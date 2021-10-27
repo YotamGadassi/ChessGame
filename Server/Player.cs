@@ -13,7 +13,7 @@ namespace Server
 
         public string Name { get; } 
 
-        public int Rank { get; private set}
+        public int Rank { get; private set; }
 
         public Guid Token { get; }
     }

@@ -83,9 +83,17 @@ namespace Server
             return false;
         }
 
+        public void Stop()
+        {
+            timer.Change(Timeout.Infinite, Timeout.Infinite);
+            CurrentStatus = GameStatus.NonActive;
+            gameBoard.ClearBoard();
+        }           
+
         public void Pause()
         {
             timer.Change(Timeout.Infinite, Timeout.Infinite);
+            CurrentStatus = GameStatus.Paused;
         }
 
         private void updateTimeElpased(object state)
@@ -102,6 +110,13 @@ namespace Server
             players.Add(Player.Name, Player);
 
             return true;
+        }
+
+        public bool TurnPlay(BoardPosition start, BoardPosition end)
+        {
+            bool moveSuccess = gameBoard.MoveTool(start, end);
+
+            return moveSuccess;
         }
 
         //TODO: Implement
