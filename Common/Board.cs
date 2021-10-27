@@ -9,10 +9,10 @@ namespace Common
 {
     public class BoardPosition
     {
-        private Point m_position;
-        public BoardPosition(Point Position)
+        public Point Position;
+        public BoardPosition(Point _Position)
         {
-            m_position = Position;
+            Position = _Position;
         }
     }
 
