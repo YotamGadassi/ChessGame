@@ -63,33 +63,42 @@ namespace Common
             return tool;
         }
 
-        public bool MoveTool(BoardPosition start, BoardPosition end, bool OverrideEndPosition = true)
+        public bool MoveTool(BoardPosition start, BoardPosition end)
         {
             ITool toolToMove = getToolSafe(start);
             bool isToolExists = null != toolToMove;
             if (!isToolExists)
                 return false;
 
-            ITool toolToRemove;
-            if (!OverrideEndPosition)
-            {
-                toolToRemove = getToolSafe(end);
-                bool isEndPositionEmpty = toolToRemove == null;
-                if (!isEndPositionEmpty)
-                    return false;
-            }
+            bool isMoveForward = CheckMoveForward(toolToMove);
+            bool isFirstMove = CheckFirstMove(toolToMove);
 
-            bool isMovingLegal = toolToMove.IsMovingLegal(start, end);
+            ITool toolAtEndPoint = getToolSafe(end);
+            bool isMovingLegal = toolToMove.IsMovingLegal(start, end, isMoveForward, isFirstMove, toolAtEndPoint);
             if (!isMovingLegal)
                 return false;
 
-            toolToRemove = RemoveTool(end);
+            toolAtEndPoint = RemoveTool(end);
             toolToMove = RemoveTool(start);
             AddTool(end, toolToMove);
 
             return true;
         }
-        
+
+        private bool CheckFirstMove(ITool toolToMove)
+        {
+            return true;
+        }
+
+        private bool CheckMoveForward(ITool toolToMove)
+        {
+            if (toolToMove.GroupNumber == 1)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public void ClearBoard()
         {
             BoardState.Clear();

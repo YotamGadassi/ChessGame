@@ -1,7 +1,6 @@
-﻿using Common;
-using System.Windows;
+﻿using System.Windows;
 
-namespace Server
+namespace Common
 {
     public class Move
     {

@@ -45,8 +45,9 @@
     <Compile Include="Board.cs" />
     <Compile Include="IPlayer.cs" />
     <Compile Include="ITool.cs" />
+    <Compile Include="Move.cs" />
+    <Compile Include="PawnsMoveLogic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ToolSoldier.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
