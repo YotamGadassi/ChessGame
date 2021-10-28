@@ -42,7 +42,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Board.cs" />
+    <Compile Include="ChessBoard.cs" />
     <Compile Include="IPlayer.cs" />
     <Compile Include="ITool.cs" />
     <Compile Include="Move.cs" />

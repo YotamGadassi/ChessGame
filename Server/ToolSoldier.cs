@@ -15,11 +15,11 @@ namespace Server
 
         public int GroupNumber { get; }
 
-        public bool IsMovingLegal(BoardPosition start, BoardPosition End, bool isMoveForward, bool IsFirstMove, ITool ToolAtEndPoint)
+        public bool IsMovingLegal(BoardPosition start, BoardPosition End, bool isMoveForward, bool IsFirstMove, bool isKilling)
         {
             Move move = new Move(start, End);
 
-            return PawnsMoveLogic.IsMoveLegal(move, isMoveForward, IsFirstMove, GroupNumber, ToolAtEndPoint);
+            return PawnsMoveLogic.IsMoveLegal(move, isMoveForward, IsFirstMove, isKilling);
         }
 
         public Point[] PossibleMoves(BoardPosition Start)

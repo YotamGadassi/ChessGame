@@ -5,16 +5,9 @@ namespace Server
 {
     public static class PawnsMoveLogic
     {
-        public static bool IsMoveLegal(Move Move, bool MoveForward , bool IsFirstMove , int ToolGroupNum, ITool ToolAtEndPoint)
+        public static bool IsMoveLegal(Move Move, bool MoveForward , bool IsFirstMove, bool isKilling)
         {
             Vector diff = Move.Diff;
-
-            bool isKilling = ToolAtEndPoint != null;
-            
-            if (isKilling && (ToolGroupNum == ToolAtEndPoint.GroupNumber))
-            {
-                return false;
-            }
 
             if (MoveForward)
             {

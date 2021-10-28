@@ -5,7 +5,7 @@ namespace Common
 {
     public interface ITool
     {
-        bool IsMovingLegal(BoardPosition start, BoardPosition End, bool isMoveForward, bool IsFirstMove , ITool ToolAtEndPoint);
+        bool IsMovingLegal(BoardPosition start, BoardPosition End,bool IsMoveForward, bool IsFirstMove, bool isKilling);
 
         Point[] PossibleMoves(BoardPosition Start);
 

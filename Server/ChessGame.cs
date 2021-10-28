@@ -1,10 +1,9 @@
 ﻿using Common;
 using System;
+using System.Windows;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Server
 {
@@ -22,10 +21,18 @@ namespace Server
         NonInitialiezed
     }
 
+    public enum Team
+    {
+        White,
+        Black
+    }
+
     public class ChessGame
     {
-        private Board gameBoard = new Board();
+        private ChessBoard gameBoard = new ChessBoard();
         private Dictionary<string, IPlayer> players = new Dictionary<string, IPlayer>();
+        private Dictionary<IPlayer, Team> playersGroupNum = new Dictionary<IPlayer, Team>();
+
         private IPlayer[] playersArray; 
         private int playersLimit = 2;
         private int minimumPlayers = 2;
@@ -44,6 +51,32 @@ namespace Server
             get; private set;
         }
 
+        private int teamToGroupNum(Team team)
+        {
+            switch(team)
+            {
+                case Team.White:
+                    return 1;
+                case Team.Black:
+                    return 2;
+                default:
+                    return 1;
+            }
+        }
+
+        private Team groupNumToTeam(int GroupNum)
+        {
+            switch (GroupNum)
+            {
+                case 1:
+                    return Team.White;
+                case 2:
+                    return Team.Black;
+                default:
+                    return Team.White;
+            }
+        }
+
         public void Init()
         {
             KeyValuePair<BoardPosition, ITool>[] boardArrangement = getInitialBoardArrangement();
@@ -57,20 +90,34 @@ namespace Server
             bool gameCanBegin = IsGameCanBegin();
             if (!gameCanBegin)
                 return;
-
+            SplitToolsBetweenPlayers();
             Mode = _Mode;
-            playersArray = players.Values.ToArray();
-            if (timer != null)
+
+
+
+            startTimer();
+            CurrentPlayer = chooseRandomFirstPlayer();
+            CurrentStatus = GameStatus.Active;
+        }
+
+        private void SplitToolsBetweenPlayers()
+        {
+            
+        }
+
+        private void startTimer()
+        {
+            if (timer == null)
                 timer = new Timer(updateTimeElpased, null, 0, 1000);
             else
                 timer.Change(0, 1000);
+        }
+
+        private IPlayer chooseRandomFirstPlayer()
+        {
             Random rand = new Random();
             int randonNumber = rand.Next(0, players.Count());
-
-            CurrentPlayer = playersArray[randonNumber];
-            CurrentStatus = GameStatus.Active;
-
-
+            return playersArray[randonNumber];
         }
 
         private bool IsGameCanBegin()
@@ -85,14 +132,14 @@ namespace Server
 
         public void Stop()
         {
-            timer.Change(Timeout.Infinite, Timeout.Infinite);
+            timer?.Change(Timeout.Infinite, Timeout.Infinite);
             CurrentStatus = GameStatus.NonActive;
             gameBoard.ClearBoard();
         }           
 
         public void Pause()
         {
-            timer.Change(Timeout.Infinite, Timeout.Infinite);
+            timer?.Change(Timeout.Infinite, Timeout.Infinite);
             CurrentStatus = GameStatus.Paused;
         }
 
@@ -103,26 +150,81 @@ namespace Server
 
         public bool RegisterPlayer(IPlayer Player)
         {
-            bool canAddPlayer = players.Count() <= playersLimit;
+            bool canAddPlayer = players.Count() < playersLimit;
             if (!canAddPlayer)
                 return false;
 
             players.Add(Player.Name, Player);
-
             return true;
         }
 
-        public bool TurnPlay(BoardPosition start, BoardPosition end)
+        public ChessBoardProxy GenerateBoardProxy(Guid PlayerToken)
         {
-            bool moveSuccess = gameBoard.MoveTool(start, end);
+            IPlayer currentPlayer = null;
+            foreach (IPlayer player in playersArray)
+            {
+                if (player.Token == PlayerToken)
+                {
+                    currentPlayer = player;
+                }
+            }
 
-            return moveSuccess;
+            if (currentPlayer == null)
+            {
+                return null;
+            }
+
+            int groupNum = playersGroupNum[currentPlayer];
+
+            ITool[] tools = gameBoard.GetToolsForGroup(groupNum).ToArray();
+            bool isMoveForward = isMoveForward()
+
+            ChessBoardProxy proxy = new ChessBoardProxy(gameBoard, tools,)  
         }
 
         //TODO: Implement
         private KeyValuePair<BoardPosition, ITool>[] getInitialBoardArrangement()
         {
-            throw new NotImplementedException();
+            IList<KeyValuePair<BoardPosition, ITool>> list = new List<KeyValuePair<BoardPosition, ITool>>();
+
+            bool isMoveForward = true;
+            foreach (IPlayer player in players.Values)
+            {
+                list.Concat(GeneratePawns(isMoveForward));
+                isMoveForward = !isMoveForward;
+            }
+
+            return list.ToArray();
         }
+
+        private IList<KeyValuePair<BoardPosition, ITool>> GeneratePawns(bool IsMoveForward)
+        {
+            int pawnsAmount = 8;
+
+            int yAxis = 1;
+            int groupNumer = 1;
+            
+            if (!IsMoveForward)
+            {
+                yAxis = 6;
+                groupNumer = 2;
+            }
+
+            IList<KeyValuePair<BoardPosition, ITool>> list = new List<KeyValuePair<BoardPosition, ITool>>();
+
+            for (int i = 0; i < pawnsAmount; ++i)
+            {
+                ToolPawn newTool = new ToolPawn(groupNumer);
+                Point newPoint = new Point(i, yAxis);
+                BoardPosition newPosition = new BoardPosition(newPoint);
+                KeyValuePair<BoardPosition, ITool> newPair = new KeyValuePair<BoardPosition, ITool>(newPosition, newTool);
+                list.Add(newPair);
+            }
+
+            return list;
+        }
+
     }
+
+
 }
