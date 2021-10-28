@@ -46,7 +46,7 @@
   <ItemGroup>
     <Compile Include="ChessGame.cs" />
     <Compile Include="Move.cs" />
-    <Compile Include="MoveLogic.cs" />
+    <Compile Include="PawnsMoveLogic.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
