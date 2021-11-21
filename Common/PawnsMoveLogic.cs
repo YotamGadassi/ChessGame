@@ -5,17 +5,17 @@ namespace Server
 {
     public static class PawnsMoveLogic
     {
-        public static bool IsMoveLegal(Move Move, bool MoveForward , bool IsFirstMove, bool isKilling)
+        public static bool IsMoveLegal(Move Move, MoveState MoveState)
         {
             Vector diff = Move.Diff;
 
-            if (MoveForward)
+            if (MoveState.MoveDirection == GameDirection.Forward)
             {
-                return logicForMoveForward(diff, IsFirstMove, isKilling);
+                return logicForMoveForward(diff, MoveState.IsFirstMove, MoveState.IsMoveToKill);
             }
             else
             {
-                return logicForMoveBackward(diff, IsFirstMove, isKilling);
+                return logicForMoveBackward(diff, MoveState.IsFirstMove, MoveState.IsMoveToKill);
             }
 
         }

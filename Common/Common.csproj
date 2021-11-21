@@ -43,10 +43,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChessBoard.cs" />
+    <Compile Include="CommonEnums.cs" />
     <Compile Include="IPlayer.cs" />
     <Compile Include="ITool.cs" />
     <Compile Include="Move.cs" />
+    <Compile Include="IMovementController.cs" />
+    <Compile Include="MoveState.cs" />
     <Compile Include="PawnsMoveLogic.cs" />
+    <Compile Include="PlayerToken.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

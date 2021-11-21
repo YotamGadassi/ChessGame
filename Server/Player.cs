@@ -8,13 +8,13 @@ namespace Server
         public Player(string _Name)
         {
             Name = _Name;
-            Token = Guid.NewGuid();
+            Token = new PlayerToken();
         }
 
         public string Name { get; } 
 
         public int Rank { get; private set; }
 
-        public Guid Token { get; }
+        public PlayerToken Token { get; }
     }
 }
