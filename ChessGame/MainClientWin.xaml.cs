@@ -24,8 +24,11 @@ namespace ChessGame
     {
         private Window m_hostWin;
 
-        private IPlayer seconderyPlayer;
-        private IPlayer mainPlayer;
+        private IPlayer m_seconderyPlayer;
+        private IPlayer m_mainPlayer;
+        private IMovementController m_mainPlayerController;
+        private IMovementController m_secondaryPlayerController;
+
 
         public MainWindow()
         {
@@ -35,7 +38,7 @@ namespace ChessGame
 
         private void ButtonClick_CreateUser(object sender, RoutedEventArgs e)
         {
-            mainPlayer = new Player("Main Player");
+            m_mainPlayer = new Player("Main Player");
         }
 
         private void ButtonClick_HostGame(object sender, RoutedEventArgs e)
@@ -50,8 +53,20 @@ namespace ChessGame
 
         private void ButtonClick_StartOfflineGame(object sender, RoutedEventArgs e)
         {
-            seconderyPlayer = new Player("Second Player");
-            m_board.Visibility = Visibility.Visible;
+            m_seconderyPlayer = new Player("Second Player");
+            ChessGameServer.instance.Init();
+            ChessGameServer.instance.RegisterPlayer(m_mainPlayer, Team.White);
+            m_mainPlayerController = ChessGameServer.instance.GetController(m_mainPlayer);
+
+            ChessGameServer.instance.RegisterPlayer(m_seconderyPlayer, Team.Black);
+            m_secondaryPlayerController = ChessGameServer.instance.GetController(m_seconderyPlayer);
+            
+            m_offlineGameGrid.Visibility = Visibility.Visible;
+        }
+
+        private void ButtonClick_StartGame(object sender, RoutedEventArgs e)
+        {
+            
         }
     }
 }

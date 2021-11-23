@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Shapes;
+using System.Collections.ObjectModel;
 using System.Windows;
 
 using Rectangle = System.Windows.Shapes.Rectangle;
-using System;
 
 namespace ChessGame
 {
@@ -15,8 +14,7 @@ namespace ChessGame
     /// </summary>
     public partial class BoardControl : UserControl
     {
-
-        Dictionary<BoardPosition, ToolType> boardCopy;
+        private ObservableDictionary<BoardPosition, ToolType> boardState;
 
         public BoardControl()
         {
@@ -76,8 +74,8 @@ namespace ChessGame
 
         public void StartGame(IMovementController controller)
         {
-            boardCopy = controller.GetBoardState();
-
+            Dictionary<BoardPosition, ToolType> state = controller.GetBoardState();
+            boardState = new ObservableDictionary<BoardPosition, ToolType>(state);
         }
     }
 }

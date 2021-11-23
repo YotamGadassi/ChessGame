@@ -74,7 +74,6 @@ namespace Server
         public static ChessGameServer instance;
         public bool isInitilized = false;
 
-
         private ChessBoard gameBoard = new ChessBoard();
 
         private Dictionary<string, IPlayer> playerNameToPlayer = new Dictionary<string, IPlayer>();
@@ -195,7 +194,7 @@ namespace Server
             return true;
         }
 
-        public IMovementController GetController(Player player)
+        public IMovementController GetController(IPlayer player)
         {
             if (false == isInitilized)
                 return null;

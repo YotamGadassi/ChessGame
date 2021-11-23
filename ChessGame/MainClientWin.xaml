@@ -23,6 +23,20 @@
             <Button Click="ButtonClick_StartOfflineGame">Play Offline</Button>
         </StackPanel>
 
-        <local:BoardControl x:Name="m_board" Grid.Column="2" Visibility="Hidden"/>
+        <Grid x:Name="m_offlineGameGrid" Grid.Column="2" Visibility="Hidden">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0">
+                <Button Click="ButtonClick_StartGame">Start Game</Button>
+                <Button Click="ButtonClick_PauseGame">Pause Game</Button>
+                <Button Click="ButtonClick_EndGame">End Game</Button>
+            </StackPanel>
+            
+            <local:BoardControl Grid.Column="1"/>
+            
+        </Grid>
     </Grid>
 </Window>

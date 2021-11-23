@@ -99,6 +99,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ObservableDictionary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -137,6 +138,9 @@
       <Project>{8042675f-3807-43bb-87aa-069842dd2da2}</Project>
       <Name>Utils</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\pawn.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

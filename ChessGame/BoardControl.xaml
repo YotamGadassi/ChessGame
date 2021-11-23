@@ -14,7 +14,7 @@
         </Style>
     </UserControl.Resources>
     
-    <Grid x:Name="m_mainGrid" Background="White" ShowGridLines="True">
+    <Grid Width="Auto" Height="Auto" x:Name="m_mainGrid" Background="White" ShowGridLines="True">
 
     </Grid>
 </UserControl>
