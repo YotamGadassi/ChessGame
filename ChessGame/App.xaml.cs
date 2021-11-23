@@ -13,5 +13,6 @@ namespace ChessGame
     /// </summary>
     public partial class App : Application
     {
+        
     }
 }

@@ -3,15 +3,21 @@ using System.Collections.Generic;
 
 namespace Utils
 {
-    public class BiDirectionalDictionary<TValue1, TValue2>
+    public class BiDirectionalDictionary<TValue1, TValue2> 
     {
+        private TValue1 defaultKey;
+        private TValue2 defaultValue;
+
         private Dictionary<TValue1, TValue2> originalDictionary;
         private Dictionary<TValue2, TValue1> reversedDictionary;
 
-        public BiDirectionalDictionary()
+        public BiDirectionalDictionary(TValue1 DefaultKey, TValue2 DefaultValue)
         {
             originalDictionary = new Dictionary<TValue1, TValue2>();
             reversedDictionary = new Dictionary<TValue2, TValue1>();
+            
+            defaultKey = DefaultKey;
+            defaultValue = DefaultValue;
         }
 
         public void Add(TValue1 value1, TValue2 value2)
@@ -91,7 +97,7 @@ namespace Utils
                 return true;
             }
 
-            value = default;
+            value = defaultValue;
             return false;
         }
         public bool TryGetValue(TValue2 key, out TValue1 value)
@@ -102,7 +108,7 @@ namespace Utils
                 return true;
             }
 
-            value = default;
+            value = defaultKey;
             return false;
         }
 

@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31624.102
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1684
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoteClient", "ChessGame\RemoteClient.csproj", "{ADD6E01E-53BE-473F-BE4C-39AF7371AF23}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "ChessGame\Client.csproj", "{ADD6E01E-53BE-473F-BE4C-39AF7371AF23}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{FA8B2308-F9B4-48CD-9DD3-D35425A00DDC}"
 EndProject

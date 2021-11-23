@@ -52,7 +52,7 @@ namespace Server
 
                     foreach (ITool tool in tools)
                     {
-                        toolTeamDict[team] = tool;
+                        toolTeamDict[tool] = team;
                     }
                 }
             }
@@ -78,8 +78,8 @@ namespace Server
         private ChessBoard gameBoard = new ChessBoard();
 
         private Dictionary<string, IPlayer> playerNameToPlayer = new Dictionary<string, IPlayer>();
-        internal BiDirectionalDictionary<IPlayer, Team> playerToTeam = new BiDirectionalDictionary<IPlayer, Team>();
-        internal BiDirectionalDictionary<Team, GameDirection> TeamToGameDirection = new BiDirectionalDictionary<Team, GameDirection>();
+        internal BiDirectionalDictionary<IPlayer, Team> playerToTeam = new BiDirectionalDictionary<IPlayer, Team>(null, Team.Black);
+        internal BiDirectionalDictionary<Team, GameDirection> TeamToGameDirection = new BiDirectionalDictionary<Team, GameDirection>(Team.Black, GameDirection.Forward);
         internal itoolTeamDictionary toolToTeam = new itoolTeamDictionary();
 
         private int playersLimit = 2;
@@ -89,15 +89,9 @@ namespace Server
 
         public GameStatus CurrentStatus = GameStatus.NonInitialiezed;
 
-        public GameMode Mode
-        {
-            get; private set;
-        }
+        public GameMode Mode {get; private set;}
 
-        public IPlayer CurrentPlayer
-        {
-            get; private set;
-        }
+        public IPlayer CurrentPlayer {get; private set;}
 
         static ChessGameServer()
         {

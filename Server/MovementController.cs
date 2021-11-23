@@ -1,4 +1,5 @@
 ﻿using Common;
+using System.Collections.Generic;
 
 namespace Server
 {
@@ -23,7 +24,7 @@ namespace Server
                 return false;
             
             ITool toolToMove = board.GetToolSafe(start);
-            bool isStartPositionContainTool = toolToMove != null
+            bool isStartPositionContainTool = toolToMove != null;
             if (!isStartPositionContainTool)
                 return false;
 
@@ -45,7 +46,11 @@ namespace Server
             
             return board.MoveTool(start, end, moveState);
         }
-    
+
+        public Dictionary<BoardPosition, ToolType> GetBoardState()
+        {
+            return board.GetBoardStateCopy();
+        }
     
     }
 }

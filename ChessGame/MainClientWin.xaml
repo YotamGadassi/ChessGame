@@ -1,0 +1,28 @@
+﻿<Window x:Class="ChessGame.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ChessGame"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Column="0">
+            <Button Click="ButtonClick_CreateUser">Create User</Button>
+            <Button Click="ButtonClick_HostGame">Host A Game</Button>
+            <Button Click="ButtonClick_ConnectToHost">Connect To Host</Button>
+            <Button Click="ButtonClick_StartOfflineGame">Play Offline</Button>
+        </StackPanel>
+
+        <local:BoardControl x:Name="m_board" Grid.Column="2" Visibility="Hidden"/>
+    </Grid>
+</Window>
