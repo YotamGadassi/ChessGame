@@ -20,6 +20,8 @@ namespace ChessGame
         private ObservableDictionary<BoardPosition, ToolType> m_boardState;
         private Dictionary<ToolType, BitmapImage> m_ToolToImageSource;
 
+        private Image currentDragedImage = null;
+
         private static int m_gridCellSize = 50;
 
         public BoardControl()
@@ -29,12 +31,13 @@ namespace ChessGame
             m_ToolToImageSource = new Dictionary<ToolType, BitmapImage>();
 
             m_mainGrid.Drop += new DragEventHandler(grid_OnDrop);
-
-            BitmapImage src = new BitmapImage(new Uri("pack://application:,,,/Resources/pawn.jpg"));
+            m_mainGrid.MouseMove += grid_OnMouseMove;
+            m_mainGrid.MouseLeftButtonUp += grin_OnMouseRemove;
+            BitmapImage src = new BitmapImage(new Uri("pack://application:,,,/Resources/pawn.png"));
             m_ToolToImageSource[ToolType.Pawn] = src;
         }
 
-        private void drawOnMap (object sender, NotifyCollectionChangedEventArgs args)
+        private void drawOnMap(object sender, NotifyCollectionChangedEventArgs args)
         {
             if (args.Action == NotifyCollectionChangedAction.Add)
             {
@@ -54,12 +57,12 @@ namespace ChessGame
                             return;
                         }
             */
-            return;      
+            return;
         }
 
         private void addToolToMap(object v)
         {
-            KeyValuePair<BoardPosition, ToolType> newPair = (KeyValuePair < BoardPosition, ToolType > )v;
+            KeyValuePair<BoardPosition, ToolType> newPair = (KeyValuePair<BoardPosition, ToolType>)v;
             Image img = createImage(newPair.Value);
             int column = (int)newPair.Key.Position.X;
             int raw = (int)newPair.Key.Position.Y;
@@ -141,7 +144,7 @@ namespace ChessGame
         {
             Dictionary<BoardPosition, ToolType> state = controller.GetBoardState();
             m_boardState = new ObservableDictionary<BoardPosition, ToolType>(state);
-            foreach(KeyValuePair<BoardPosition, ToolType> pair in m_boardState)
+            foreach (KeyValuePair<BoardPosition, ToolType> pair in m_boardState)
             {
                 addToolToMap(pair);
             }
@@ -153,7 +156,7 @@ namespace ChessGame
             if (img != null && e.LeftButton == MouseButtonState.Pressed)
             {
                 DataObject dataObject = new DataObject(img);
-            
+
                 DragDrop.DoDragDrop(img, dataObject, DragDropEffects.Move);
             }
         }
@@ -169,5 +172,6 @@ namespace ChessGame
             Grid.SetColumn(element, column);
             Grid.SetRow(element, row);
         }
+
     }
 }
