@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "Utils\Utils.csproj", "{8042675F-3807-43BB-87AA-069842DD2DA2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DragAndDropControl", "WpfControlLibrary1\DragAndDropControl.csproj", "{43A27F8C-6588-43CF-AB27-F78252730380}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{8042675F-3807-43BB-87AA-069842DD2DA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8042675F-3807-43BB-87AA-069842DD2DA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8042675F-3807-43BB-87AA-069842DD2DA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43A27F8C-6588-43CF-AB27-F78252730380}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43A27F8C-6588-43CF-AB27-F78252730380}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43A27F8C-6588-43CF-AB27-F78252730380}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43A27F8C-6588-43CF-AB27-F78252730380}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

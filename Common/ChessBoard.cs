@@ -18,8 +18,7 @@ namespace Common
         public void Init(IList<KeyValuePair<BoardPosition, ITool>[]> InitialStateList)
         {
             ClearBoard();
-
-            foreach (KeyValuePair<BoardPosition, ITool>[] initialState in  InitialStateList)
+             foreach (KeyValuePair<BoardPosition, ITool>[] initialState in  InitialStateList)
             {
                 foreach (KeyValuePair<BoardPosition, ITool> pair in initialState)
                 {

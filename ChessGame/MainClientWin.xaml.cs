@@ -66,7 +66,17 @@ namespace ChessGame
 
         private void ButtonClick_StartGame(object sender, RoutedEventArgs e)
         {
-            
+            m_board.StartGame(m_mainPlayerController);
         }
+
+        private void ButtonClick_PauseGame(object sender, RoutedEventArgs e)
+        {
+
+        }
+        private void ButtonClick_EndGame(object sender, RoutedEventArgs e)
+        {
+
+        }
+
     }
 }

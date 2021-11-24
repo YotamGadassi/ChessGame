@@ -226,7 +226,7 @@ namespace Server
         {
             IList<KeyValuePair<BoardPosition, ITool>> list = new List<KeyValuePair<BoardPosition, ITool>>();
 
-            list.Concat(GeneratePawns(direction, team));
+            list = GeneratePawns(direction, team);
 
             return list.ToArray();
         }

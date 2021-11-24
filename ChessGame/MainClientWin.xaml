@@ -35,7 +35,7 @@
                 <Button Click="ButtonClick_EndGame">End Game</Button>
             </StackPanel>
             
-            <local:BoardControl Grid.Column="1"/>
+            <local:BoardControl Grid.Column="1" x:Name="m_board"/>
             
         </Grid>
     </Grid>
