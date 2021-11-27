@@ -6,6 +6,12 @@ using System.Threading.Tasks;
 
 namespace Common
 {
+    public enum GameDirection
+    {
+        Forward,
+        Backward
+    }
+    
     public enum GameMode
     {
         Offline,
@@ -20,15 +26,4 @@ namespace Common
         NonInitialiezed
     }
 
-    public enum Team
-    {
-        White,
-        Black
-    }
-
-    public enum GameDirection
-    {
-        Forward,
-        Backward
-    }
 }

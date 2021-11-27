@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{ADD6E01E-53BE-473F-BE4C-39AF7371AF23}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>ChessGame</RootNamespace>
-    <AssemblyName>ChessGame</AssemblyName>
+    <RootNamespace>Client</RootNamespace>
+    <AssemblyName>Client</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -60,6 +60,9 @@
     <Compile Include="BoardControl.xaml.cs">
       <DependentUpon>BoardControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ChessTool.xaml.cs">
+      <DependentUpon>ChessTool.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CreateUserWin.xaml.cs">
       <DependentUpon>CreateUserWin.xaml</DependentUpon>
     </Compile>
@@ -70,6 +73,10 @@
       <DependentUpon>HostGameWin.xaml</DependentUpon>
     </Compile>
     <Page Include="BoardControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ChessTool.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -99,7 +106,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ObservableDictionary.cs" />
+    <Compile Include="OfflineFramwork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -126,17 +133,17 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ChessBoard\ChessBoard.csproj">
+      <Project>{f2c65404-0aa1-433c-a420-eff2d5677999}</Project>
+      <Name>ChessBoard</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{bdcf94e1-2e56-4321-bb88-fae6c1bb3899}</Project>
       <Name>Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Server\Server.csproj">
+    <ProjectReference Include="..\Server\ChessGame.csproj">
       <Project>{fa8b2308-f9b4-48cd-9dd3-d35425a00ddc}</Project>
-      <Name>Server</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Utils\Utils.csproj">
-      <Project>{8042675f-3807-43bb-87aa-069842dd2da2}</Project>
-      <Name>Utils</Name>
+      <Name>ChessGame</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

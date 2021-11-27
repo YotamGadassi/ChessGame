@@ -1,21 +1,7 @@
-﻿using Common;
-using Server;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace ChessGame
+namespace Client
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -23,11 +9,7 @@ namespace ChessGame
     public partial class MainWindow : Window
     {
         private Window m_hostWin;
-
-        private IPlayer m_seconderyPlayer;
-        private IPlayer m_mainPlayer;
-        private IMovementController m_mainPlayerController;
-        private IMovementController m_secondaryPlayerController;
+        private OfflineFramwork Framwork = null;
 
 
         public MainWindow()
@@ -38,7 +20,7 @@ namespace ChessGame
 
         private void ButtonClick_CreateUser(object sender, RoutedEventArgs e)
         {
-            m_mainPlayer = new Player("Main Player");
+
         }
 
         private void ButtonClick_HostGame(object sender, RoutedEventArgs e)
@@ -53,20 +35,21 @@ namespace ChessGame
 
         private void ButtonClick_StartOfflineGame(object sender, RoutedEventArgs e)
         {
-            m_seconderyPlayer = new Player("Second Player");
-            ChessGameServer.instance.Init();
-            ChessGameServer.instance.RegisterPlayer(m_mainPlayer, Team.White);
-            m_mainPlayerController = ChessGameServer.instance.GetController(m_mainPlayer);
+            if(Framwork != null)
+            {
+                return;
+            }
 
-            ChessGameServer.instance.RegisterPlayer(m_seconderyPlayer, Team.Black);
-            m_secondaryPlayerController = ChessGameServer.instance.GetController(m_seconderyPlayer);
-            
+            Framwork = new OfflineFramwork();
+
+            m_offlineGameGrid.Children.Add(Framwork.boardControl);
+            Grid.SetColumn(Framwork.boardControl, 1);
             m_offlineGameGrid.Visibility = Visibility.Visible;
         }
 
         private void ButtonClick_StartGame(object sender, RoutedEventArgs e)
         {
-            m_board.StartGame(m_mainPlayerController);
+            Framwork.boardControl.StartGame();
         }
 
         private void ButtonClick_PauseGame(object sender, RoutedEventArgs e)

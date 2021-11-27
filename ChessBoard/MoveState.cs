@@ -1,4 +1,6 @@
-﻿namespace Common
+﻿using Common;
+
+namespace ChessBoard
 {
     public class MoveState
     {

@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="ChessGame.BoardControl"
+﻿<UserControl x:Class="Client.BoardControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:ChessGame"
              mc:Ignorable="d">
     <Canvas x:Name="m_MainCanvas">
-        <Grid AllowDrop="True" Width="Auto" Height="Auto" x:Name="m_mainGrid" Background="White" ShowGridLines="True" Loaded="init_Grid">
+        <Grid Width="Auto" Height="Auto" x:Name="m_mainGrid" ShowGridLines="True" Loaded="CreateMainGrid">
+            <Grid x:Name="m_gameGrid" AllowDrop="True" ShowGridLines="True" Loaded="CreateGameGrid"/>
         </Grid>
     </Canvas>
 </UserControl>
