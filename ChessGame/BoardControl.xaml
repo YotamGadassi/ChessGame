@@ -6,8 +6,8 @@
              xmlns:local="clr-namespace:ChessGame"
              mc:Ignorable="d">
     <Canvas x:Name="m_MainCanvas">
-        <Grid Width="Auto" Height="Auto" x:Name="m_mainGrid" ShowGridLines="True" Loaded="CreateMainGrid">
-            <Grid x:Name="m_gameGrid" AllowDrop="True" ShowGridLines="True" Loaded="CreateGameGrid"/>
+        <Grid Width="Auto" Height="Auto" x:Name="m_mainGrid" Loaded="CreateMainGrid">
+            <Grid x:Name="m_gameGrid" Loaded="CreateGameGrid"/>
         </Grid>
     </Canvas>
 </UserControl>

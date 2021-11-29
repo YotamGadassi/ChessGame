@@ -18,33 +18,23 @@ namespace ChessBoard
 
         public event EventHandler<ChessBoardEventArgs> StateChangeEvent;
 
-        public bool SafeAdd(BoardPosition Position, ITool Tool)
+        public void Add(BoardPosition Position, ITool Tool)
         {
-            bool isAdded = m_board.SafeAdd(Position, Tool);
-            if (!isAdded)
-            {
-                return false;
-            }
+            m_board.Add(Position, Tool);
 
             ChessBoardEventArgs args = new ChessBoardEventArgs(EventType.Add, Position, Tool);
 
             StateChangeEvent?.Invoke(this, args);
-            return true;
         }
 
-        public void ForceAdd(BoardPosition Position, ITool Tool)
-        {
-            m_board.ForceAdd(Position, Tool);
-        }
-
-        public void ForceAdd(IList<KeyValuePair<BoardPosition, ITool>> InitialState)
+        public void Add(IList<KeyValuePair<BoardPosition, ITool>> InitialState)
         {
             foreach (KeyValuePair<BoardPosition, ITool> pair in InitialState)
             {
                 BoardPosition position = pair.Key;
                 ITool tool = pair.Value;
 
-                m_board.ForceAdd(position, tool);
+                m_board.Add(position, tool);
             }
         }
 
@@ -63,33 +53,9 @@ namespace ChessBoard
             return true;
         }
 
-        public bool SafeMove(BoardPosition Start, BoardPosition End)
+        public void Move(BoardPosition Start, BoardPosition End)
         {
-            ITool toolToMove = m_board.GetTool(Start);
-            if (null == toolToMove)
-            {
-                return false;
-            }
-
-            ChessMoveChecker moveChecker = new ChessMoveChecker(End);
-
-            bool isMoved = m_board.SafeMove(Start, End, moveChecker.CheckMove);
-            if (!isMoved)
-            {
-                return false;
-            }
-
-            toolToMove.Move(End);
-            ChessBoardEventArgs args = new ChessBoardEventArgs(EventType.Move, Start, End, null, null);
-
-            StateChangeEvent?.Invoke(this, args);
-
-            return true;
-        }
-
-        public void ForceMove(BoardPosition Start, BoardPosition End)
-        {
-            m_board.ForceMove(Start, End);
+            m_board.Move(Start, End);
 
             ChessBoardEventArgs args = new ChessBoardEventArgs(EventType.Move, Start, End, null, null);
 
@@ -106,6 +72,11 @@ namespace ChessBoard
             return m_board.GetPosition(Tool);
         }
 
+        public void ClearBoard()
+        {
+            m_board.Clear();
+        }
+
         public BoardState GetStateCopy()
         {
             BoardState boardCopy = new BoardState();
@@ -114,25 +85,11 @@ namespace ChessBoard
                 BoardPosition position = pair.Key;
                 ITool toolCopy = pair.Value.GetCopy();
 
-                boardCopy.ForceAdd(position, toolCopy);
+                boardCopy.Add(position, toolCopy);
             }
 
             return boardCopy;
         }
     }
 
-    internal class ChessMoveChecker
-    {
-        BoardPosition EndPosition;
-
-        public ChessMoveChecker(BoardPosition End)
-        {
-            EndPosition = End;
-        }
-
-        public bool CheckMove(ITool ToolToMove, ITool ToolAtEnd)
-        {
-            return ToolToMove.IsMovingLegal(EndPosition, ToolAtEnd);
-        }
-    }
 }

@@ -36,39 +36,11 @@ namespace Client
             m_mainGrid.Children.Add(toolImage);
         }
 
-        public BoardPosition Position => toolModel.Position;
-
         public Color Color => toolModel.Color;
-
-        public GameDirection MovingDirection => toolModel.MovingDirection;
 
         public string Type => toolModel.Type;
 
-        public bool IsFirstMove => toolModel.IsFirstMove;
+        public ITool GetCopy() => toolModel.GetCopy();
 
-        public void Deactivate()
-        {
-            toolModel.Deactivate();
-        }
-
-        public ITool GetCopy()
-        {
-            return toolModel.GetCopy();
-        }
-
-        public bool IsMovingLegal(BoardPosition End, ITool ToolAtEndPoint)
-        {
-            return toolModel.IsMovingLegal(End, ToolAtEndPoint);
-        }
-
-        public void Move(BoardPosition Postion)
-        {
-            toolModel.Move(Postion);
-        }
-
-        public BoardPosition[] PossibleMoves(BoardPosition Start)
-        {
-            return toolModel.PossibleMoves(Start);
-        }
     }
 }

@@ -9,7 +9,7 @@ namespace Client
     public partial class MainWindow : Window
     {
         private Window m_hostWin;
-        private OfflineFramwork Framwork = null;
+        private OfflineFramwork Framework = null;
 
 
         public MainWindow()
@@ -35,21 +35,26 @@ namespace Client
 
         private void ButtonClick_StartOfflineGame(object sender, RoutedEventArgs e)
         {
-            if(Framwork != null)
+            if(Framework != null)
             {
                 return;
             }
 
-            Framwork = new OfflineFramwork();
-
-            m_offlineGameGrid.Children.Add(Framwork.boardControl);
-            Grid.SetColumn(Framwork.boardControl, 1);
+            Framework = new OfflineFramwork();
+            m_offlineGameGrid.Children.Add(Framework.boardControl);
+            Grid.SetColumn(Framework.boardControl, 1);
             m_offlineGameGrid.Visibility = Visibility.Visible;
         }
 
+        bool isGameRunning = false;
         private void ButtonClick_StartGame(object sender, RoutedEventArgs e)
         {
-            Framwork.boardControl.StartGame();
+            if (isGameRunning)
+            {
+                return;
+            }
+            isGameRunning = true;
+            Framework.StartGame();
         }
 
         private void ButtonClick_PauseGame(object sender, RoutedEventArgs e)
@@ -58,7 +63,8 @@ namespace Client
         }
         private void ButtonClick_EndGame(object sender, RoutedEventArgs e)
         {
-
+            isGameRunning = false;
+            Framework.EndGame();
         }
 
     }

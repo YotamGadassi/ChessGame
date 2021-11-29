@@ -12,20 +12,7 @@ namespace ChessBoard
         
         private Dictionary<BoardPosition, ITool> m_board = new Dictionary<BoardPosition, ITool>();
 
-        public bool SafeAdd(BoardPosition Position, ITool Tool)
-        {
-            bool keyExists = m_board.ContainsKey(Position);
-            if (keyExists)
-            {
-                return false;
-            }
-
-            m_board.Add(Position, Tool);
-            
-            return true;
-        }
-
-        public void ForceAdd(BoardPosition Position, ITool Tool)
+        public void Add(BoardPosition Position, ITool Tool)
         {
             m_board[Position] = Tool;
         }
@@ -35,25 +22,7 @@ namespace ChessBoard
             return m_board.Remove(Position);
         }
 
-        public bool SafeMove(BoardPosition Start, BoardPosition End, Func<ITool, ITool, bool> PredicateForEndPosition)
-        {
-            m_board.TryGetValue(Start, out ITool toolToMove);
-            m_board.TryGetValue(End, out ITool toolAtEnd);
-
-            bool moveLegal = PredicateForEndPosition(toolToMove, toolAtEnd);
-
-            if (!moveLegal)
-            {
-                return false;
-            }
-
-            m_board.Remove(Start);
-            m_board[End] = toolToMove;
-
-            return true;
-        }
-
-        public void ForceMove(BoardPosition Start, BoardPosition End)
+        public void Move(BoardPosition Start, BoardPosition End)
         {
             ITool toolToMove = m_board[Start];
             m_board.Remove(Start);
@@ -83,7 +52,6 @@ namespace ChessBoard
         {
             m_board.Clear();
         }
-
 
         #region IEnumerable
         public IEnumerator GetEnumerator()

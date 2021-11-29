@@ -1,9 +1,8 @@
-﻿using Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Tools;
 using ChessBoard;
+using ChessGame;
 
 namespace Game
 {
@@ -12,41 +11,18 @@ namespace Game
         private Board m_gameBoard;
         private Dictionary<Team, IList<ITool>> m_teamToolsDict;
 
-        private GameHelper gameHelper;
+        private GameMoveHelper gameHelper;
 
         public event EventHandler<ChessBoardEventArgs> StateChangeEvent;
-
+        // public event EventHandler<ChessBoardEventArgs> CheckEvent;
+        public event EventHandler<EventArgs> CheckmateEvent;
+        public event EventHandler<EventArgs> EndGameEvent;
+        public event EventHandler<EventArgs> StartGameEvent;
         public Team CurrentTeamTurn { get; private set; }
 
-        public GameEngine(Team FirstTeam, Team SecondTeam)
+        public GameEngine()
         {
             m_gameBoard = new Board();
-            m_gameBoard.StateChangeEvent += StateChanged;
-
-            m_teamToolsDict = new Dictionary<Team, IList<ITool>>();
-            m_teamToolsDict[FirstTeam] = new List<ITool>();
-            m_teamToolsDict[SecondTeam] = new List<ITool>();
-
-            KeyValuePair<BoardPosition, ITool>[] whiteGroupBoardArrangement = getInitialBoardArrangement(FirstTeam);
-            KeyValuePair<BoardPosition, ITool>[] blackGroupBoardArrangement = getInitialBoardArrangement(SecondTeam);
-
-            m_gameBoard.ForceAdd(whiteGroupBoardArrangement);
-            m_gameBoard.ForceAdd(blackGroupBoardArrangement);
-
-            gameHelper = new GameHelper(m_gameBoard);
-
-            CurrentTeamTurn = FirstTeam;
-        }
-
-        public bool Move(BoardPosition Start, BoardPosition End, Team team)
-        {
-            bool isTeamTurn = CurrentTeamTurn == team;
-            if(!isTeamTurn)
-            {
-                return false;
-            }
-
-            return Move(Start, End);
         }
 
         public bool Move(BoardPosition Start, BoardPosition End)
@@ -54,15 +30,51 @@ namespace Game
             bool isMoveOk = gameHelper.IsMoveLegal(Start, End);
             if (isMoveOk)
             {
-                ITool tool = m_gameBoard.GetTool(Start);
-                m_gameBoard.ForceMove(Start, End);
-                gameHelper.ReportMovingTool(tool);
+                ITool toolToMove = m_gameBoard.GetTool(Start);
+                ITool toolAtEnd = m_gameBoard.GetTool(End);
+                if(toolAtEnd != null && toolAtEnd.Type == "King")
+                {
+                    CheckmateEvent?.Invoke(this, null);
+                }
+                m_gameBoard.Move(Start, End);
+                gameHelper.ReportMovingTool(toolToMove);
                 SwitchTeams();
             }
 
             return isMoveOk;
         }
 
+        public void EndGame()
+        {
+            m_gameBoard.ClearBoard();
+            EndGameEvent?.Invoke(this, null);
+            m_gameBoard.StateChangeEvent -= StateChanged;
+
+            m_teamToolsDict.Clear();
+            gameHelper = null;
+            CurrentTeamTurn = null;
+        }
+
+        public void StartGame(Team FirstTeam, Team SecondTeam)
+        {
+            m_gameBoard.StateChangeEvent += StateChanged;
+            
+            m_teamToolsDict = new Dictionary<Team, IList<ITool>>();
+            m_teamToolsDict[FirstTeam] = new List<ITool>();
+            m_teamToolsDict[SecondTeam] = new List<ITool>();
+
+            KeyValuePair<BoardPosition, ITool>[] whiteGroupBoardArrangement = getInitialBoardArrangement(FirstTeam);
+            KeyValuePair<BoardPosition, ITool>[] blackGroupBoardArrangement = getInitialBoardArrangement(SecondTeam);
+
+            m_gameBoard.Add(whiteGroupBoardArrangement);
+            m_gameBoard.Add(blackGroupBoardArrangement);
+
+            IEnumerable<Team> teams = m_teamToolsDict.Keys;
+            gameHelper = new GameMoveHelper(m_gameBoard, teams);
+
+            CurrentTeamTurn = FirstTeam;
+            StartGameEvent?.Invoke(this, null);
+        }
         public BoardState GetBoardState()
         {
             return m_gameBoard.GetStateCopy();
@@ -92,44 +104,38 @@ namespace Game
 
         private KeyValuePair<BoardPosition, ITool>[] getInitialBoardArrangement(Team team)
         {
-            IList<KeyValuePair<BoardPosition, ITool>> list = new List<KeyValuePair<BoardPosition, ITool>>();
+            IList<KeyValuePair<BoardPosition, ITool>> pawnList = new List<KeyValuePair<BoardPosition, ITool>>();
+            IList<KeyValuePair<BoardPosition, ITool>> rookList = new List<KeyValuePair<BoardPosition, ITool>>();
+            IList<KeyValuePair<BoardPosition, ITool>> bishopList = new List<KeyValuePair<BoardPosition, ITool>>();
+            IList<KeyValuePair<BoardPosition, ITool>> knightList = new List<KeyValuePair<BoardPosition, ITool>>();
+            IList<KeyValuePair<BoardPosition, ITool>> queenKingList = new List<KeyValuePair<BoardPosition, ITool>>();
 
-            list = GeneratePawns(team);
+            pawnList = GameInitHelper.GeneratePawns(team);
+            rookList = GameInitHelper.GenerateRooks(team);
+            bishopList = GameInitHelper.GenerateBishops(team);
+            knightList = GameInitHelper.GenerateKnights(team);
+            queenKingList = GameInitHelper.GenerateQueenKing(team);
 
-            foreach (KeyValuePair<BoardPosition, ITool> pair in list)
+            IList<KeyValuePair<BoardPosition, ITool>> toolsList = conctanteLists(pawnList, rookList, bishopList, knightList, queenKingList);
+
+            foreach (KeyValuePair<BoardPosition, ITool> pair in toolsList)
             {
                 m_teamToolsDict[team].Add(pair.Value);
             }
 
-            return list.ToArray();
+            return toolsList.ToArray();
         }
 
-        private IList<KeyValuePair<BoardPosition, ITool>> GeneratePawns(Team team)
+        private IList<KeyValuePair<BoardPosition, ITool>> conctanteLists(params IList<KeyValuePair<BoardPosition, ITool>>[] lists)
         {
-            int pawnsAmount = 8;
+            IList<KeyValuePair<BoardPosition, ITool>> toolsList = new List<KeyValuePair<BoardPosition, ITool>>();
 
-            int yAxis = default;
-            switch(team.MoveDirection)
+            foreach (IList<KeyValuePair<BoardPosition,ITool>> list in lists)
             {
-                case GameDirection.Forward:
-                    yAxis = 1;
-                    break;
-                case GameDirection.Backward:
-                    yAxis = 6;
-                    break;
+                toolsList = toolsList.Concat(list).ToList();
             }
 
-            IList<KeyValuePair<BoardPosition, ITool>> list = new List<KeyValuePair<BoardPosition, ITool>>();
-
-            for (int i = 0; i < pawnsAmount; ++i)
-            {
-                BoardPosition newPosition = new BoardPosition(i, yAxis);
-                Pawn newPawn = new Pawn(newPosition, team.Color, team.MoveDirection);
-                KeyValuePair<BoardPosition, ITool> newPair = new KeyValuePair<BoardPosition, ITool>(newPosition, newPawn);
-                list.Add(newPair);
-            }
-
-            return list;
+            return toolsList;
         }
 
         public void Dispose()

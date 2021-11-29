@@ -19,9 +19,18 @@ namespace Client
             WhiteTeam = new Team("WhiteTeam", Colors.White, GameDirection.Forward);
             BlackTeam = new Team("BlackTeam", Colors.Black, GameDirection.Backward);
 
-            ChessGame = new GameEngine(WhiteTeam, BlackTeam);
-
+            ChessGame = new GameEngine();
             boardControl = new BoardControl(ChessGame);
+        }
+
+        public void StartGame()
+        {
+            ChessGame.StartGame(WhiteTeam, BlackTeam);
+        }
+
+        public void EndGame()
+        {
+            ChessGame.EndGame();
         }
     }
 

@@ -39,7 +39,12 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Pawn\Pawn.cs" />
+    <Compile Include="Bishop.cs" />
+    <Compile Include="King.cs" />
+    <Compile Include="Knight.cs" />
+    <Compile Include="Pawn.cs" />
+    <Compile Include="Queen.cs" />
+    <Compile Include="Rook.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ChessBoard\ChessBoard.csproj">

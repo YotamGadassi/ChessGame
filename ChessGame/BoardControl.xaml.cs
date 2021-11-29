@@ -20,6 +20,20 @@ namespace Client
     public partial class BoardControl : UserControl
     {
         private GameEngine m_gameEngine;
+        private ToolHelper m_toolsHelper;
+
+        bool isGameRunning = false;
+
+        public BoardControl(GameEngine Engine)
+        {
+            InitializeComponent();
+            m_toolsHelper = new ToolHelper();
+            m_mainGrid.Drop += new DragEventHandler(grid_OnDrop);
+
+            m_gameEngine = Engine;
+            m_gameEngine.EndGameEvent += EndGameHandler;
+            m_gameEngine.StartGameEvent += StartGameHandler;
+        }
 
         public void boardChangeHandler(object sender, ChessBoardEventArgs args)
         {
@@ -45,7 +59,7 @@ namespace Client
 
         public void addToolHandler(object sender, BoardPosition position, ITool tool)
         {
-            ChessToolUI toolUI = createUITool(tool);
+            ChessToolUI toolUI = m_toolsHelper.CreateUITool(tool);
 
             m_gameGrid.Children.Add(toolUI);
             Grid.SetColumn(toolUI, position.Column);
@@ -59,6 +73,103 @@ namespace Client
             if(null != toolToRemove)
             {
                 m_gameGrid.Children.Remove(toolToRemove);
+            }
+        }
+        public void moveToolHandel(BoardPosition start, BoardPosition end)
+        {
+            ChessToolUI toolAtStartPoint = getTool(start);
+            ChessToolUI toolAtEndPoint = getTool(end);
+
+            if (null != toolAtEndPoint)
+            {
+                m_gameGrid.Children.Remove(toolAtEndPoint);
+            }
+
+            Grid.SetColumn(toolAtStartPoint, end.Column);
+            Grid.SetRow(toolAtStartPoint, end.Row);
+        }
+
+        public void EndGameHandler(object sender, EventArgs args)
+        {
+            if (!isGameRunning)
+            {
+                return;
+            }
+
+            isGameRunning = false;
+            StopGame();
+            ClearBoard();
+        }
+
+        public void StartGameHandler(object sender, EventArgs args)
+        {
+            if (isGameRunning)
+            {
+                return;
+            }
+
+            isGameRunning = true;
+            StartGame();
+        }
+
+        public void StartGame()
+        {
+            BoardState boardState = m_gameEngine.GetBoardState();
+
+            m_gameEngine.StateChangeEvent += boardChangeHandler;
+            m_gameEngine.CheckmateEvent += checkmateHandler;
+
+            m_gameGrid.AllowDrop = true;
+
+            if (m_gameGrid.IsLoaded)
+            {
+                CreateGameGrid(this, null);
+            }
+
+            foreach (KeyValuePair<BoardPosition, ITool> pair in boardState)
+            {
+                addToolToMap(pair);
+            }
+        }
+
+        private void checkmateHandler(object sender, EventArgs args)
+        {
+            StopGame();
+        }
+
+        private void StopGame()
+        {
+            m_gameGrid.AllowDrop = false;
+            m_gameEngine.StateChangeEvent -= boardChangeHandler;
+            m_gameEngine.CheckmateEvent -= checkmateHandler;
+
+            UIElementCollection elementCollection = m_gameGrid.Children;
+            foreach (UIElement element in elementCollection)
+            {
+                if (element is ChessToolUI)
+                {
+                    element.MouseMove -= tool_MouseMove;
+                }
+            }
+        }
+
+        public void ClearBoard()
+        {
+            int childrenCount = m_gameGrid.Children.Count;
+
+            IList<ChessToolUI> toolsList = new List<ChessToolUI>();
+
+            foreach(UIElement element in m_gameGrid.Children)
+            {
+                if (element is ChessToolUI)
+                {
+                    toolsList.Add(element as ChessToolUI);
+                }
+            }
+
+            foreach(ChessToolUI tool in toolsList)
+            {
+                m_gameGrid.Children.Remove(tool);
             }
         }
 
@@ -81,43 +192,7 @@ namespace Client
             return tool;
         }
 
-        public void moveToolHandel(BoardPosition start, BoardPosition end)
-        {
-            ChessToolUI toolAtStartPoint = getTool(start);
-            ChessToolUI toolAtEndPoint = getTool(end);
-
-            if (null != toolAtEndPoint)
-            {
-                m_gameGrid.Children.Remove(toolAtEndPoint);
-            }
-
-            Grid.SetColumn(toolAtStartPoint, end.Column);
-            Grid.SetRow(toolAtStartPoint, end.Row);
-        }
-
-        private Dictionary<string, BitmapImage> m_ToolToImageSource;
-
         private static int m_gridCellSize = 50;
-
-        public BoardControl(GameEngine Engine)
-        {
-            InitializeComponent();
-
-            m_ToolToImageSource = new Dictionary<string, BitmapImage>();
-            m_mainGrid.Drop += new DragEventHandler(grid_OnDrop);
-
-            m_gameEngine = Engine;
-
-            loadImages();
-
-            m_gameEngine.StateChangeEvent += boardChangeHandler;
-        }
-
-        private void loadImages()
-        {
-            BitmapImage src = new BitmapImage(new Uri("pack://application:,,,/Resources/pawn.png"));
-            m_ToolToImageSource["Pawn"] = src;
-        }
 
         private void CreateMainGrid(object sender, RoutedEventArgs args)
         {
@@ -159,17 +234,23 @@ namespace Client
             {
                 for (int j = 0; j < 8; ++j)
                 {
-                    Rectangle rectangle = new Rectangle();
-                    rectangle.HorizontalAlignment = HorizontalAlignment.Stretch;
-                    rectangle.VerticalAlignment = VerticalAlignment.Stretch;
-                    Color color = Colors.White;
+                    Uri imgSource;
                     if ((i + j) % 2 == 1)
-                        color = Colors.Black;
+                    {
+                        imgSource = new Uri("pack://application:,,,/Resources/square_brown_dark.png");
+                    }
+                    else
+                    {
+                        imgSource = new Uri("pack://application:,,,/Resources/square_brown_light.png");
+                    }
 
-                    m_gameGrid.Children.Add(rectangle);
-                    Grid.SetRow(rectangle, i);
-                    Grid.SetColumn(rectangle, j);
-                    rectangle.Fill = new SolidColorBrush(color);
+                    BitmapImage imgBitmap = new BitmapImage(imgSource);
+                    Image squareImg = new Image();
+                    squareImg.Source = imgBitmap;
+
+                    m_gameGrid.Children.Add(squareImg);
+                    Grid.SetRow(squareImg, i);
+                    Grid.SetColumn(squareImg, j);
                 }
             }
         }
@@ -178,9 +259,10 @@ namespace Client
         {
             ITool tool = pair.Value;
 
-            ChessToolUI uiTool = createUITool(tool);
+            ChessToolUI uiTool = m_toolsHelper.CreateUITool(tool);
+            uiTool.MouseMove += tool_MouseMove;
 
-            BoardPosition toolPosition = uiTool.Position;
+            BoardPosition toolPosition = pair.Key;
 
             int column = toolPosition.Column;
             int raw = toolPosition.Row;
@@ -190,28 +272,7 @@ namespace Client
             Grid.SetRow(uiTool, raw);
         }
 
-        private ChessToolUI createUITool(ITool tool)
-        {
-            Image img = new Image();
-            img.Source = m_ToolToImageSource[tool.Type];
-            ChessToolUI newTool = new ChessToolUI(img, tool);
-            
-            newTool.MouseMove += new MouseEventHandler(tool_MouseMove);
-
-            return newTool;
-        }
-
-        public void StartGame()
-        {
-            BoardState boardState = m_gameEngine.GetBoardState();
-
-            foreach (KeyValuePair<BoardPosition, ITool> pair in boardState)
-            {
-                addToolToMap(pair);
-            }
-        }
-
-        public void tool_MouseMove(object sender, MouseEventArgs e)
+        private void tool_MouseMove(object sender, MouseEventArgs e)
         {
             ChessToolUI uiTool = sender as ChessToolUI;
             if(uiTool == null || m_gameEngine.CurrentTeamTurn.Color != uiTool.Color)
@@ -227,7 +288,7 @@ namespace Client
             }
         }
 
-        public void grid_OnDrop(object sender, DragEventArgs args)
+        private void grid_OnDrop(object sender, DragEventArgs args)
         {
             ChessToolUI uiTool = (ChessToolUI)args.Data.GetData(typeof(ChessToolUI));
             
