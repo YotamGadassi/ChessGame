@@ -21,10 +21,6 @@ namespace Client
     {
         private GameEngine m_gameEngine;
         private ToolHelper m_toolsHelper;
-
-        /// <summary>
-        /// 
-        /// </summary>
         bool isGameRunning = false;
 
         public BoardControl(GameEngine Engine)
