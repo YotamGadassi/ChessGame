@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Client.Command;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace Client
@@ -6,31 +7,17 @@ namespace Client
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainClientWindows : Window
     {
         private Window m_hostWin;
         private OfflineFramwork Framework = null;
+        public PlayOnlineCommand playOnlineCommand { get; }
 
-
-        public MainWindow()
+        public MainClientWindows()
         {
             InitializeComponent();
-            m_hostWin = new HostGameWin();
-        }
-
-        private void ButtonClick_CreateUser(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void ButtonClick_HostGame(object sender, RoutedEventArgs e)
-        {
-            m_hostWin.Show();
-        }
-
-        private void ButtonClick_ConnectToHost(object sender, RoutedEventArgs e)
-        {
-
+            playOnlineCommand = new PlayOnlineCommand();
+            DataContext = this;
         }
 
         private void ButtonClick_StartOfflineGame(object sender, RoutedEventArgs e)

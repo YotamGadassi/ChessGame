@@ -13,7 +13,7 @@ namespace ChessGame
         {
             int pawnsAmount = 8;
 
-            int yAxis = default;
+            int yAxis = 0;
             switch (team.MoveDirection)
             {
                 case GameDirection.Forward:

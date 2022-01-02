@@ -17,9 +17,9 @@ namespace Client
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
-    public partial class HostGameWin : Window
+    public partial class OnlineModeControl : UserControl
     {
-        public HostGameWin()
+        public OnlineModeControl()
         {
             InitializeComponent();
         }
