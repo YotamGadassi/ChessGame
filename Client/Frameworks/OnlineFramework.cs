@@ -25,6 +25,7 @@ namespace Client.Frameworks
             m_connectCommand = new ConnectCommand(m_connectionManager);
             m_disconnectCommand = new DisconnectCommand(m_connectionManager);
             m_usersList = new ObservableCollection<User>();
+            m_inviteCommand = new InviteCommand();
         }
 
         public void AddUserToUsersList(User user)

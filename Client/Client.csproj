@@ -189,6 +189,7 @@
     </ApplicationDefinition>
     <Compile Include="BindingConverters\ConnectionStateConverter.cs" />
     <Compile Include="ClientHost.cs" />
+    <Compile Include="Command\AcceptInvitaion.cs" />
     <Compile Include="Command\AcceptInvitationCommand.cs" />
     <Compile Include="Command\BaseCommandHandler.cs" />
     <Compile Include="Command\ConnectCommand.cs" />

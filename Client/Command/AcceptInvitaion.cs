@@ -1,13 +1,16 @@
 ﻿using System;
-using System.Windows.Controls;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Client.Command
 {
-    public class InviteCommand : BaseCommandHandler
+    public class AcceptInvitaion : BaseCommandHandler
     {
         public override bool CanExecute(object parameter)
         {
-            return null != parameter;
+            throw new NotImplementedException();
         }
 
         public override void Execute(object parameter)

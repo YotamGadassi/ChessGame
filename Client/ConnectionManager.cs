@@ -54,8 +54,9 @@ namespace Client
         {
             m_hubConnection.On<User>("Client_AddNewUser", m_addUser);
             m_hubConnection.On<User[]>("Client_AddUsersList", addUsersList);
-            m_hubConnection.On<User>("RemoveUserFromUsersList", m_removeUser);
-            m_hubConnection.On<User>("AddInvititaionToInvitaionsList", m_addInvitation);
+            m_hubConnection.On<User>("Client_RemoveUser", m_removeUser);
+            m_hubConnection.On<User>("Client_GetInvitation", m_addInvitation);
+            m_hubConnection.On<User>("Client_CancelInvitation", m_addInvitation);
             m_hubConnection.On<User>("RemoveInvititaionFromInvitaionsList", m_removeInvitation);
 
         }
