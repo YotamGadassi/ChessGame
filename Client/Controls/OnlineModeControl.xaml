@@ -21,7 +21,7 @@
                 <Button x:Name="m_ConnectButton" Width="100" Command="{Binding m_connectCommand}" CommandParameter="{Binding ElementName=m_NameTextBox, Path=Text}">Connect</Button>
                 <Button x:Name="m_DisconnectionButton" Width="100" Command="{Binding m_disconnectCommand}">Disconnect</Button>
                 <TextBox x:Name="m_NameTextBox" Text="User Name" Width="100" IsEnabled="{Binding ElementName=m_ConnectButton, Path=IsEnabled}"/>
-                <ListBox x:Name="m_UsersListBox" IsEnabled="{Binding ElementName=m_ConnectButton, Path=IsEnabled}" ItemsSource="{Binding m_usersList}" Width="150" Height="200" ScrollViewer.CanContentScroll="True" Margin="0,10">
+                <ListBox x:Name="m_UsersListBox" IsEnabled="{Binding ElementName=m_disconnectCommand, Path=IsEnabled}" ItemsSource="{Binding m_usersList}" Width="150" Height="200" ScrollViewer.CanContentScroll="True" Margin="0,10">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Path=Name}"/>
