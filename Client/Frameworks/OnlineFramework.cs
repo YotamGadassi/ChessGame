@@ -1,31 +1,30 @@
 ﻿using Client.Command;
-using Client.Models;
+using ClientWebServerCommon;
 using System.Collections.ObjectModel;
 
 namespace Client.Frameworks
 {
     public class OnlineFramework
     {
-        private readonly string s_serverURL = "";
+        private readonly string s_serverURL = "https://localhost:44340/ChessHub";
     
-        public OnlineModeControl OnlineModeControl { get; }
+        public ConnectCommand m_connectCommand { get; }
+        public DisconnectCommand m_disconnectCommand { get; }
+        public InviteCommand m_inviteCommand { get; }
+        public AcceptInvitationCommand m_acceptInvitationCommand { get; }
 
-        private ConnectCommand m_connectCommand;
-        private DisconnectCommand m_disconnectCommand;
-        private InviteCommand m_inviteCommand;
-        private AcceptInvitationCommand m_acceptInvitationCommand;
-
-        private ObservableCollection<User> m_usersList;
-        private ObservableCollection<User> m_invitationsList;
+        public ObservableCollection<User> m_usersList { get; }
+        public ObservableCollection<User> m_invitationsList { get; }
 
         private User m_user;
-        private ConnectionManager m_connectionManager;
+        public ConnectionManager m_connectionManager { get; }
 
         public OnlineFramework()
         {
             m_connectionManager = new ConnectionManager(s_serverURL, AddUserToUsersList, RemoveUserFromUsersList, AddInvitationToInvitationsList, RemoveInvitationFromInvitationsList);
-            OnlineModeControl = new OnlineModeControl();
-            OnlineModeControl.DataContext = this;
+            m_connectCommand = new ConnectCommand(m_connectionManager);
+            m_disconnectCommand = new DisconnectCommand(m_connectionManager);
+            m_usersList = new ObservableCollection<User>();
         }
 
         public void AddUserToUsersList(User user)

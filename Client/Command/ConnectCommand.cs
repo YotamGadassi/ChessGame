@@ -1,4 +1,4 @@
-﻿using Client.Models;
+﻿using ClientWebServerCommon;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,19 +19,14 @@ namespace Client.Command
 
         public override bool CanExecute(object parameter)
         {
-            if(m_connectionManager.State == ConnectionState.Disconnected)
-            {
-                return true;
-            }
-
-            return false;
+            return m_connectionManager.State == ConnectionState.Disconnected;
         }
 
         public override void Execute(object parameter)
         {
             string userName = (string)parameter;
 
-            User user = new User(userName);
+            User user = new User(userName, new Guid());
 
             m_connectionManager.Connect(user);
         }

@@ -1,4 +1,4 @@
-﻿using Client.Models;
+﻿using ClientWebServerCommon;
 using Microsoft.AspNetCore.Http.Connections.Client;
 using Microsoft.AspNetCore.SignalR.Client;
 using System;
@@ -26,6 +26,7 @@ namespace Client
 
         public ConnectionManager(string serverURL, Action<User> addUser, Action<User> removeUser, Action<User> addInvitation, Action<User> removeInvitation)
         {
+            State = ConnectionState.Disconnected;
             m_serverURL = serverURL;
             m_addUser = addUser;
             m_removeUser = removeUser;
@@ -51,11 +52,20 @@ namespace Client
 
         private void addAllMethodsToConnection()
         {
-            m_hubConnection.On<User>("AddUserToUsersList", m_addUser);
+            m_hubConnection.On<User>("Client_AddNewUser", m_addUser);
+            m_hubConnection.On<User[]>("Client_AddUsersList", addUsersList);
             m_hubConnection.On<User>("RemoveUserFromUsersList", m_removeUser);
             m_hubConnection.On<User>("AddInvititaionToInvitaionsList", m_addInvitation);
             m_hubConnection.On<User>("RemoveInvititaionFromInvitaionsList", m_removeInvitation);
 
+        }
+
+        private void addUsersList(User[] users)
+        {
+            foreach (User user in users)
+            {
+                m_addUser(user);
+            }
         }
 
         public async void Disconnect()

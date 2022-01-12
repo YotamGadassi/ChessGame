@@ -209,7 +209,6 @@
       <DependentUpon>OnlineModeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Frameworks\OnlineFramework.cs" />
-    <Compile Include="Models\User.cs" />
     <Compile Include="ToolHelper.cs" />
     <Page Include="Controls\BoardControl.xaml">
       <SubType>Designer</SubType>
@@ -241,7 +240,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="OfflineFramwork.cs" />
+    <Compile Include="Frameworks\OfflineFramwork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -263,6 +262,10 @@
     <ProjectReference Include="..\ChessBoard\ChessBoard.csproj">
       <Project>{f2c65404-0aa1-433c-a420-eff2d5677999}</Project>
       <Name>ChessBoard</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ClientWebServerCommon\ClientWebServerCommon.csproj">
+      <Project>{b6b017f6-a48c-4f26-84b1-0bf549b5c78b}</Project>
+      <Name>ClientWebServerCommon</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{bdcf94e1-2e56-4321-bb88-fae6c1bb3899}</Project>
@@ -323,7 +326,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets" Condition="Exists('..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
