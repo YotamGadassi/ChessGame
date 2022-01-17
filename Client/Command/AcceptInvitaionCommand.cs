@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Client.Command
 {
-    public class AcceptInvitaion : BaseCommandHandler
+    public class AcceptInvitaionCommand : BaseCommandHandler
     {
         public override bool CanExecute(object parameter)
         {

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.Connections.Client;
 using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 
 namespace Client
@@ -15,6 +16,8 @@ namespace Client
 
     public class ConnectionManager
     {
+        private Timer m_invitationCancelScheduler;
+        
         private HubConnection m_hubConnection;
         private string m_userName;
         private string m_serverURL;
@@ -37,6 +40,29 @@ namespace Client
             m_removeUser = removeUser;
             m_addInvitation = addInvitation;
             m_removeInvitation = removeInvitation;
+            m_invitationCancelScheduler = new Timer();
+            m_invitationCancelScheduler.AutoReset = false;
+            m_invitationCancelScheduler.Elapsed += cancelInvitation;
+        }
+
+        private void cancelInvitation(object sender, ElapsedEventArgs e)
+        {
+            // TODO: create invitation manager
+            Task.Run(() => m_hubConnection.InvokeAsync<Guid>("Server_CancelInvitaiton", guest));
+        }
+
+        public async void SendInvitation(User guest)
+        {
+            Task<Guid> result = Task.Run(() => m_hubConnection.InvokeAsync<Guid>("Server_SendInvitaiton", guest));
+            setInvitationModeOn();
+            m_invitationCancelScheduler.Enabled = true;
+            m_invitationCancelScheduler.Interval = 30000;
+
+        }
+
+        private void setInvitationModeOn()
+        {
+            throw new NotImplementedException();
         }
 
         private void setHeaders(HttpConnectionOptions options)

@@ -14,7 +14,7 @@ namespace Client.Frameworks
         public ConnectCommand m_connectCommand { get; }
         public DisconnectCommand m_disconnectCommand { get; }
         public InviteCommand m_inviteCommand { get; }
-        public AcceptInvitationCommand m_acceptInvitationCommand { get; }
+        public DeclineInvitationCommand m_acceptInvitationCommand { get; }
 
         public ObservableCollection<User> m_usersList { get; }
         public ObservableCollection<User> m_invitationsList { get; }

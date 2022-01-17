@@ -3,20 +3,17 @@ using System.Windows.Input;
 
 namespace Client.Command
 {
-    public class AcceptInvitationCommand : ICommand
+    public class DeclineInvitationCommand : BaseCommandHandler
     {
-        public AcceptInvitationCommand()
+        public DeclineInvitationCommand()
         {
         }
-
-        public event EventHandler CanExecuteChanged;
-
-        public bool CanExecute(object parameter)
+        public override bool CanExecute(object parameter)
         {
             throw new NotImplementedException();
         }
 
-        public void Execute(object parameter)
+        public override void Execute(object parameter)
         {
             throw new NotImplementedException();
         }
