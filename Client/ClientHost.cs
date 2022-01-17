@@ -1,5 +1,6 @@
 ﻿using Client.Frameworks;
 using System;
+using System.Threading;
 
 namespace Client
 {
@@ -11,8 +12,8 @@ namespace Client
         [STAThread]
         public static void Startup()
         {
-            onlineFramework = new OnlineFramework();
             createControls();
+            onlineFramework = new OnlineFramework(m_mainClientWin);
             m_mainClientWin.m_OnlineModeControl.DataContext = onlineFramework;
             m_mainClientWin.ShowDialog();
         }

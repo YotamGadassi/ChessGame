@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.Connections.Client;
 using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Client
 {
@@ -23,6 +24,10 @@ namespace Client
         private Action<User> m_removeUser;
         private Action<User> m_addInvitation;
         private Action<User> m_removeInvitation;
+        private Action m_disconnection;
+
+        public event EventHandler<EventArgs> ConnectionEvent;
+        public event EventHandler<EventArgs> DisconnectionEvent;
 
         public ConnectionManager(string serverURL, Action<User> addUser, Action<User> removeUser, Action<User> addInvitation, Action<User> removeInvitation)
         {
@@ -48,17 +53,37 @@ namespace Client
             addAllMethodsToConnection();
 
             internalConnect();
+
+            raiseConnectionEvent();
+        }
+
+        private void raiseConnectionEvent()
+        {
+            EventArgs args = new EventArgs();
+            ConnectionEvent?.Invoke(this, args);
         }
 
         private void addAllMethodsToConnection()
         {
             m_hubConnection.On<User>("Client_AddNewUser", m_addUser);
-            m_hubConnection.On<User[]>("Client_AddUsersList", addUsersList);
+            m_hubConnection.On<User[]>("Client_AddUsersList",addUsersList);
             m_hubConnection.On<User>("Client_RemoveUser", m_removeUser);
             m_hubConnection.On<User>("Client_GetInvitation", m_addInvitation);
             m_hubConnection.On<User>("Client_CancelInvitation", m_addInvitation);
             m_hubConnection.On<User>("RemoveInvititaionFromInvitaionsList", m_removeInvitation);
 
+        }
+
+        private void uiInjectMethod(Action<User> method)
+        {
+            Application currentApp = App.Current;
+
+            if (null == currentApp)
+            {
+                return;
+            }
+
+            currentApp.Dispatcher.Invoke(method);
         }
 
         private void addUsersList(User[] users)
@@ -73,20 +98,28 @@ namespace Client
         {
             m_userName = string.Empty;
             m_hubConnection.Closed -= onConnectionClosed;
-            m_hubConnection.Remove("AddUserToUsersList");
-            m_hubConnection.Remove("RemoveUserFromUsersList");
-            m_hubConnection.Remove("AddInvititaionToInvitaionsList");
+            m_hubConnection.Remove("Client_AddNewUser");
+            m_hubConnection.Remove("Client_RemoveUser");
+            m_hubConnection.Remove("Client_GetInvitation");
+            m_hubConnection.Remove("Client_CancelInvitation");
             m_hubConnection.Remove("RemoveInvititaionFromInvitaionsList");
 
             try
             {
                 await m_hubConnection.StopAsync();
+                raiseDisconnectionEvent();
                 State = ConnectionState.Disconnected;
             }
             catch (Exception e)
             {
-                
+
             }
+        }
+
+        private void raiseDisconnectionEvent()
+        {
+            EventArgs args = new EventArgs();
+            DisconnectionEvent.Invoke(this, args);
         }
 
         private async Task onConnectionClosed(Exception e)

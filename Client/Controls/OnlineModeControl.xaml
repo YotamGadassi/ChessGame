@@ -30,7 +30,7 @@
                     <ListBox.Style>
                     <Style TargetType="ListBox">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsFocused}" Value="False">
+                                <DataTrigger Binding="{Binding ElementName=m_UsersListBox, Path=IsFocused}" Value="False">
                                 <Setter Property="SelectedIndex" Value="0"/>
                             </DataTrigger> 
                         </Style.Triggers>

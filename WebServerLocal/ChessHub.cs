@@ -10,66 +10,83 @@ namespace WebServerLocal
 {
     public class ChessHub : Hub
     {
-        private static Dictionary<User, string> pendingUsers = new Dictionary<User, string>();
-        private static Dictionary<Guid, Invitation> invitations = new Dictionary<Guid, Invitation>();
+        private static Dictionary<Guid, User> s_pendingUsers = new Dictionary<Guid, User>();
+        private static Dictionary <Guid, string> s_connectionIds = new Dictionary<Guid, string>();
+        private static Dictionary<Guid, Invitation> s_invitations = new Dictionary<Guid, Invitation>();
 
         public override async Task OnConnectedAsync()
         {
             HttpContext httpContext = Context.GetHttpContext();
 
             string userName = httpContext.Request.Headers["UserName"];
-            Guid newToken = Guid.NewGuid();
-            User newUser = new User(userName, newToken);
+            string publicTokenString = httpContext.Request.Headers["publicToken"];
 
-            User[] usersCollection = pendingUsers.Keys.ToArray();
+            Guid privateToken = Guid.NewGuid();
+            Guid publicToken = new Guid(publicTokenString);
+            User newUser = new User(userName, publicToken);
+
+            User[] usersCollection = s_pendingUsers.Values.ToArray();
             await Clients.Caller.SendAsync("Client_AddUsersList", usersCollection);
+            await Clients.Caller.SendAsync("Client_SetPrivateToken", privateToken);
 
             await Clients.AllExcept(Context.ConnectionId).SendAsync("Client_AddNewUser", newUser);
 
-            pendingUsers.Add(newUser, Context.ConnectionId);
+            s_pendingUsers.Add(privateToken, newUser);
+            s_connectionIds.Add(privateToken, Context.ConnectionId);
 
             await base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            KeyValuePair<User, string> userConnectionIdPair = pendingUsers.Where(pair => pair.Value == Context.ConnectionId).ToArray()[0];
-            User disconnectedUser = userConnectionIdPair.Key; 
-            if (null == disconnectedUser)
+            bool isGuidExists = s_connectionIds.TryGetValue(Context.ConnectionId, out Guid privateToken);
+            if (!isGuidExists)
             {
-                await base.OnDisconnectedAsync(exception);
                 return;
             }
-            pendingUsers.Remove(disconnectedUser);
+
+            User disconnectedUser = s_pendingUsers[privateToken];
+
+            s_connectionIds.Remove(privateToken);
+            s_pendingUsers.Remove(privateToken);
 
             await Clients.AllExcept(Context.ConnectionId).SendAsync("Client_RemoveUser", disconnectedUser);
             await base.OnDisconnectedAsync(exception);
         }
 
-        public async Task<Guid> Server_Invite(User guest)
+        public async Task<Guid> Server_CreateInvitation(User guest)
         {
-            bool isGuestAvailable = pendingUsers.TryGetValue(guest, out string guestConnectionId);
+            KeyValuePair<Guid, User> guidUserPair = s_pendingUsers.First((pair => pair.Value.Equals(guest)));
 
-            if(!isGuestAvailable)
-            {
-                return Guid.Empty;
-            }
+            Guid guestPrivateToken = guidUserPair.Key;
 
-            User host = pendingUsers.Where(pair => pair.Value == Context.ConnectionId).ToArray()?[0].Key;
-            if (null == host)
-            {
-                return Guid.Empty;
-            }
+            string guestDonnectionId = s_connectionIds[guestPrivateToken];
+            string hostConnectionId = Context.ConnectionId;
 
-            Guid token = Guid.NewGuid();
+            Guid invitationToken = createNewInvitation(hostConnectionId, guestDonnectionId);
 
-            Invitation invitation = new Invitation(host, guest, token);
+            await Clients.Client(guestDonnectionId).SendAsync("Client_AddInvitation", invitationToken);
 
-            invitations.Add(invitation.InvitaionToken, invitation);
+            return invitationToken;
 
-           await Clients.Client(guestConnectionId).SendAsync("Client_GetInvitation", invitation);
+        }
 
-            return invitation.InvitaionToken;
+        public bool Server_AcceptInvitation(Guid invitationToken)
+        {
+            bool isHostStillInviting;
+        }
+
+        private Guid createNewInvitation(string hostConnectionId, string guestDonnectionId)
+        {
+            Guid newToken = Guid.NewGuid();
+            Invitation newInvitation = new Invitation(hostConnectionId, guestDonnectionId, newToken);
+            s_invitations.Add(newToken, newInvitation);
+            return newToken;
+        }
+
+        public async Task Server_RemoveInvitation(Guid InvitationToken)
+        {
+
         }
     }
 }
