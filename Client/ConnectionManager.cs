@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Http.Connections.Client;
 using Microsoft.AspNetCore.SignalR.Client;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using System.Windows;
 
 namespace Client
@@ -16,8 +16,10 @@ namespace Client
 
     public class ConnectionManager
     {
-        private Timer m_invitationCancelScheduler;
-        
+        public bool isInInvitationSession { get; private set; }
+        public Guid CurrentInvitationToken { get; }
+        private User lastGuest;
+        private Timer m_scheduler;
         private HubConnection m_hubConnection;
         private string m_userName;
         private string m_serverURL;
@@ -40,12 +42,10 @@ namespace Client
             m_removeUser = removeUser;
             m_addInvitation = addInvitation;
             m_removeInvitation = removeInvitation;
-            m_invitationCancelScheduler = new Timer();
-            m_invitationCancelScheduler.AutoReset = false;
-            m_invitationCancelScheduler.Elapsed += cancelInvitation;
+            m_scheduler = new Timer(new TimerCallback(cancelInvitation));
         }
 
-        private void cancelInvitation(object sender, ElapsedEventArgs e)
+        private void cancelInvitation(object target)
         {
             // TODO: create invitation manager
             Task.Run(() => m_hubConnection.InvokeAsync<Guid>("Server_CancelInvitaiton", guest));
@@ -55,9 +55,11 @@ namespace Client
         {
             Task<Guid> result = Task.Run(() => m_hubConnection.InvokeAsync<Guid>("Server_SendInvitaiton", guest));
             setInvitationModeOn();
-            m_invitationCancelScheduler.Enabled = true;
-            m_invitationCancelScheduler.Interval = 30000;
-
+            result.Wait(10000);
+            if (!result.IsCompleted)
+            {
+                return;
+            }
         }
 
         private void setInvitationModeOn()

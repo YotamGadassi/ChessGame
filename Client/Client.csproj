@@ -210,6 +210,10 @@
       <DependentUpon>OnlineModeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Frameworks\OnlineFramework.cs" />
+    <Compile Include="InvitationManager.cs" />
+    <Compile Include="Login\Login.xaml.cs">
+      <DependentUpon>Login.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ToolHelper.cs" />
     <Page Include="Controls\BoardControl.xaml">
       <SubType>Designer</SubType>
@@ -236,6 +240,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Controls\OnlineModeControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Login\Login.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

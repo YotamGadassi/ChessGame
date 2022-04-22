@@ -54,7 +54,7 @@ namespace WebServerLocal
             await base.OnDisconnectedAsync(exception);
         }
 
-        public async Task<Guid> Server_CreateInvitation(User guest)
+        public Guid Server_CreateInvitation(User guest)
         {
             KeyValuePair<Guid, User> guidUserPair = s_pendingUsers.First((pair => pair.Value.Equals(guest)));
 
@@ -65,15 +65,18 @@ namespace WebServerLocal
 
             Guid invitationToken = createNewInvitation(hostConnectionId, guestDonnectionId);
 
-            await Clients.Client(guestDonnectionId).SendAsync("Client_AddInvitation", invitationToken);
+            Clients.Client(guestDonnectionId).SendAsync("Client_AddInvitation", invitationToken);
 
             return invitationToken;
-
         }
 
         public bool Server_AcceptInvitation(Guid invitationToken)
         {
-            bool isHostStillInviting;
+            bool isHostStillInviting = s_invitations.TryGetValue(invitationToken, out Invitation invitation);
+            if (!isHostStillInviting)
+            {
+
+            }
         }
 
         private Guid createNewInvitation(string hostConnectionId, string guestDonnectionId)
