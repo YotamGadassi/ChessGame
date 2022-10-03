@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ChessBoard
+﻿namespace ChessBoard.EventArgs
 {
     public enum EndGameReason
     {
@@ -11,7 +9,7 @@ namespace ChessBoard
         FlagFall = 4
     }
 
-    public class EndGameEventArgs : EventArgs
+    public class EndGameEventArgs : System.EventArgs
     {
         public EndGameReason Reason {get;}
 

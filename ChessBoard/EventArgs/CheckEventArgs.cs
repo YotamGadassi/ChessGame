@@ -1,9 +1,8 @@
-﻿using System;
-using Common;
+﻿using Common;
 
-namespace ChessBoard
+namespace ChessBoard.EventArgs
 {
-    public class CheckEventArgs : EventArgs
+    public class CheckEventArgs : System.EventArgs
     {
         public TeamColor TeamMadeCheck { get; }
         public BoardPosition KingPosition { get; }
