@@ -16,14 +16,14 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Column="0">
-            <Button x:Name="m_onlineButton" Command="{Binding Path=playOnlineCommand}" CommandParameter="{Binding ElementName=OnlineModeControl}" Content="Play Online">
+            <Button x:Name="m_onlineButton" Command="{Binding Path=playOnlineCommand}" CommandParameter="{Binding ElementName=m_OnlineModeControl}" Content="Play Online">
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=OnlineModeControl, Path=Visibility}" Value="Hidden">
+                            <DataTrigger Binding="{Binding ElementName=m_OnlineModeControl, Path=Visibility}" Value="Hidden">
                                 <Setter Property="IsEnabled" Value="True"/>
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding ElementName=OnlineModeControl, Path=Visibility}" Value="Visible">
+                            <DataTrigger Binding="{Binding ElementName=m_OnlineModeControl, Path=Visibility}" Value="Visible">
                                 <Setter Property="IsEnabled" Value="False"/>
                             </DataTrigger>
                         </Style.Triggers>
@@ -33,7 +33,7 @@
             <Button Click="ButtonClick_StartOfflineGame">Play Offline</Button>
         </StackPanel>
 
-        <local:OnlineModeControl x:Name="OnlineModeControl" Grid.Column="1" Visibility="Hidden"/>
+        <local:OnlineModeControl x:Name="m_OnlineModeControl" Grid.Column="1" Visibility="Hidden"/>
         <Grid x:Name="m_offlineGameGrid" Grid.Column="2" Visibility="Hidden">
         
             <Grid.ColumnDefinitions>

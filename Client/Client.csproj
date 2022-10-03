@@ -189,7 +189,8 @@
     </ApplicationDefinition>
     <Compile Include="BindingConverters\ConnectionStateConverter.cs" />
     <Compile Include="ClientHost.cs" />
-    <Compile Include="Command\AcceptInvitationCommand.cs" />
+    <Compile Include="Command\AcceptInvitaionCommand.cs" />
+    <Compile Include="Command\DeclineInvitationCommand.cs" />
     <Compile Include="Command\BaseCommandHandler.cs" />
     <Compile Include="Command\ConnectCommand.cs" />
     <Compile Include="Command\DisconnectCommand.cs" />
@@ -209,6 +210,10 @@
       <DependentUpon>OnlineModeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Frameworks\OnlineFramework.cs" />
+    <Compile Include="InvitationManager.cs" />
+    <Compile Include="Login\Login.xaml.cs">
+      <DependentUpon>Login.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ToolHelper.cs" />
     <Page Include="Controls\BoardControl.xaml">
       <SubType>Designer</SubType>
@@ -238,6 +243,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Login\Login.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Frameworks\OfflineFramwork.cs" />
@@ -263,9 +272,9 @@
       <Project>{f2c65404-0aa1-433c-a420-eff2d5677999}</Project>
       <Name>ChessBoard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ClientServerCommon\ClientServerCommon.csproj">
-      <Project>{e7fe6a2f-e320-4d07-9f5a-03ec88d87266}</Project>
-      <Name>ClientServerCommon</Name>
+    <ProjectReference Include="..\ClientWebServerCommon\ClientWebServerCommon.csproj">
+      <Project>{b6b017f6-a48c-4f26-84b1-0bf549b5c78b}</Project>
+      <Name>ClientWebServerCommon</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{bdcf94e1-2e56-4321-bb88-fae6c1bb3899}</Project>

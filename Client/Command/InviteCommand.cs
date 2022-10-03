@@ -1,17 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+using System.Windows.Controls;
 
 namespace Client.Command
 {
     public class InviteCommand : BaseCommandHandler
     {
+        ConnectionManager m_connectionManager;
+        
+        public InviteCommand(ConnectionManager connectionManager)
+        {
+            m_connectionManager = connectionManager;
+        }
+        
         public override bool CanExecute(object parameter)
         {
-            return true;
+            return null != parameter;
         }
 
         public override void Execute(object parameter)
