@@ -10,7 +10,8 @@ namespace Client
         
         public void Application_Startup(object sender, StartupEventArgs args)
         {
-            ClientHost.Startup();
+            ClientHost host = new ClientHost();
+            host.Startup("http://localhost:56151/ChessHub");
         }
 
     }

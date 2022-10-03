@@ -1,64 +1,52 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ChessBoard
 {
-    public class BoardState : IEnumerable
+    public class BoardState
     {
-        
-        private Dictionary<BoardPosition, ITool> m_board = new Dictionary<BoardPosition, ITool>();
+        private Dictionary<BoardPosition, ITool> m_positionToTool = new Dictionary<BoardPosition, ITool>();
+        private Dictionary<ITool, BoardPosition> m_toolToPosition = new Dictionary<ITool, BoardPosition>();
 
-        public void Add(BoardPosition Position, ITool Tool)
+        public bool Add(BoardPosition position, ITool tool)
         {
-            m_board[Position] = Tool;
-        }
-
-        public bool Remove(BoardPosition Position)
-        {
-            return m_board.Remove(Position);
-        }
-
-        public void Move(BoardPosition Start, BoardPosition End)
-        {
-            ITool toolToMove = m_board[Start];
-            m_board.Remove(Start);
-            m_board[End] = toolToMove;
-        }
-
-        public ITool GetTool(BoardPosition Position)
-        {
-            m_board.TryGetValue(Position, out ITool tool);
-            return tool;
-        }
-
-        public BoardPosition GetPosition(ITool Tool)
-        {
-            foreach (KeyValuePair<BoardPosition, ITool> pair in m_board)
+            if (m_positionToTool.ContainsKey(position)
+                ||m_toolToPosition.ContainsKey((tool)))
             {
-                if (pair.Value == Tool)
-                {
-                    return pair.Key;
-                }
+                return false;
+            }
+            
+            m_positionToTool[position] = tool;
+            m_toolToPosition[tool] = position;
+            return true;
+        }
+
+        public bool Remove(BoardPosition position)
+        {
+            bool isPositionContainsTool = m_positionToTool.TryGetValue(position, out ITool tool);
+            if (isPositionContainsTool)
+            {
+                m_positionToTool.Remove(position);
+                m_toolToPosition.Remove(tool);
             }
 
-            return BoardPosition.Empty;
+            return isPositionContainsTool;
+        }
+
+        public bool TryGetTool(BoardPosition position, out ITool tool)
+        {
+            return m_positionToTool.TryGetValue(position, out tool);
+        }
+
+        public bool GetPosition(ITool tool, out BoardPosition position)
+        {
+            return m_toolToPosition.TryGetValue(tool, out position);
         }
 
         public void Clear()
         {
-            m_board.Clear();
+            m_toolToPosition.Clear();
+            m_positionToTool.Clear();
         }
 
-        #region IEnumerable
-        public IEnumerator GetEnumerator()
-        {
-            return m_board.GetEnumerator();
-        }
-
-        #endregion
     }
 }

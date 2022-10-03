@@ -1,31 +1,35 @@
 ﻿using Client.Command;
 using Client.Models;
+using System;
 using System.Collections.ObjectModel;
 
 namespace Client.Frameworks
 {
     public class OnlineFramework
     {
-        private readonly string s_serverURL = "";
+        public string ServerURL { get; }
     
-        public OnlineModeControl OnlineModeControl { get; }
+        public ConnectCommand m_connectCommand { get; }
+        public DisconnectCommand m_disconnectCommand { get; }
+        public InviteCommand m_inviteCommand { get; }
+        public AcceptInvitationCommand m_acceptInvitationCommand { get; }
 
-        private ConnectCommand m_connectCommand;
-        private DisconnectCommand m_disconnectCommand;
-        private InviteCommand m_inviteCommand;
-        private AcceptInvitationCommand m_acceptInvitationCommand;
+        public ObservableCollection<User> m_usersList { get; }
+        public ObservableCollection<User> m_invitationsList { get; }
 
-        private ObservableCollection<User> m_usersList;
-        private ObservableCollection<User> m_invitationsList;
-
-        private User m_user;
         private ConnectionManager m_connectionManager;
 
-        public OnlineFramework()
+        public OnlineFramework(string serverURL)
         {
-            m_connectionManager = new ConnectionManager(s_serverURL, AddUserToUsersList, RemoveUserFromUsersList, AddInvitationToInvitationsList, RemoveInvitationFromInvitationsList);
-            OnlineModeControl = new OnlineModeControl();
-            OnlineModeControl.DataContext = this;
+            ServerURL = serverURL;
+            m_connectionManager = new ConnectionManager(ServerURL, AddUserToUsersList, RemoveUserFromUsersList, AddInvitationToInvitationsList, RemoveInvitationFromInvitationsList);
+            m_usersList = new ObservableCollection<User>();
+            m_invitationsList = new ObservableCollection<User>();
+            m_connectCommand = new ConnectCommand(m_connectionManager);
+            m_disconnectCommand = new DisconnectCommand(m_connectionManager);
+            m_inviteCommand = new InviteCommand();
+            m_acceptInvitationCommand = new AcceptInvitationCommand();
+
         }
 
         public void AddUserToUsersList(User user)

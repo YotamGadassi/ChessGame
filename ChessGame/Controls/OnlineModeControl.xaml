@@ -20,21 +20,14 @@
             <StackPanel Grid.Column="0">
                 <Button x:Name="m_ConnectButton" Width="100" Command="{Binding m_connectCommand}" CommandParameter="{Binding ElementName=m_NameTextBox, Path=Text}">Connect</Button>
                 <Button x:Name="m_DisconnectionButton" Width="100" Command="{Binding m_disconnectCommand}">Disconnect</Button>
-                <TextBox x:Name="m_NameTextBox" Text="User Name" Width="100">
-                    <TextBox.Style>
-                        <Style TargetType="TextBox">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Path=m_connectionState, Converter={StaticResource connectionStateConveter}}" Value="Connected">
-                                    <Setter Property="IsEnabled" Value="False"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding Path=m_connectionState, Converter={StaticResource connectionStateConveter}}" Value="Disconnected">
-                                    <Setter Property="IsEnabled" Value="True"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
-                <ListBox x:Name="m_UsersListBox" ItemsSource="{Binding m_usersList}" Width="100"/>
+                <TextBox x:Name="m_NameTextBox" Text="User Name" Width="100" IsEnabled="{Binding ElementName=m_ConnectButton, Path=IsEnabled}"/>
+                <ListBox x:Name="m_UsersListBox" ItemsSource="{Binding m_usersList}" Width="100">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </StackPanel>
 
             <StackPanel Grid.Column="1">

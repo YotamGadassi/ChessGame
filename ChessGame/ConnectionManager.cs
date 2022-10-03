@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Http.Connections.Client;
 using Microsoft.AspNetCore.SignalR.Client;
 using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Client
@@ -9,14 +11,16 @@ namespace Client
     public enum ConnectionState
     {
         Connected,
-        Disconnected
+        Disconnected,
+        Idle
     }
 
     public class ConnectionManager
     {
         private HubConnection m_hubConnection;
-        private string m_userName;
+        private User m_user;
         private string m_serverURL;
+
         public ConnectionState State { get; private set; }
 
         private Action<User> m_addUser;
@@ -26,6 +30,7 @@ namespace Client
 
         public ConnectionManager(string serverURL, Action<User> addUser, Action<User> removeUser, Action<User> addInvitation, Action<User> removeInvitation)
         {
+            State = ConnectionState.Disconnected;
             m_serverURL = serverURL;
             m_addUser = addUser;
             m_removeUser = removeUser;
@@ -35,57 +40,74 @@ namespace Client
 
         private void setHeaders(HttpConnectionOptions options)
         {
-            options.Headers.Add("UserName", m_userName);
+            options.Headers.Add("Header_UserName", m_user.Name);
         }
 
         public void Connect(User user)
         {
-            m_userName = user.Name;
+            State = ConnectionState.Idle;
+            m_user = user;
             m_hubConnection = new HubConnectionBuilder().WithUrl(m_serverURL, setHeaders).Build();
-            m_hubConnection.Closed += onConnectionClosed;
+
+            // m_hubConnection.Closed += onConnectionClosed;
 
             addAllMethodsToConnection();
 
-            internalConnect();
+            internalConnect(user);
         }
 
         private void addAllMethodsToConnection()
         {
-            m_hubConnection.On<User>("AddUserToUsersList", m_addUser);
-            m_hubConnection.On<User>("RemoveUserFromUsersList", m_removeUser);
-            m_hubConnection.On<User>("AddInvititaionToInvitaionsList", m_addInvitation);
-            m_hubConnection.On<User>("RemoveInvititaionFromInvitaionsList", m_removeInvitation);
+            m_hubConnection.On<User>("Client_AddOneUser", (u) => 
+                                                                { 
+                                                                    m_addUser.Invoke(u); 
+                                                                });
+
+            m_hubConnection.On<List<User>>("Client_AddListOfUsers", (usersList) =>
+            {
+                foreach(User u in usersList)
+                {
+                    m_addUser.Invoke(u);
+                }
+            });
+            m_hubConnection.On<User>("Client_RemoveUserFromUsersList", m_removeUser);
+            m_hubConnection.On<User>("Client_AddInvititaionToInvitaionsList", m_addInvitation);
+            m_hubConnection.On<User>("Client_RemoveInvititaionFromInvitaionsList", m_removeInvitation);
 
         }
 
         public async void Disconnect()
         {
-            m_userName = string.Empty;
-            m_hubConnection.Closed -= onConnectionClosed;
-            m_hubConnection.Remove("AddUserToUsersList");
-            m_hubConnection.Remove("RemoveUserFromUsersList");
-            m_hubConnection.Remove("AddInvititaionToInvitaionsList");
-            m_hubConnection.Remove("RemoveInvititaionFromInvitaionsList");
+            State = ConnectionState.Idle;
+            // m_hubConnection.Closed -= onConnectionClosed;
+            m_hubConnection.Remove("Client_AddOneUser");
+            m_hubConnection.Remove("Client_AddListOfUsers");
+            m_hubConnection.Remove("Client_RemoveUserFromUsersList");
+            m_hubConnection.Remove("Client_AddInvititaionToInvitaionsList");
+            m_hubConnection.Remove("Client_RemoveInvititaionFromInvitaionsList");
 
-            try
-            {
+            //try
+            //{
+                Console.WriteLine("before connection");
                 await m_hubConnection.StopAsync();
+                Console.WriteLine("after connection");
+
                 State = ConnectionState.Disconnected;
-            }
-            catch (Exception e)
-            {
-                
-            }
+            //}
+            //catch (Exception e)
+            //{
+            //    Console.WriteLine("exception detalis:{0}", e.Message);
+            //}
         }
 
         private async Task onConnectionClosed(Exception e)
         {
             State = ConnectionState.Disconnected;
             await Task.Delay(new Random().Next(0, 5) * 1000);
-            internalConnect();
+            internalConnect(m_user);
         }
 
-        private async void internalConnect()
+        private async void internalConnect(User user)
         {
             try
             {

@@ -26,4 +26,10 @@ namespace Common
         NonInitialiezed
     }
 
+    public enum TeamColor
+    {
+        White = 1,
+        Black = 2
+    }
+
 }

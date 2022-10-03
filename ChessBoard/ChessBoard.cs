@@ -1,5 +1,4 @@
-﻿using Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace ChessBoard
@@ -16,7 +15,11 @@ namespace ChessBoard
     {
         private BoardState m_board = new BoardState();
 
-        public event EventHandler<ChessBoardEventArgs> StateChangeEvent;
+        public event EventHandler<EndGameEventArgs> EndGameEvent;
+        public event EventHandler<CheckEventArgs> CheckEvent;
+        public event EventHandler<ChessBoardEventArgs> ToolMovedEvent;
+        public event EventHandler<ChessBoardEventArgs> KillingEvent;
+        public event EventHandler<ChessBoardEventArgs> PromotionEvent;
 
         public void Add(BoardPosition Position, ITool Tool)
         {

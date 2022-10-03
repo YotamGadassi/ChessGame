@@ -11,7 +11,9 @@ namespace Client.Command
     public class ConnectCommand : BaseCommandHandler
     {
         private ConnectionManager m_connectionManager;
-    
+
+        bool canExecute = true;
+
         public ConnectCommand(ConnectionManager connectionManager)
         {
             m_connectionManager = connectionManager;
@@ -19,21 +21,18 @@ namespace Client.Command
 
         public override bool CanExecute(object parameter)
         {
-            if(m_connectionManager.State == ConnectionState.Disconnected)
-            {
-                return true;
-            }
-
-            return false;
+            return m_connectionManager.State == ConnectionState.Disconnected && canExecute == true;
         }
 
         public override void Execute(object parameter)
         {
+            canExecute = false;
             string userName = (string)parameter;
 
-            User user = new User(userName);
+            User user = new User(userName, new Guid());
 
             m_connectionManager.Connect(user);
+            canExecute = true;
         }
     }
 }

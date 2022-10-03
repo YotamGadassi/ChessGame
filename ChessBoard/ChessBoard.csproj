@@ -42,12 +42,14 @@
     <Compile Include="BoardPosition.cs" />
     <Compile Include="BoardState.cs" />
     <Compile Include="ChessBoard.cs" />
-    <Compile Include="ChessBoardEventArgs.cs" />
+    <Compile Include="EventArgs\CheckEventArgs.cs" />
+    <Compile Include="EventArgs\EndGameEventArgs.cs" />
     <Compile Include="ITool.cs" />
     <Compile Include="MoveState.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
+    <Reference Include="System" />
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Presentation" />
     <Reference Include="WindowsBase" />
@@ -58,5 +60,6 @@
       <Name>Common</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

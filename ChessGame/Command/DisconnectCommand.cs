@@ -11,6 +11,8 @@ namespace Client.Command
     {
         private readonly ConnectionManager m_connectionManager;
 
+        bool canExecute = true;
+
         public event EventHandler CanExecuteChanged;
 
         public DisconnectCommand(ConnectionManager connectionManager)
@@ -20,12 +22,15 @@ namespace Client.Command
 
         public override bool CanExecute(object parameter)
         {
-            throw new NotImplementedException();
+            return m_connectionManager.State == ConnectionState.Connected && canExecute == true;
         }
 
         public override void Execute(object parameter)
         {
-            throw new NotImplementedException();
+            canExecute = false;
+            m_connectionManager.Disconnect();
+            
+            canExecute = true;
         }
     }
 }
