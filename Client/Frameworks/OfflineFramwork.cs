@@ -9,7 +9,7 @@ namespace Client
     {
         public BoardControl boardControl;
 
-        public GameEngine ChessGame;
+        public GameManager ChessGame;
 
         public Team WhiteTeam;
 
@@ -20,7 +20,7 @@ namespace Client
             WhiteTeam = new Team("WhiteTeam", Colors.White, GameDirection.Forward);
             BlackTeam = new Team("BlackTeam", Colors.Black, GameDirection.Backward);
 
-            ChessGame = new GameEngine();
+            ChessGame = new GameManager();
             boardControl = new BoardControl(ChessGame);
         }
 

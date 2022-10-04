@@ -40,15 +40,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BoardPosition.cs" />
     <Compile Include="BoardState.cs" />
     <Compile Include="ChessBoard.cs" />
-    <Compile Include="ChessBoardEventArgs\CheckEventArgs.cs" />
-    <Compile Include="ChessBoardEventArgs\EndGameEventArgs.cs" />
-    <Compile Include="ChessBoardEventArgs\KillingEventArgs.cs" />
-    <Compile Include="ChessBoardEventArgs\PromotionEventArgs.cs" />
-    <Compile Include="ChessBoardEventArgs\ToolAddedEventArgs.cs" />
-    <Compile Include="ChessBoardEventArgs\ToolMovedEventArgs.cs" />
     <Compile Include="GameMovesHelper.cs" />
   </ItemGroup>
   <ItemGroup>

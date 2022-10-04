@@ -2,43 +2,40 @@
 using System.Collections.Generic;
 using System.Linq;
 using ChessBoard;
+using ChessBoard.ChessBoardEventArgs;
 using Common;
 using Game;
 
 namespace ChessGame
 {
-    public class GameEngine : IDisposable
+    public class GameManager : IDisposable
     {
         private ChessBoard.ChessBoard          m_gameBoard;
 
         // public event EventHandler<ChessBoardEventArgs> CheckEvent;
-        public event EventHandler<EventArgs> CheckmateEvent;
-        public event EventHandler<EventArgs> EndGameEvent;
-        public event EventHandler<EventArgs> StartGameEvent;
-        public Team CurrentTeamTurn { get; private set; }
+        public event EventHandler<EventArgs>          CheckmateEvent;
+        public event EventHandler<EventArgs>          EndGameEvent;
+        public event EventHandler<EventArgs>          StartGameEvent;
+        public event EventHandler<ToolMovedEventArgs> ToolMovedEvent;
+        public Team[]                                 m_teams;
 
-        public GameEngine()
+        public Team                                   CurrentTeamTurn { get; private set; }
+
+        public GameManager(Team[] teams)
         {
-            m_gameBoard = new ChessBoard.ChessBoard();  
+            m_gameBoard                =  new ChessBoard.ChessBoard();
+            m_gameBoard.ToolMovedEvent += toolMovedHandler;
+            m_teams                    =  teams;
+        }
+
+        private void toolMovedHandler(object sender, ToolMovedEventArgs e)
+        {
+            SwitchTeams();
         }
 
         public bool Move(BoardPosition start, BoardPosition end)
         {
-            bool isMoveOk = gameHelper.IsMoveLegal(start, end);
-            if (isMoveOk)
-            {
-                ITool toolToMove = m_gameBoard.GetTool(start);
-                ITool toolAtEnd = m_gameBoard.GetTool(end);
-                if(toolAtEnd != null && toolAtEnd.Type == "King")
-                {
-                    CheckmateEvent?.Invoke(this, null);
-                }
-                m_gameBoard.Move(start, end);
-                gameHelper.ReportMovingTool(toolToMove);
-                SwitchTeams();
-            }
-
-            return isMoveOk;
+            return m_gameBoard.Move(start, end);
         }
 
         public void EndGame()
@@ -68,24 +65,17 @@ namespace ChessGame
 
             IEnumerable<Team> teams = m_teamToolsDict.Keys;
             gameHelper = new GameMoveHelper(m_gameBoard, teams);
-
             CurrentTeamTurn = FirstTeam;
             StartGameEvent?.Invoke(this, null);
         }
+        
         public BoardState GetBoardState()
         {
             return m_gameBoard.GetStateCopy();
         }
         
-        private void StateChanged(object sender, ChessBoardEventArgs args)
+        private void switchCurrentTeam()
         {
-            StateChangeEvent?.Invoke(sender, args);
-        }
-
-        private void SwitchTeams()
-        {
-            IEnumerable<Team> teams = m_teamToolsDict.Keys;
-
             Team firstTeam = teams.First();
             Team secondTeam = teams.Last();
             

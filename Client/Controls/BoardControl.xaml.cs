@@ -20,11 +20,11 @@ namespace Client
     /// </summary>
     public partial class BoardControl : UserControl
     {
-        private GameEngine m_gameEngine;
+        private GameManager m_gameEngine;
         private ToolHelper m_toolsHelper;
         bool isGameRunning = false;
 
-        public BoardControl(GameEngine Engine)
+        public BoardControl(GameManager Engine)
         {
             InitializeComponent();
             m_toolsHelper = new ToolHelper();
