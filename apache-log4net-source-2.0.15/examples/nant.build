@@ -15,8 +15,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<project name="examples" default="compile" xmlnds="http://tempuri.org/nant-vs.xsd">
-    <target name="compile" description="Builds examples">
+<project name="consoleapp-example" default="compile" xmlnds="http://tempuri.org/nant-vs.xsd">
+    <!-- compile WebApp example -->
+    <target name="compile" description="Builds WebApp example">
         <nant target="compile">
             <buildfiles>
                 <include name="*/nant.build" />
@@ -25,7 +26,14 @@ limitations under the License.
             </buildfiles>
         </nant>
     </target>
-    <target name="update-version-info" description="Updates the AssemblyVersionInfo.cs of the examples">
-        <nant buildfile="net/nant.build" target="update-version-info" />
+    <!-- update the version of WebApp example -->
+    <target name="update-version-info" description="Update AssemblyVersionInfo of WebApp example">
+        <nant target="compile">
+            <buildfiles>
+                <include name="*/nant.build" />
+                <!-- exclude current build file -->
+                <exclude name="exclude.build" />
+            </buildfiles>
+        </nant>
     </target>
 </project>

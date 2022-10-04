@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Common;
 
 namespace ChessBoard
 {
@@ -12,7 +14,7 @@ namespace ChessBoard
             if (m_positionToTool.ContainsKey(position)
                 ||m_toolToPosition.ContainsKey((tool)))
             {
-                return false;
+                throw new ArgumentException($"Board already contains tool {tool}!");
             }
             
             m_positionToTool[position] = tool;
@@ -37,7 +39,7 @@ namespace ChessBoard
             return m_positionToTool.TryGetValue(position, out tool);
         }
 
-        public bool GetPosition(ITool tool, out BoardPosition position)
+        public bool TryGetPosition(ITool tool, out BoardPosition position)
         {
             return m_toolToPosition.TryGetValue(tool, out position);
         }

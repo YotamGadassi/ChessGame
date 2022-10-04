@@ -11,6 +11,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Input;
 using Game;
 using ChessBoard;
+using ChessGame;
 
 namespace Client
 {

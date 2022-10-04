@@ -1,7 +1,6 @@
 ﻿using System.Windows.Media;
-using Common;
 
-namespace ChessBoard
+namespace Common
 {
     public interface ITool
     {

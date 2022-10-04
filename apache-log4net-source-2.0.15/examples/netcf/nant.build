@@ -15,9 +15,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<project name="netcf-examples" default="compile" xmlnds="http://tempuri.org/nant-vs.xsd">
-    <!-- compile .NET Compact Framework examples -->
-    <target name="compile" description="Builds .NET Compact Framework examples">
+<project name="consoleapp-example" default="compile" xmlnds="http://tempuri.org/nant-vs.xsd">
+    <!-- compile ConsoleApp example -->
+    <target name="compile" description="Builds ConsoleApp example">
         <nant target="compile">
             <buildfiles>
                 <include name="*/nant.build" />

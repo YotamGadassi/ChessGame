@@ -15,9 +15,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<project name="net-extensions" default="compile" xmlnds="http://tempuri.org/nant-vs.xsd">
-    <!-- compile .NET Framework extensions -->
-    <target name="compile" description="Builds .NET Framework extensions">
+<project name="trace-extension" default="compile" xmlnds="http://tempuri.org/nant-vs.xsd">
+    <!-- compile Trace extension -->
+    <target name="compile" description="Builds Trace extension">
         <nant target="compile">
             <buildfiles>
                 <include name="*/nant.build" />

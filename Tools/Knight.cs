@@ -1,6 +1,6 @@
-﻿using ChessBoard;
-using System;
+﻿using System;
 using System.Windows.Media;
+using Common;
 
 namespace Tools
 {

@@ -15,9 +15,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<project name="repository-examples" default="compile" xmlnds="http://tempuri.org/nant-vs.xsd">
-    <!-- compile Domain examples -->
-    <target name="compile" description="Builds Repository examples">
+<project name="simplemodule-example" default="compile" xmlnds="http://tempuri.org/nant-vs.xsd">
+    <!-- compile SimpleModule example -->
+    <target name="compile" description="Builds SimpleModule example">
         <nant target="compile">
             <buildfiles>
                 <include name="*/nant.build" />

@@ -15,31 +15,25 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<project name="net-1.0-examples" default="compile" xmlnds="http://tempuri.org/nant-vs.xsd">
-    <!-- include configuration file -->
-    <include buildfile="nant.config" />
-    <!-- compile all .NET Framework 1.0 examples -->
-    <target name="compile" description="Builds .NET Framework 1.0 examples">
-        <if test="${framework::exists(project.runtime.config + '-' + project.runtime.version)}">
-            <nant target="compile">
-                <buildfiles>
-                    <include name="*/nant.build" />
-                    <!-- exclude current build file -->
-                    <exclude name="exclude.build" />
-                </buildfiles>
-            </nant>
-        </if>
-        <if test="${not framework::exists(project.runtime.config + '-' + project.runtime.version)}">
-            <if test="${property::exists('project.build.package') and project.build.package}">
-                <fail message="${project.runtime.description} is not available." />
-            </if>
-            <if test="${not(property::exists('project.build.package') and project.build.package)}">
-                <echo message="${project.runtime.description} is not available. Examples skipped." />
-            </if>
-        </if>
+<project name="consoleapp-example" default="compile" xmlnds="http://tempuri.org/nant-vs.xsd">
+    <!-- compile WebApp example -->
+    <target name="compile" description="Builds WebApp example">
+        <nant target="compile">
+            <buildfiles>
+                <include name="*/nant.build" />
+                <!-- exclude current build file -->
+                <exclude name="exclude.build" />
+            </buildfiles>
+        </nant>
     </target>
-    <!-- update the version of all .NET Framework 1.0 examples -->
-    <target name="update-version-info" description="Update AssemblyVersionInfo of .NET Framework 1.0 examples">
-        <nant buildfile="Tutorials/nant.build" target="update-version-info" />
+    <!-- update the version of WebApp example -->
+    <target name="update-version-info" description="Update AssemblyVersionInfo of WebApp example">
+        <nant target="compile">
+            <buildfiles>
+                <include name="*/nant.build" />
+                <!-- exclude current build file -->
+                <exclude name="exclude.build" />
+            </buildfiles>
+        </nant>
     </target>
 </project>

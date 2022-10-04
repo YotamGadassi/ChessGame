@@ -37,19 +37,28 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BoardPosition.cs" />
     <Compile Include="BoardState.cs" />
     <Compile Include="ChessBoard.cs" />
-    <Compile Include="EventArgs\CheckEventArgs.cs" />
-    <Compile Include="EventArgs\EndGameEventArgs.cs" />
-    <Compile Include="ITool.cs" />
-    <Compile Include="MoveState.cs" />
+    <Compile Include="ChessBoardEventArgs\CheckEventArgs.cs" />
+    <Compile Include="ChessBoardEventArgs\EndGameEventArgs.cs" />
+    <Compile Include="ChessBoardEventArgs\KillingEventArgs.cs" />
+    <Compile Include="ChessBoardEventArgs\PromotionEventArgs.cs" />
+    <Compile Include="ChessBoardEventArgs\ToolAddedEventArgs.cs" />
+    <Compile Include="ChessBoardEventArgs\ToolMovedEventArgs.cs" />
+    <Compile Include="GameMovesHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="log4net, Version=2.0.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.15\lib\net45\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Presentation" />
     <Reference Include="WindowsBase" />
@@ -58,6 +67,10 @@
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{bdcf94e1-2e56-4321-bb88-fae6c1bb3899}</Project>
       <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tools\Tools.csproj">
+      <Project>{C06C0779-17AA-4CD8-AF0B-36FDEA6C9B3B}</Project>
+      <Name>Tools</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

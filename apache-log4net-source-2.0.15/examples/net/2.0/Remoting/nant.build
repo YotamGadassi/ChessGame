@@ -15,9 +15,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<project name="remoting-examples" default="compile" xmlnds="http://tempuri.org/nant-vs.xsd">
-    <!-- compile Remoting examples -->
-    <target name="compile" description="Builds Remoting examples">
+<project name="remotingserver-example" default="compile" xmlnds="http://tempuri.org/nant-vs.xsd">
+    <!-- compile RemotingServer example -->
+    <target name="compile" description="Builds RemotingServer example">
         <nant target="compile">
             <buildfiles>
                 <include name="*/nant.build" />

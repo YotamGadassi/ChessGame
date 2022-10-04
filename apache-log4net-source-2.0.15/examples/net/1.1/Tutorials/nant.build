@@ -15,9 +15,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<project name="tutorials-examples" default="compile" xmlnds="http://tempuri.org/nant-vs.xsd">
-    <!-- compile Tutorials examples -->
-    <target name="compile" description="Builds Tutorials examples">
-        <nant buildfile="ConsoleApp/nant.build" target="compile" />
+<project name="consoleapp-example" default="compile" xmlnds="http://tempuri.org/nant-vs.xsd">
+    <!-- compile ConsoleApp example -->
+    <target name="compile" description="Builds ConsoleApp example">
+        <nant buildfile="js/nant.build" target="compile" />
     </target>
 </project>

@@ -1,4 +1,4 @@
-﻿namespace ChessBoard.EventArgs
+﻿namespace ChessBoard.ChessBoardEventArgs
 {
     public enum EndGameReason
     {

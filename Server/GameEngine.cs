@@ -2,18 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using ChessBoard;
-using ChessGame;
+using Common;
+using Game;
 
-namespace Game
+namespace ChessGame
 {
     public class GameEngine : IDisposable
     {
-        private Board m_gameBoard;
-        private Dictionary<Team, IList<ITool>> m_teamToolsDict;
+        private ChessBoard.ChessBoard          m_gameBoard;
 
-        private GameMoveHelper gameHelper;
-
-        public event EventHandler<ChessBoardEventArgs> StateChangeEvent;
         // public event EventHandler<ChessBoardEventArgs> CheckEvent;
         public event EventHandler<EventArgs> CheckmateEvent;
         public event EventHandler<EventArgs> EndGameEvent;
@@ -22,21 +19,21 @@ namespace Game
 
         public GameEngine()
         {
-            m_gameBoard = new Board();
+            m_gameBoard = new ChessBoard.ChessBoard();  
         }
 
-        public bool Move(BoardPosition Start, BoardPosition End)
+        public bool Move(BoardPosition start, BoardPosition end)
         {
-            bool isMoveOk = gameHelper.IsMoveLegal(Start, End);
+            bool isMoveOk = gameHelper.IsMoveLegal(start, end);
             if (isMoveOk)
             {
-                ITool toolToMove = m_gameBoard.GetTool(Start);
-                ITool toolAtEnd = m_gameBoard.GetTool(End);
+                ITool toolToMove = m_gameBoard.GetTool(start);
+                ITool toolAtEnd = m_gameBoard.GetTool(end);
                 if(toolAtEnd != null && toolAtEnd.Type == "King")
                 {
                     CheckmateEvent?.Invoke(this, null);
                 }
-                m_gameBoard.Move(Start, End);
+                m_gameBoard.Move(start, end);
                 gameHelper.ReportMovingTool(toolToMove);
                 SwitchTeams();
             }

@@ -1,5 +1,5 @@
 ﻿using System.Windows.Media;
-using ChessBoard;
+using Common;
 
 namespace Tools
 {

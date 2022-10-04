@@ -1,99 +1,141 @@
 ﻿using System;
-using System.Collections.Generic;
-using ChessBoard.EventArgs;
+using System.Reflection;
+using ChessBoard.ChessBoardEventArgs;
+using Common;
+using log4net;
 
 namespace ChessBoard
 {
-   public interface IBoardQueryService
+    public class ChessBoard
     {
-        ITool GetTool(BoardPosition Position);
+        private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        BoardPosition GetPosition(ITool Tool);
-        BoardState GetStateCopy();
-   }
+        private BoardState     m_board;
+        private GameMoveHelper m_gameMoveHelper;
 
-    public class Board : IBoardQueryService
-    {
-        private BoardState m_board = new BoardState();
+        public event EventHandler<ToolMovedEventArgs> ToolMovedEvent;
+        public event EventHandler<KillingEventArgs>   KillingEvent;
+        public event EventHandler<ToolAddedEventArgs> AddedToolEvent;
 
-        public event EventHandler<EndGameEventArgs> EndGameEvent;
-        public event EventHandler<CheckEventArgs> CheckEvent;
-        public event EventHandler<ChessBoardEventArgs> ToolMovedEvent;
-        public event EventHandler<ChessBoardEventArgs> KillingEvent;
-        public event EventHandler<ChessBoardEventArgs> PromotionEvent;
-
-        public void Add(BoardPosition Position, ITool Tool)
+        public ChessBoard()
         {
-            m_board.Add(Position, Tool);
-
-            ChessBoardEventArgs args = new ChessBoardEventArgs(EventType.Add, Position, Tool);
-
-            StateChangeEvent?.Invoke(this, args);
+            m_board          = new BoardState();
+            m_gameMoveHelper = new GameMoveHelper(this);
         }
 
-        public void Add(IList<KeyValuePair<BoardPosition, ITool>> InitialState)
+        /// <summary>
+        /// Adds a tool to the chess board
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">If position is out of board boundaries</exception>
+        /// <exception cref="ArgumentException">board already contains tool, of if position is occupied</exception>
+        /// <param name="position">The position to which the tool should be added</param>
+        /// <param name="tool">The tool to add</param>
+        public void Add(BoardPosition position, ITool tool)
         {
-            foreach (KeyValuePair<BoardPosition, ITool> pair in InitialState)
+            if (false == validatePosition(position))
             {
-                BoardPosition position = pair.Key;
-                ITool tool = pair.Value;
-
-                m_board.Add(position, tool);
+                throw new ArgumentOutOfRangeException($"The position {position} is out of range!");
             }
+
+            m_board.Add(position, tool);
+
+            ToolAddedEventArgs eventArgs = new ToolAddedEventArgs(tool, position);
+
+            AddedToolEvent?.Invoke(this, eventArgs);
         }
 
-        public bool Remove(BoardPosition Position)
+        private bool validatePosition(BoardPosition position)
         {
-            bool isRemoved = m_board.Remove(Position);
-            if (!isRemoved)
+            int upLeftBoundry    = 0;
+            int downRightBoundry = 7;
+            if (position.Column > 7 || position.Column < upLeftBoundry || position.Row < upLeftBoundry ||
+                position.Row    > downRightBoundry)
             {
                 return false;
             }
 
-            ChessBoardEventArgs args = new ChessBoardEventArgs(EventType.Remove, Position, null);
+            return true;
+        }
 
-            StateChangeEvent?.Invoke(this, args);
+        public bool Remove(BoardPosition position)
+        {
+            return m_board.Remove(position);
+        }
+        /// <summary>
+        /// Moves a tool from start to end.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">if position is out of board boundaries</exception>
+        /// <param name="start">The position from which to move a tool</param>
+        /// <param name="end">The position to move a tool to it</param>
+        /// <returns>true if tool has moved, O.W. false</returns>
+        public bool Move(BoardPosition start, BoardPosition end)
+        {
+            if (false == (validatePosition(start) && validatePosition(end)))
+            {
+                throw new
+                    ArgumentOutOfRangeException($"The start or end position are not valid: Start:{start}, End:{end}");
+            }
+
+            if (false == m_gameMoveHelper.IsMoveLegal(start, end))
+            {
+                s_log.Info($"Move from {start} to {end} is not legal!");
+                return false;
+            }
+
+            bool isThereToolToMove = m_board.TryGetTool(start, out ITool toolToMove);
+            if (false == isThereToolToMove)
+            {
+                s_log.Error($"Position {start} doesn't contain any tool. So no move occurred");
+                return false;
+            }
+
+            bool isThereToolToKill = m_board.TryGetTool(end, out ITool toolOnEndPosition);
+            if (isThereToolToKill)
+            {
+                if (isOnSameTeam(toolToMove, toolOnEndPosition))
+                {
+                    s_log.Info($"Cannot move tool {toolToMove} from {start} to {end}, because tool {toolOnEndPosition} is on the same team and is at end position");
+                    return false;
+                }
+
+                m_board.Remove(end);
+                m_board.Remove(start);
+                m_board.Add(end, toolToMove);
+
+                s_log.Info($"Killing event has occurred: tool at start: {toolToMove}, start: {start}, end: {end}, tool at end: {toolOnEndPosition}");
+                KillingEventArgs eventArgs = new KillingEventArgs(toolToMove, start, end, toolOnEndPosition);
+                KillingEvent?.Invoke(this, eventArgs);
+                return true;
+            }
+
+            m_board.Remove(start);
+            m_board.Add(end, toolToMove);
+
+            s_log.Info($"Tool Moved Event: tool:{toolToMove}, start:{start}, end:{end}");
+            ToolMovedEventArgs evengArgs = new ToolMovedEventArgs(toolToMove, start, end);
+            ToolMovedEvent?.Invoke(this, evengArgs);
 
             return true;
         }
 
-        public void Move(BoardPosition Start, BoardPosition End)
+        private bool isOnSameTeam(ITool toolA, ITool toolB)
         {
-            m_board.Move(Start, End);
-
-            ChessBoardEventArgs args = new ChessBoardEventArgs(EventType.Move, Start, End, null, null);
-
-            StateChangeEvent?.Invoke(this, args);
+            return toolA.Color.Equals(toolB.Color);
         }
 
-        public ITool GetTool(BoardPosition Position)
+        public bool TryGetTool(BoardPosition position, out ITool tool)
         {
-            return m_board.GetTool(Position);
+            return m_board.TryGetTool(position, out tool);
         }
 
-        public BoardPosition GetPosition(ITool Tool)
+        public bool TryGetPosition(ITool tool, out BoardPosition position)
         {
-            return m_board.GetPosition(Tool);
+            return m_board.TryGetPosition(tool, out position);
         }
 
         public void ClearBoard()
         {
             m_board.Clear();
         }
-
-        public BoardState GetStateCopy()
-        {
-            BoardState boardCopy = new BoardState();
-            foreach (KeyValuePair<BoardPosition, ITool> pair in m_board)
-            {
-                BoardPosition position = pair.Key;
-                ITool toolCopy = pair.Value.GetCopy();
-
-                boardCopy.Add(position, toolCopy);
-            }
-
-            return boardCopy;
-        }
     }
-
 }
