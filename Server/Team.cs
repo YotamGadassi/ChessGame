@@ -1,9 +1,7 @@
-﻿using Common;
-using System.Collections.Generic;
-using ChessBoard;
-using System.Windows.Media;
+﻿using System.Windows.Media;
+using Common;
 
-namespace Game
+namespace ChessGame
 {
     public class Team
     {
@@ -13,14 +11,11 @@ namespace Game
 
         public GameDirection MoveDirection { get; }
 
-        internal IList<ITool> Tools { get; }
-
-        public Team(string TeamName, Color TeamColor, GameDirection TeamMovingDirection)
+        public Team(string teamName, Color teamColor, GameDirection teamMovingDirection)
         {
-            Name = TeamName;
-            Color = TeamColor;
-            MoveDirection = TeamMovingDirection;
-            Tools = new List<ITool>();
+            Name = teamName;
+            Color = teamColor;
+            MoveDirection = teamMovingDirection;
         }
     }
 }

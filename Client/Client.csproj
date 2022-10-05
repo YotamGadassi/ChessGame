@@ -193,6 +193,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="BindingConverters\ConnectionStateConverter.cs" />
+    <Compile Include="Board\BoardPanel.cs" />
+    <Compile Include="Board\BoardViewModel.cs" />
     <Compile Include="ClientHost.cs" />
     <Compile Include="Command\AcceptInvitaionCommand.cs" />
     <Compile Include="Command\DeclineInvitationCommand.cs" />
@@ -202,7 +204,7 @@
     <Compile Include="Command\InviteCommand.cs" />
     <Compile Include="Command\PlayOnlineCommand.cs" />
     <Compile Include="ConnectionManager.cs" />
-    <Compile Include="Controls\BoardControl.xaml.cs">
+    <Compile Include="Board\BoardControl.xaml.cs">
       <DependentUpon>BoardControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ChessTool.xaml.cs">
@@ -220,7 +222,7 @@
       <DependentUpon>Login.xaml</DependentUpon>
     </Compile>
     <Compile Include="ToolHelper.cs" />
-    <Page Include="Controls\BoardControl.xaml">
+    <Page Include="Board\BoardControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

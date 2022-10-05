@@ -1,5 +1,4 @@
 ﻿using Common;
-using Game;
 using System.Windows.Media;
 using ChessGame;
 

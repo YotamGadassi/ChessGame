@@ -1,15 +1,10 @@
 ﻿using Common;
 using System.Collections.Generic;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows;
-using System.Collections.Specialized;
-
-using Rectangle = System.Windows.Shapes.Rectangle;
 using System;
 using System.Windows.Media.Imaging;
 using System.Windows.Input;
-using Game;
 using ChessBoard;
 using ChessGame;
 

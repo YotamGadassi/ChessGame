@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Media;
 using ChessBoard;
 using ChessBoard.ChessBoardEventArgs;
 using Common;
-using Game;
+using Tools;
 
 namespace ChessGame
 {
-    public class GameManager : IDisposable
+    public class GameManager
     {
         private ChessBoard.ChessBoard          m_gameBoard;
 
@@ -17,22 +18,23 @@ namespace ChessGame
         public event EventHandler<EventArgs>          EndGameEvent;
         public event EventHandler<EventArgs>          StartGameEvent;
         public event EventHandler<ToolMovedEventArgs> ToolMovedEvent;
-        public Team[]                                 m_teams;
+        public event EventHandler<KillingEventArgs> ToolKilledEvent;
 
-        public Team                                   CurrentTeamTurn { get; private set; }
+        public event Func<object, ToolMovedEventArgs, ITool> PromotionEvent; 
+        private                 Team[]                       m_teams;
+        private                 int                          m_currentTeamIndex;
+        private static readonly int                          s_teamsAmount = 2;
+        public                  Team                         CurrentTeamTurn => m_teams[m_currentTeamIndex];
 
-        public GameManager(Team[] teams)
+
+        public GameManager()
         {
             m_gameBoard                =  new ChessBoard.ChessBoard();
             m_gameBoard.ToolMovedEvent += toolMovedHandler;
-            m_teams                    =  teams;
-        }
+            m_gameBoard.KillingEvent   += toolKilledHandler;
 
-        private void toolMovedHandler(object sender, ToolMovedEventArgs e)
-        {
-            SwitchTeams();
         }
-
+        
         public bool Move(BoardPosition start, BoardPosition end)
         {
             return m_gameBoard.Move(start, end);
@@ -41,52 +43,84 @@ namespace ChessGame
         public void EndGame()
         {
             m_gameBoard.ClearBoard();
-            EndGameEvent?.Invoke(this, null);
-            m_gameBoard.StateChangeEvent -= StateChanged;
-
-            m_teamToolsDict.Clear();
-            gameHelper = null;
-            CurrentTeamTurn = null;
+            m_teams            = null;
+            m_currentTeamIndex = 0;
         }
 
-        public void StartGame(Team FirstTeam, Team SecondTeam)
+        public void StartGame(Team firstTeam, Team secondTeam)
         {
-            m_gameBoard.StateChangeEvent += StateChanged;
-            
-            m_teamToolsDict = new Dictionary<Team, IList<ITool>>();
-            m_teamToolsDict[FirstTeam] = new List<ITool>();
-            m_teamToolsDict[SecondTeam] = new List<ITool>();
+            KeyValuePair<BoardPosition, ITool>[] whiteGroupBoardArrangement = getInitialBoardArrangement(firstTeam);
+            KeyValuePair<BoardPosition, ITool>[] blackGroupBoardArrangement = getInitialBoardArrangement(secondTeam);
 
-            KeyValuePair<BoardPosition, ITool>[] whiteGroupBoardArrangement = getInitialBoardArrangement(FirstTeam);
-            KeyValuePair<BoardPosition, ITool>[] blackGroupBoardArrangement = getInitialBoardArrangement(SecondTeam);
+            foreach (var pair in whiteGroupBoardArrangement)
+            {
+                m_gameBoard.Add(pair.Key, pair.Value);
+            }
 
-            m_gameBoard.Add(whiteGroupBoardArrangement);
-            m_gameBoard.Add(blackGroupBoardArrangement);
+            foreach (var pair in blackGroupBoardArrangement)
+            {
+                m_gameBoard.Add(pair.Key, pair.Value);
+            }
 
-            IEnumerable<Team> teams = m_teamToolsDict.Keys;
-            gameHelper = new GameMoveHelper(m_gameBoard, teams);
-            CurrentTeamTurn = FirstTeam;
-            StartGameEvent?.Invoke(this, null);
+            m_teams            = new[] { firstTeam, secondTeam };
+            m_currentTeamIndex = 0;
         }
         
-        public BoardState GetBoardState()
+        public bool TryGetTool(BoardPosition position, out ITool tool)
         {
-            return m_gameBoard.GetStateCopy();
+            return m_gameBoard.TryGetTool(position, out tool);
         }
         
         private void switchCurrentTeam()
         {
-            Team firstTeam = teams.First();
-            Team secondTeam = teams.Last();
-            
-            if(CurrentTeamTurn == firstTeam)
+            m_currentTeamIndex = (m_currentTeamIndex + 1) % s_teamsAmount;
+        }
+
+        private void toolKilledHandler(object sender, KillingEventArgs e)
+        {
+            // need to handle:
+            //1. king killed - CheckMate
+            ITool killedTool = e.KilledTool;
+            if (killedTool is King)
             {
-                CurrentTeamTurn = secondTeam;
+                CheckmateEvent?.Invoke(this, e);
+                return;
             }
-            else
+            //2. promotion
+            ITool movedTool = e.MovedTool;
+            if (movedTool is Pawn)
             {
-                CurrentTeamTurn = firstTeam;
+                if ((movedTool.Color == Colors.White && e.EndPosition.Row == 7)
+                 || (movedTool.Color == Colors.Black && e.EndPosition.Row == 0))
+                {
+                    ITool chosenToolAfterPromotion = PromotionEvent?.Invoke(this, e);
+                    //TODO: handle the swap
+                    return;
+                }
             }
+
+            ToolKilledEvent?.Invoke(this, e);
+        }
+
+        private void toolMovedHandler(object sender, ToolMovedEventArgs e)
+        {
+            switchCurrentTeam();
+            // need to handle:
+            // handle promotion
+            ITool movedTool = e.MovedTool;
+            if (movedTool is Pawn)
+            {
+                if ((movedTool.Color == Colors.White && e.EndPosition.Row == 7)
+                    || (movedTool.Color == Colors.Black && e.EndPosition.Row == 0))
+                {
+                    ITool chosenToolAfterPromotion = PromotionEvent?.Invoke(this, e);
+                    //TODO: handle the swap
+                    return;
+                }
+            }
+
+            //TODO: handle check for check
+            ToolMovedEvent?.Invoke(this, e);
         }
 
         private KeyValuePair<BoardPosition, ITool>[] getInitialBoardArrangement(Team team)
@@ -105,11 +139,6 @@ namespace ChessGame
 
             IList<KeyValuePair<BoardPosition, ITool>> toolsList = conctanteLists(pawnList, rookList, bishopList, knightList, queenKingList);
 
-            foreach (KeyValuePair<BoardPosition, ITool> pair in toolsList)
-            {
-                m_teamToolsDict[team].Add(pair.Value);
-            }
-
             return toolsList.ToArray();
         }
 
@@ -125,10 +154,6 @@ namespace ChessGame
             return toolsList;
         }
 
-        public void Dispose()
-        {
-            m_gameBoard.StateChangeEvent -= StateChanged;
-        }
     }
 
 }
