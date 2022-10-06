@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Client.Board
+﻿namespace Client.Board
 {
+    public class SquareViewModel
+    {
+        
+    }
+
     public class BoardViewModel
     {
     }

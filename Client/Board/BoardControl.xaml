@@ -2,10 +2,26 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ChessGame"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:board="clr-namespace:Client.Board"
              mc:Ignorable="d">
-    <Grid Width="Auto" Height="Auto" x:Name="m_mainGrid">
+    <Grid  x:Name="m_mainGrid" Width="Auto" Height="Auto">
+        <Grid.Resources>
+            <ResourceDictionary>
+                <Style x:Key="LabelSquareStyle" TargetType="Label">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <Grid>
+                                    <board:BoardSquare BackgroundImageSource="{Binding BackgroundImageSource}"/>
+                                    <board:BoardSquare ToolImageSource="{Binding ToolImageSource}"/>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ResourceDictionary>
+        </Grid.Resources>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
@@ -30,6 +46,7 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-    
+    <Label Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelSquareStyle}" DataContext="{Binding Path=SquaresDictViewModel.S00}">
+    </Label>
     </Grid>
 </UserControl>

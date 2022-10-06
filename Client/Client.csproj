@@ -194,6 +194,9 @@
     </ApplicationDefinition>
     <Compile Include="BindingConverters\ConnectionStateConverter.cs" />
     <Compile Include="Board\BoardPanel.cs" />
+    <Compile Include="Board\BoardSquare.xaml.cs">
+      <DependentUpon>BoardSquare.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Board\BoardViewModel.cs" />
     <Compile Include="ClientHost.cs" />
     <Compile Include="Command\AcceptInvitaionCommand.cs" />
@@ -223,6 +226,10 @@
     </Compile>
     <Compile Include="ToolHelper.cs" />
     <Page Include="Board\BoardControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Board\BoardSquare.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
