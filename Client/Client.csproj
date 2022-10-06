@@ -188,16 +188,24 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
     <Compile Include="BindingConverters\ConnectionStateConverter.cs" />
+    <Compile Include="Board\BoardControl.xaml.cs">
+      <DependentUpon>BoardControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Board\BoardPanel.cs" />
     <Compile Include="Board\BoardSquare.xaml.cs">
       <DependentUpon>BoardSquare.xaml</DependentUpon>
     </Compile>
     <Compile Include="Board\BoardViewModel.cs" />
+    <Compile Include="Board\ClickSquareCommand.cs" />
+    <Compile Include="Board\SquareConverter.cs" />
+    <Compile Include="Board\SquaresViewModel.cs" />
+    <Compile Include="MainWindow\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MainWindow\MainWindowViewModel.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Helpers\ToolsImageHelper.cs" />
     <Compile Include="ClientHost.cs" />
     <Compile Include="Command\AcceptInvitaionCommand.cs" />
     <Compile Include="Command\DeclineInvitationCommand.cs" />
@@ -206,10 +214,8 @@
     <Compile Include="Command\DisconnectCommand.cs" />
     <Compile Include="Command\InviteCommand.cs" />
     <Compile Include="Command\PlayOnlineCommand.cs" />
+    <Compile Include="Command\WpfCommand.cs" />
     <Compile Include="ConnectionManager.cs" />
-    <Compile Include="Board\BoardControl.xaml.cs">
-      <DependentUpon>BoardControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\ChessTool.xaml.cs">
       <DependentUpon>ChessTool.xaml</DependentUpon>
     </Compile>
@@ -220,7 +226,6 @@
       <DependentUpon>OnlineModeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Frameworks\OnlineFramework.cs" />
-    <Compile Include="InvitationManager.cs" />
     <Compile Include="Login\Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
     </Compile>
@@ -241,23 +246,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\MainClientWin.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Controls\MainClientWin.xaml.cs">
-      <DependentUpon>MainClientWin.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
     <Page Include="Controls\OnlineModeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Login\Login.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MainWindow\MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -297,6 +294,10 @@
     <ProjectReference Include="..\Server\ChessGame.csproj">
       <Project>{fa8b2308-f9b4-48cd-9dd3-d35425a00ddc}</Project>
       <Name>ChessGame</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tools\Tools.csproj">
+      <Project>{C06C0779-17AA-4CD8-AF0B-36FDEA6C9B3B}</Project>
+      <Name>Tools</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 
-namespace Client
+namespace Client.Board
 {
     public class BoardPanel
     {
-        public DependencyObject Control { get; }
-
+        public FrameworkElement Control   { get; }
+        public BoardViewModel   BoardVm { get; }
         public BoardPanel()
         {
-            
+            Control             = new Client.BoardControl();
+            BoardVm           = new BoardViewModel();
+            Control.DataContext = BoardVm;
         }
     }
 }

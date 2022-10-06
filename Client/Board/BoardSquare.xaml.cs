@@ -24,7 +24,6 @@ namespace Client.Board
             get => (BitmapImage)GetValue(ToolImageSourceProperty);
         }
 
-
         public BoardSquare()
         {
             InitializeComponent();
