@@ -1,11 +1,11 @@
 ﻿namespace Client.MainWindow
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for MainWindowControl.xaml
     /// </summary>
-    public partial class MainWindow
+    public partial class MainWindowControl
     {
-        public MainWindow()
+        public MainWindowControl()
         {
             InitializeComponent();
         }

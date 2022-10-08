@@ -188,7 +188,6 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BindingConverters\ConnectionStateConverter.cs" />
     <Compile Include="Board\BoardControl.xaml.cs">
       <DependentUpon>BoardControl.xaml</DependentUpon>
     </Compile>
@@ -199,37 +198,15 @@
     <Compile Include="Board\BoardViewModel.cs" />
     <Compile Include="Board\ClickSquareCommand.cs" />
     <Compile Include="Board\SquareConverter.cs" />
-    <Compile Include="Board\SquaresViewModel.cs" />
-    <Compile Include="MainWindow\MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="Board\SquareViewModel.cs" />
+    <Compile Include="Helpers\InputBindingsAttachedProperty.cs" />
+    <Compile Include="MainWindow\MainWindowControl.xaml.cs">
+      <DependentUpon>MainWindowControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow\MainWindowViewModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Helpers\ToolsImageHelper.cs" />
-    <Compile Include="ClientHost.cs" />
-    <Compile Include="Command\AcceptInvitaionCommand.cs" />
-    <Compile Include="Command\DeclineInvitationCommand.cs" />
-    <Compile Include="Command\BaseCommandHandler.cs" />
-    <Compile Include="Command\ConnectCommand.cs" />
-    <Compile Include="Command\DisconnectCommand.cs" />
-    <Compile Include="Command\InviteCommand.cs" />
-    <Compile Include="Command\PlayOnlineCommand.cs" />
     <Compile Include="Command\WpfCommand.cs" />
-    <Compile Include="ConnectionManager.cs" />
-    <Compile Include="Controls\ChessTool.xaml.cs">
-      <DependentUpon>ChessTool.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\DetailControl.xaml.cs">
-      <DependentUpon>DetailControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\OnlineModeControl.xaml.cs">
-      <DependentUpon>OnlineModeControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Frameworks\OnlineFramework.cs" />
-    <Compile Include="Login\Login.xaml.cs">
-      <DependentUpon>Login.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ToolHelper.cs" />
     <Page Include="Board\BoardControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -238,29 +215,12 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\ChessTool.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\DetailControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\OnlineModeControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Login\Login.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MainWindow\MainWindow.xaml">
+    <Page Include="MainWindow\MainWindowControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Frameworks\OfflineFramwork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -350,9 +310,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets" Condition="Exists('..\packages\Microsoft.Extensions.Logging.Abstractions.6.0.0\build\Microsoft.Extensions.Logging.Abstractions.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

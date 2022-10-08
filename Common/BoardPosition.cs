@@ -1,4 +1,4 @@
-﻿namespace ChessBoard
+﻿namespace Common
 {
     public struct BoardPosition
     {
@@ -13,9 +13,9 @@
             Row = Row_;
         }
 
-        public bool IsEmpty(BoardPosition Position)
+        public bool IsEmpty()
         {
-            return Position.Equals(Empty);
+            return Equals(Empty);
         }
     }
 }

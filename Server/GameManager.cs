@@ -18,7 +18,7 @@ namespace ChessGame
         public event EventHandler<EventArgs>          EndGameEvent;
         public event EventHandler<EventArgs>          StartGameEvent;
         public event EventHandler<ToolMovedEventArgs> ToolMovedEvent;
-        public event EventHandler<KillingEventArgs> ToolKilledEvent;
+        public event EventHandler<KillingEventArgs>   ToolKilledEvent;
 
         public event Func<object, ToolMovedEventArgs, ITool> PromotionEvent; 
         private                 Team[]                       m_teams;

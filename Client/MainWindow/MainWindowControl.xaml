@@ -1,4 +1,4 @@
-﻿<Window x:Class="Client.MainWindow.MainWindow"
+﻿<Window x:Class="Client.MainWindow.MainWindowControl"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -11,9 +11,9 @@
             <ColumnDefinition Width="100"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
+    <Label Grid.Column="1" Content="{Binding CurrentView}"/>
     </Grid>
 
-    <Label Content="{Binding }"></Label>
 
 
 </Window>

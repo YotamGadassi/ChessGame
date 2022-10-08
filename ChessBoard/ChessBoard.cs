@@ -46,10 +46,12 @@ namespace ChessBoard
 
         private bool validatePosition(BoardPosition position)
         {
-            int upLeftBoundry    = 0;
-            int downRightBoundry = 7;
-            if (position.Column > 7 || position.Column < upLeftBoundry || position.Row < upLeftBoundry ||
-                position.Row    > downRightBoundry)
+            int upLeftBoundry    = 1;
+            int downRightBoundry = 8;
+            if (position.Column > downRightBoundry 
+             || position.Column < upLeftBoundry 
+             || position.Row    < upLeftBoundry 
+             || position.Row   > downRightBoundry)
             {
                 return false;
             }

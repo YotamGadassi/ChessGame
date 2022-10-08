@@ -33,7 +33,8 @@ namespace Client.Helpers
             }
         }
 
-        private static readonly Dictionary<TypeColorPair, BitmapImage> m_ToolToImageSource;
+        private static readonly Dictionary<TypeColorPair, BitmapImage> m_ToolToImageSource =
+            new Dictionary<TypeColorPair, BitmapImage>();
 
         static ToolsImageHelper()
         {

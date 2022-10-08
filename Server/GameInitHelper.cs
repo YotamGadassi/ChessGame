@@ -16,16 +16,16 @@ namespace ChessGame
             switch (team.MoveDirection)
             {
                 case GameDirection.Forward:
-                    yAxis = 1;
+                    yAxis = 2;
                     break;
                 case GameDirection.Backward:
-                    yAxis = 6;
+                    yAxis = 7;
                     break;
             }
 
             IList<KeyValuePair<BoardPosition, ITool>> list = new List<KeyValuePair<BoardPosition, ITool>>();
 
-            for (int i = 0; i < pawnsAmount; ++i)
+            for (int i = 1; i <= pawnsAmount; ++i)
             {
                 BoardPosition newPosition = new BoardPosition(i, yAxis);
                 Pawn newPawn = new Pawn(team.Color);
@@ -42,12 +42,12 @@ namespace ChessGame
 
             IList<KeyValuePair<BoardPosition, ITool>> list = new List<KeyValuePair<BoardPosition, ITool>>();
 
-            BoardPosition position = new BoardPosition(0, yAxis);
+            BoardPosition position = new BoardPosition(1, yAxis);
             ITool tool = new Rook(team.Color);
             KeyValuePair<BoardPosition, ITool> pair = new KeyValuePair<BoardPosition, ITool>(position, tool);
             list.Add(pair);
 
-            position = new BoardPosition(7, yAxis);
+            position = new BoardPosition(8, yAxis);
             tool = new Rook(team.Color);
             pair = new KeyValuePair<BoardPosition, ITool>(position, tool);
 
@@ -62,12 +62,12 @@ namespace ChessGame
 
             IList<KeyValuePair<BoardPosition, ITool>> list = new List<KeyValuePair<BoardPosition, ITool>>();
 
-            BoardPosition position = new BoardPosition(2, yAxis);
+            BoardPosition position = new BoardPosition(3, yAxis);
             ITool tool = new Bishop(team.Color);
             KeyValuePair<BoardPosition, ITool> pair = new KeyValuePair<BoardPosition, ITool>(position, tool);
             list.Add(pair);
 
-            position = new BoardPosition(5, yAxis);
+            position = new BoardPosition(6, yAxis);
             tool = new Bishop(team.Color);
             pair = new KeyValuePair<BoardPosition, ITool>(position, tool);
 
@@ -82,12 +82,12 @@ namespace ChessGame
 
             IList<KeyValuePair<BoardPosition, ITool>> list = new List<KeyValuePair<BoardPosition, ITool>>();
 
-            BoardPosition position = new BoardPosition(1, yAxis);
+            BoardPosition position = new BoardPosition(2, yAxis);
             ITool tool = new Knight(team.Color);
             KeyValuePair<BoardPosition, ITool> pair = new KeyValuePair<BoardPosition, ITool>(position, tool);
             list.Add(pair);
 
-            position = new BoardPosition(6, yAxis);
+            position = new BoardPosition(7, yAxis);
             tool = new Knight(team.Color);
             pair = new KeyValuePair<BoardPosition, ITool>(position, tool);
 
@@ -102,12 +102,12 @@ namespace ChessGame
 
             IList<KeyValuePair<BoardPosition, ITool>> list = new List<KeyValuePair<BoardPosition, ITool>>();
 
-            BoardPosition position = new BoardPosition(3, yAxis);
+            BoardPosition position = new BoardPosition(4, yAxis);
             ITool tool = new Queen(team.Color);
             KeyValuePair<BoardPosition, ITool> pair = new KeyValuePair<BoardPosition, ITool>(position, tool);
             list.Add(pair);
 
-            position = new BoardPosition(4, yAxis);
+            position = new BoardPosition(5, yAxis);
             tool = new King(team.Color);
             pair = new KeyValuePair<BoardPosition, ITool>(position, tool);
             list.Add(pair);
@@ -120,9 +120,9 @@ namespace ChessGame
             switch (moveDirection)
             {
                 case GameDirection.Forward:
-                    return 0;
+                    return 1;
                 case GameDirection.Backward:
-                    return 7;
+                    return 8;
                 default:
                     throw new ArgumentException(string.Format("Move direction: {0} is not allowed", moveDirection));
             }

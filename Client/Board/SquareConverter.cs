@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using ChessBoard;
+using Common;
 
 namespace Client.Board
 {

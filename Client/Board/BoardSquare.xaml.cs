@@ -7,7 +7,7 @@ namespace Client.Board
     /// <summary>
     /// Interaction logic for BoardSquare.xaml
     /// </summary>
-    public partial class BoardSquare
+    public partial class BoardSquare : UserControl
     {
         private static readonly DependencyProperty BackgroundImageSourceProperty = DependencyProperty.Register("BackgroundImageSource", typeof(BitmapImage), typeof(BoardSquare));
         private static readonly DependencyProperty ToolImageSourceProperty = DependencyProperty.Register("ToolImageSource", typeof(BitmapImage), typeof(BoardSquare));
