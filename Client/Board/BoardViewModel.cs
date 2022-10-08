@@ -7,13 +7,6 @@ using Color = System.Windows.Media.Color;
 
 namespace Client.Board
 {
-    public enum SquareState
-    {
-        Regular = 1,
-        Chosen = 2,
-        Hinted = 3
-    }
-
     public class BoardViewModel : DependencyObject
     {
         private SquareViewModel                            m_selectedBoardPosition;
@@ -45,12 +38,12 @@ namespace Client.Board
 
         public void ClickCommandExecute(BoardPosition position, ITool tool)
         {
+            Color currTeamColor             = m_gameManager.CurrentTeamTurn.Color;
+            bool  isPositionToolSameTeam = null != tool && tool.Color.Equals(currTeamColor);
             bool  isSelectedPosition        = null != m_selectedBoardPosition;
             if (false == isSelectedPosition)
             {
-                Color currTeamColor             = m_gameManager.CurrentTeamTurn.Color;
-                bool  isPositionValidToBeChosen = null != tool && tool.Color.Equals(currTeamColor);
-                if (isPositionValidToBeChosen)
+                if (isPositionToolSameTeam)
                 {
                     setSelectedBoardPosition(position);
                     return;
@@ -58,9 +51,15 @@ namespace Client.Board
 
                 clearSelectedHintedBoardPositions();
                 return;
-
-
             }
+            clearSelectedHintedBoardPositions();
+
+            if (isPositionToolSameTeam)
+            {
+                setSelectedBoardPosition(position);
+            }
+
+
         }
 
         public bool ForceAddTool(ITool tool, BoardPosition position)
@@ -118,10 +117,12 @@ namespace Client.Board
 
             m_selectedBoardPosition.State = SquareState.Regular;
             m_selectedBoardPosition       = null;
-
-            foreach (SquareViewModel hintedBoardPosition in m_hintedBoardPositions)
+            if (null != m_hintedBoardPositions)
             {
-                hintedBoardPosition.State = SquareState.Regular;
+                foreach (SquareViewModel hintedBoardPosition in m_hintedBoardPositions)
+                {
+                    hintedBoardPosition.State = SquareState.Regular;
+                }
             }
 
             m_hintedBoardPositions = null;

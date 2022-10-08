@@ -10,6 +10,13 @@ using Common;
 
 namespace Client.Board
 {
+    public enum SquareState
+    {
+        Regular = 1,
+        Chosen  = 2,
+        Hinted  = 3
+    }
+
     public class SquareViewModel : DependencyObject
     {
         public static readonly DependencyProperty BackgroundImageSourceProperty = DependencyProperty.Register("BackgroundImageSource", typeof(BitmapImage), typeof(SquareViewModel));
