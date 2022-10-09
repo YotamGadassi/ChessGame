@@ -8,8 +8,8 @@ namespace Common
 {
     public enum GameDirection
     {
-        Forward,
-        Backward
+        North,
+        South
     }
     
     public enum GameMode

@@ -41,25 +41,26 @@ namespace Client.Board
             Color currTeamColor             = m_gameManager.CurrentTeamTurn.Color;
             bool  isPositionToolSameTeam = null != tool && tool.Color.Equals(currTeamColor);
             bool  isSelectedPosition        = null != m_selectedBoardPosition;
+            if (isPositionToolSameTeam)
+            {
+                setSelectedBoardPosition(position);
+                BoardPosition[] positionToMove = getAvailablePositionsToMove(position, tool); 
+                return;
+            }
             if (false == isSelectedPosition)
             {
-                if (isPositionToolSameTeam)
-                {
-                    setSelectedBoardPosition(position);
-                    return;
-                }
+
 
                 clearSelectedHintedBoardPositions();
                 return;
             }
             clearSelectedHintedBoardPositions();
 
-            if (isPositionToolSameTeam)
-            {
-                setSelectedBoardPosition(position);
-            }
+        }
 
-
+        private BoardPosition[] getAvailablePositionsToMove(BoardPosition position, ITool tool)
+        {
+            
         }
 
         public bool ForceAddTool(ITool tool, BoardPosition position)

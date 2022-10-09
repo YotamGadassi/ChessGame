@@ -15,10 +15,10 @@ namespace ChessGame
             int yAxis = 0;
             switch (team.MoveDirection)
             {
-                case GameDirection.Forward:
+                case GameDirection.North:
                     yAxis = 2;
                     break;
-                case GameDirection.Backward:
+                case GameDirection.South:
                     yAxis = 7;
                     break;
             }
@@ -119,9 +119,9 @@ namespace ChessGame
         {
             switch (moveDirection)
             {
-                case GameDirection.Forward:
+                case GameDirection.North:
                     return 1;
-                case GameDirection.Backward:
+                case GameDirection.South:
                     return 8;
                 default:
                     throw new ArgumentException(string.Format("Move direction: {0} is not allowed", moveDirection));

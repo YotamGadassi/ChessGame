@@ -16,10 +16,10 @@ namespace Client
             MainWindowViewModel mainWindowsVm = new MainWindowViewModel();
 
             GameManager gameManager = new GameManager();
-            gameManager.StartGame(new Team("A", Colors.White, GameDirection.Forward), new Team("B", Colors.Black, GameDirection.Backward));
+            gameManager.StartGame(new Team("A", Colors.White, GameDirection.North), new Team("B", Colors.Black, GameDirection.South));
             
             BoardPanel  panel       = new BoardPanel(gameManager);
-            panel.UpdateBoardViewModel();
+            panel.Init();
             mainWindowsVm.CurrentView = panel.Control;
             mainWindow.DataContext    = mainWindowsVm;
             mainWindow.ShowDialog();

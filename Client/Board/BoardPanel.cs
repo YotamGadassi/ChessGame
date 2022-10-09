@@ -17,9 +17,13 @@ namespace Client.Board
             Control             = new BoardControl();
             BoardVm             = new BoardViewModel(gameManager);
             Control.DataContext = BoardVm;
-            registerEvents();
         }
 
+        public void Init()
+        {
+            updateBoardViewModel();
+            registerEvents();
+        }
         private void registerEvents()
         {
             m_gameManger.ToolMovedEvent += gameMangerOnToolMovedEvent;
@@ -34,7 +38,7 @@ namespace Client.Board
             BoardVm.ForceAddTool(movedTool, endPosition);
         }
 
-        public void UpdateBoardViewModel()
+        private void updateBoardViewModel()
         {
             BoardVm.RemoveAllTools();
             for (int row = 1; row <= 8; ++row)

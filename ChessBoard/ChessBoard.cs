@@ -32,7 +32,7 @@ namespace ChessBoard
         /// <param name="tool">The tool to add</param>
         public void Add(BoardPosition position, ITool tool)
         {
-            if (false == validatePosition(position))
+            if (false == m_gameMoveHelper.ValidatePositionOnBoard(position))
             {
                 throw new ArgumentOutOfRangeException($"The position {position} is out of range!");
             }
@@ -42,21 +42,6 @@ namespace ChessBoard
             ToolAddedEventArgs eventArgs = new ToolAddedEventArgs(tool, position);
 
             AddedToolEvent?.Invoke(this, eventArgs);
-        }
-
-        private bool validatePosition(BoardPosition position)
-        {
-            int upLeftBoundry    = 1;
-            int downRightBoundry = 8;
-            if (position.Column > downRightBoundry 
-             || position.Column < upLeftBoundry 
-             || position.Row    < upLeftBoundry 
-             || position.Row   > downRightBoundry)
-            {
-                return false;
-            }
-
-            return true;
         }
 
         public bool Remove(BoardPosition position)
@@ -72,7 +57,7 @@ namespace ChessBoard
         /// <returns>true if tool has moved, O.W. false</returns>
         public bool Move(BoardPosition start, BoardPosition end)
         {
-            if (false == (validatePosition(start) && validatePosition(end)))
+            if (false == (m_gameMoveHelper.ValidatePositionOnBoard(start) && m_gameMoveHelper.ValidatePositionOnBoard(end)))
             {
                 throw new
                     ArgumentOutOfRangeException($"The start or end position are not valid: Start:{start}, End:{end}");
