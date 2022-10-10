@@ -34,6 +34,10 @@
                         <DataTrigger Binding="{Binding State}" Value="Chosen">
                             <Setter Property="BorderThickness" Value="5"/>
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding State}" Value="Hinted">
+                            <Setter Property="BorderThickness" Value="5"/>
+                            <Setter Property="BorderBrush" Value="Brown"/>
+                        </DataTrigger>
                     </Style.Triggers>
                 </Style>
                 <Style TargetType="{x:Type Label}">

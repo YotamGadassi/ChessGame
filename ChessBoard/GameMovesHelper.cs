@@ -4,47 +4,38 @@ using System.Reflection;
 using System.Windows.Media;
 using Common;
 using log4net;
-using Tools;
 
 namespace ChessBoard
 {
     public class GameMoveHelper
     {
-        private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private  readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private delegate bool IsMoveLegalDelegate(BoardPosition start,     BoardPosition end, ITool toolToMove,
-                                                  bool          isKilling, ChessBoard    chessBoard);
+                                                  bool          isKilling);
 
-        private delegate BoardPosition[] AvailableMovesDelegate(BoardPosition position, ITool tool, ChessBoard chessBoard);
+        private  Dictionary<string, IsMoveLegalDelegate>        m_isLegalDelegatesDict;
 
-        private static Dictionary<string, IsMoveLegalDelegate>        m_isLegalDelegatesDict;
-        private        static Dictionary<Type, AvailableMovesDelegate> m_availableMovesDelegatesDict;
+        private  Dictionary<Color, GameDirection> m_colorToDirection;
 
-        private static Dictionary<Color, GameDirection> m_colorToDirection;
+        private ChessBoard m_chessBoard;
 
-        static GameMoveHelper()
+        public GameMoveHelper(ChessBoard chessBoard)
         {
+            m_chessBoard = chessBoard;
             initMoveLegalDelegates();
-            initAvailableMovesDelegates();
             initColorToDirection();
         }
 
-        private static void initAvailableMovesDelegates()
+        public  bool IsMoveLegal(BoardPosition start, BoardPosition end)
         {
-            m_availableMovesDelegatesDict = new Dictionary<Type, AvailableMovesDelegate>();
-            m_availableMovesDelegatesDict.Add(typeof(Pawn), pawnCalculateAvailablePositionsToMove);
-            m_availableMovesDelegatesDict.Add(typeof(Rook), rookCalculateAvailablePositionsToMove);
-        }
-
-        public static bool IsMoveLegal(BoardPosition start, BoardPosition end, ChessBoard chessBoard)
-        {
-            if (false == chessBoard.TryGetTool(start, out ITool toolToMove))
+            if (false == m_chessBoard.TryGetTool(start, out ITool toolToMove))
             {
                 s_log.Info($"No tool to move from position {start}. So no move occurred.");
                 return false;
             }
 
-            bool isToolAtEnd = chessBoard.TryGetTool(end, out ITool toolAtEnd);
+            bool isToolAtEnd = m_chessBoard.TryGetTool(end, out ITool toolAtEnd);
             if (isToolAtEnd && isSameTeam(toolToMove, toolAtEnd))
             {
                 s_log.Warn($"{toolToMove.Type} cannot move to a position which contains tool from same team!");
@@ -53,17 +44,17 @@ namespace ChessBoard
 
             IsMoveLegalDelegate func = m_isLegalDelegatesDict[toolToMove.Type];
 
-            return func(start, end, toolToMove, isToolAtEnd, chessBoard);
+            return func(start, end, toolToMove, isToolAtEnd);
         }
 
-        private static void initColorToDirection()
+        private  void initColorToDirection()
         {
             m_colorToDirection = new Dictionary<Color, GameDirection>();
             m_colorToDirection.Add(Colors.White, GameDirection.North);
             m_colorToDirection.Add(Colors.Black, GameDirection.South);
         }
 
-        private static void initMoveLegalDelegates()
+        private  void initMoveLegalDelegates()
         {
             m_isLegalDelegatesDict = new Dictionary<string, IsMoveLegalDelegate>();
             m_isLegalDelegatesDict.Add("Pawn", pawnCheckMove);
@@ -74,7 +65,7 @@ namespace ChessBoard
             m_isLegalDelegatesDict.Add("King", kingCheckMove);
         }
 
-        private bool pawnCheckMove(BoardPosition start, BoardPosition end, ITool toolToMove, bool isKilling, ChessBoard chessBoard)
+        private  bool pawnCheckMove(BoardPosition start, BoardPosition end, ITool toolToMove, bool isKilling)
         {
             GameDirection toolGameDirection = m_colorToDirection[toolToMove.Color];
 
@@ -108,24 +99,17 @@ namespace ChessBoard
             bool isMoveTwoSquares = convertedEnd.Row == convertedStart.Row + 2;
             if (isMoveTwoSquares)
             {
-                bool isFirstMove = start.Row == 2;
+                bool isFirstMove = convertedStart.Row == 2;
                 if (false == isFirstMove)
                 {
                     s_log.Info($"Pawn cannot move two squares if it's not it first move!");
                     return false;
                 }
 
-                int nextRow = start.Row + 1;
-                if (toolGameDirection == GameDirection.South)
-                {
-                    nextRow = end.Row - start.Row;
-                }
-
-                BoardPosition inBetweenSquare         = new BoardPosition(start.Column, nextRow);
-                bool          isSquareBetweenOccupied = chessBoard.TryGetTool(inBetweenSquare, out ITool toolInBetween);
+                bool          isSquareBetweenOccupied = checkToolsBetweenColumns(start.Column, start.Row, end.Row);
                 if (isSquareBetweenOccupied)
                 {
-                    s_log.Warn($"Pawn cannot skip other tool. Position {inBetweenSquare} is occupied with tool {toolInBetween.Type}");
+                    s_log.Warn($"Pawn cannot skip other tool. Squares between {start}-{end} is occupied");
                     return false;
                 }
 
@@ -142,7 +126,7 @@ namespace ChessBoard
             return true;
         }
 
-        private bool rookCheckMove(BoardPosition start, BoardPosition end, ITool toolToMove, bool isKilling, ChessBoard chessBoard)
+        private  bool rookCheckMove(BoardPosition start, BoardPosition end, ITool toolToMove, bool isKilling)
         {
             bool isSameColumn = start.Column == end.Column;
             bool isSameRow = start.Row == end.Row;
@@ -152,7 +136,7 @@ namespace ChessBoard
                 int  moveColumm         = start.Column;
                 int  rowOne             = start.Row;
                 int  rowTwo             = end.Row;
-                bool isToolsBetweenRows = checkToolsBetweenColumns(moveColumm, rowOne, rowTwo, chessBoard);
+                bool isToolsBetweenRows = checkToolsBetweenColumns(moveColumm, rowOne, rowTwo);
                 if (isToolsBetweenRows)
                 {
                     return false;
@@ -165,7 +149,7 @@ namespace ChessBoard
                 int  moveRow               = start.Row;
                 int  columnsOne            = start.Column;
                 int  columnTwo             = end.Column;
-                bool isToolsBetweenColumns = checkToolsBetweenRows(moveRow, columnsOne, columnTwo, chessBoard);
+                bool isToolsBetweenColumns = checkToolsBetweenRows(moveRow, columnsOne, columnTwo);
                 if (isToolsBetweenColumns)
                 {
                     return false;
@@ -177,7 +161,7 @@ namespace ChessBoard
             return false;
         }
 
-        private bool bishopCheckMove(BoardPosition start, BoardPosition end, ITool toolToMove, bool isKilling, ChessBoard chessBoard)
+        private  bool bishopCheckMove(BoardPosition start, BoardPosition end, ITool toolToMove, bool isKilling)
         {
             int columnDiff = Math.Abs(end.Column - start.Column);
             int rowDiff = Math.Abs(end.Row - start.Row);
@@ -186,7 +170,7 @@ namespace ChessBoard
                 return false;
             }
 
-            bool isToolsBetweenSquares = checkToolsBetweenDiagonlMove(start, end, chessBoard);
+            bool isToolsBetweenSquares = checkToolsBetweenDiagonalMove(start, end);
             if (isToolsBetweenSquares)
             {
                 return false;
@@ -195,7 +179,7 @@ namespace ChessBoard
             return true;
         }
 
-        private bool knightCheckMove(BoardPosition start, BoardPosition end, ITool toolToMove, bool isKilling, ChessBoard chessBoard)
+        private  bool knightCheckMove(BoardPosition start, BoardPosition end, ITool toolToMove, bool isKilling)
         {
             bool isMoveTwoColumns = Math.Abs(end.Column - start.Column) == 2;
             if (isMoveTwoColumns)
@@ -214,13 +198,13 @@ namespace ChessBoard
             return false;
         }
 
-        private bool queenCheckMove(BoardPosition start, BoardPosition end, ITool toolToMove, bool isKilling, ChessBoard chessBoard)
+        private  bool queenCheckMove(BoardPosition start, BoardPosition end, ITool toolToMove, bool isKilling)
         {
-            bool checkQueenMove = bishopCheckMove(start, end, toolToMove, isKilling, chessBoard) || rookCheckMove(start, end, toolToMove, isKilling, chessBoard);
+            bool checkQueenMove = bishopCheckMove(start, end, toolToMove, isKilling) || rookCheckMove(start, end, toolToMove, isKilling);
             return checkQueenMove;
         }
 
-        private bool kingCheckMove(BoardPosition start, BoardPosition end, ITool toolToMove, bool isKilling, ChessBoard chessBoard)
+        private  bool kingCheckMove(BoardPosition start, BoardPosition end, ITool toolToMove, bool isKilling)
         {
             int rowMoved = Math.Abs(end.Row - start.Row);
             int columnMoved = Math.Abs(end.Column - start.Column);
@@ -228,7 +212,7 @@ namespace ChessBoard
             return rowMoved <= 1 && columnMoved <= 1;
         }
 
-        private bool checkToolsBetweenDiagonlMove(BoardPosition start, BoardPosition end, ChessBoard chessBoard)
+        private  bool checkToolsBetweenDiagonalMove(BoardPosition start, BoardPosition end)
         {
             int startRow = start.Row;
             int startColumn = start.Column;
@@ -249,7 +233,7 @@ namespace ChessBoard
             for (; row != endRow && column != endColumn; row += valueAddToRow, column += valueAddToColumn)
             {
                 BoardPosition position = new BoardPosition(column, row);
-                if (chessBoard.TryGetTool(position, out _))
+                if (m_chessBoard.TryGetTool(position, out _))
                 {
                     return true;
                 }
@@ -258,7 +242,7 @@ namespace ChessBoard
             return false;
         }
 
-        private bool checkToolsBetweenColumns(int column, int rowOne, int rowTwo, ChessBoard chessBoard)
+        private  bool checkToolsBetweenColumns(int column, int rowOne, int rowTwo)
         {
             bool isMovingForward = rowTwo > rowOne;
             if (!isMovingForward)
@@ -271,7 +255,7 @@ namespace ChessBoard
             for(int row = rowOne + 1; row < rowTwo; ++row)
             {
                 BoardPosition position = new BoardPosition(column, row);
-                if (chessBoard.TryGetTool(position, out _))
+                if (m_chessBoard.TryGetTool(position, out _))
                 {
                     return true;
                 }
@@ -279,7 +263,7 @@ namespace ChessBoard
             return false;
         }
 
-        private bool checkToolsBetweenRows(int row, int columnOne, int columnTwo, ChessBoard chessBoard)
+        private  bool checkToolsBetweenRows(int row, int columnOne, int columnTwo)
         {
             bool isMovingForward = columnTwo > columnOne;
             if (!isMovingForward)
@@ -292,7 +276,7 @@ namespace ChessBoard
             for (int column = columnOne + 1; column < columnTwo; ++column)
             {
                 BoardPosition position = new BoardPosition(column, row);
-                if (chessBoard.TryGetTool(position, out _))
+                if (m_chessBoard.TryGetTool(position, out _))
                 {
                     return true;
                 }
@@ -300,17 +284,17 @@ namespace ChessBoard
             return false;
         }
 
-        private static bool isSameTeam(ITool toolToMove, ITool toolAtEnd)
+        private  bool isSameTeam(ITool toolToMove, ITool toolAtEnd)
         {
             return toolAtEnd.Color == toolToMove.Color;
         }
 
-        private BoardPosition ConvertDirection(BoardPosition position, GameDirection moveDirection)
+        private  BoardPosition ConvertDirection(BoardPosition position, GameDirection moveDirection)
         {
             if (moveDirection == GameDirection.South)
             {
-                int column = 7 - position.Column;
-                int row = 7 - position.Row;
+                int column = 9 - position.Column;
+                int row = 9 - position.Row;
                 
                 BoardPosition convertedPosition = new BoardPosition(column, row);
                 
@@ -320,127 +304,7 @@ namespace ChessBoard
             return position;
         }
 
-        public BoardPosition[] GetAvailablePositionToMove(BoardPosition position, ChessBoard chessBoard)
-        {
-            if (chessBoard.TryGetTool(position, out ITool toolToMove))
-            {
-                return m_availableMovesDelegatesDict[toolToMove.GetType()](position, toolToMove, chessBoard);
-            }
-
-            return null;
-        }
-
-        private BoardPosition[] pawnCalculateAvailablePositionsToMove(BoardPosition position, ITool pawn, ChessBoard chessBoard)
-        {
-            GameDirection toolGameDirection = m_colorToDirection[pawn.Color];
-            int           rowIncrement      = toolGameDirection == GameDirection.North ? 1 : -1;
-            int           nextRow           = position.Row + rowIncrement;
-            
-            //TODO: add en passant logic
-            
-            List<BoardPosition> potentialPositions = new List<BoardPosition>()
-                                        {
-                                            new BoardPosition(position.Column,     nextRow),
-                                        };
-
-            bool isFirstMove = position.Row == 1;
-            if (isFirstMove)
-            {
-                potentialPositions.Add(new BoardPosition(position.Column, nextRow + rowIncrement));
-            }
-
-            foreach (BoardPosition boardPosition in potentialPositions)
-            {
-                if (false == ValidatePositionOnBoard(boardPosition) || false == isPositionFreeOrKilling(boardPosition, pawn, chessBoard))
-                {
-                    potentialPositions.Remove(boardPosition);
-                }
-            }
-
-            BoardPosition westDiagonal = new BoardPosition(position.Column - 1, nextRow);
-            if (ValidatePositionOnBoard(westDiagonal) 
-             && chessBoard.TryGetTool(westDiagonal, out ITool westDiagonalTool) 
-             && false == isSameTeam(westDiagonalTool, pawn))
-            {
-                potentialPositions.Add(westDiagonal);
-            }
-
-            BoardPosition eastDiagonal = new BoardPosition(position.Column + 1, nextRow);
-            if (ValidatePositionOnBoard(eastDiagonal)  
-             && chessBoard.TryGetTool(eastDiagonal , out ITool eastDiagonalTool) 
-             && false == isSameTeam(eastDiagonalTool, pawn))
-            {
-                potentialPositions.Add(eastDiagonal);
-            }
-
-            return potentialPositions.ToArray();
-        }
-
-        private BoardPosition[] rookCalculateAvailablePositionsToMove(BoardPosition position, ITool rook, ChessBoard chessBoard)
-        {
-            List<BoardPosition> positions = new List<BoardPosition>();
-
-            int           diff         = 1;
-            BoardPosition tempPosition = position;
-            tempPosition = getNewPosition(tempPosition, 0, diff);
-            
-            while (ValidatePositionOnBoard(tempPosition) && isPositionFreeOrKilling(tempPosition, rook, chessBoard))
-            {
-                positions.Add(tempPosition);
-                ++diff;
-                tempPosition = getNewPosition(tempPosition, 0, diff);
-            }
-
-            diff         = -1;
-            tempPosition = position;
-            tempPosition = getNewPosition(tempPosition, 0, diff);
-            while (ValidatePositionOnBoard(tempPosition) && isPositionFreeOrKilling(tempPosition, rook, chessBoard))
-            {
-                positions.Add(tempPosition);
-                --diff;
-                tempPosition = getNewPosition(tempPosition, 0, diff);
-            }
-            
-            diff         = 1;
-            tempPosition = position;
-            tempPosition = getNewPosition(tempPosition, diff, 0);
-            while (ValidatePositionOnBoard(tempPosition) && isPositionFreeOrKilling(tempPosition, rook, chessBoard))
-            {
-                positions.Add(tempPosition);
-                --diff;
-                tempPosition = getNewPosition(tempPosition, diff, diff);
-            }
-            
-            diff         = -1;
-            tempPosition = position;
-            tempPosition = getNewPosition(tempPosition, diff, 0);
-            while (ValidatePositionOnBoard(tempPosition) && isPositionFreeOrKilling(tempPosition, rook, chessBoard))
-            {
-                positions.Add(tempPosition);
-                --diff;
-                tempPosition = getNewPosition(tempPosition, diff, 0);
-            }
-
-            return positions.ToArray();
-        }
-
-        private BoardPosition getNewPosition(BoardPosition tempPosition, int colDiff, int rowDiff)
-        {
-            return new BoardPosition(tempPosition.Column + colDiff, tempPosition.Row + rowDiff);
-        }
-
-        private bool isPositionFreeOrKilling(BoardPosition positionToMove, ITool tool, ChessBoard chessBoard)
-        {
-            bool  isPositionOccupied = chessBoard.TryGetTool(positionToMove, out ITool toolOnPosition);
-            if (isPositionOccupied && isSameTeam(toolOnPosition, tool))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public bool ValidatePositionOnBoard(BoardPosition position)
+        public static bool ValidatePositionOnBoard(BoardPosition position)
         {
             int upLeftBoundry    = 1;
             int downRightBoundry = 8;

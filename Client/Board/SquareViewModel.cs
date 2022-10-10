@@ -50,7 +50,7 @@ namespace Client.Board
             {
                 m_tool = value;
                 setImageSource(m_tool);
-                }
+            }
         }
         public SquareState State
         {

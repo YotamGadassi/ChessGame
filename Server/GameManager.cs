@@ -78,6 +78,7 @@ namespace ChessGame
 
         private void toolKilledHandler(object sender, KillingEventArgs e)
         {
+            switchCurrentTeam();
             // need to handle:
             //1. king killed - CheckMate
             ITool killedTool = e.KilledTool;

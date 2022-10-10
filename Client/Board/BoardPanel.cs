@@ -26,16 +26,6 @@ namespace Client.Board
         }
         private void registerEvents()
         {
-            m_gameManger.ToolMovedEvent += gameMangerOnToolMovedEvent;
-        }
-
-        private void gameMangerOnToolMovedEvent(object sender, ToolMovedEventArgs e)
-        {
-            ITool movedTool       = e.MovedTool;
-            BoardPosition initialPosition = e.InitialPosition;
-            BoardPosition endPosition     = e.EndPosition;
-            BoardVm.RemoveTool(initialPosition, out _);
-            BoardVm.ForceAddTool(movedTool, endPosition);
         }
 
         private void updateBoardViewModel()

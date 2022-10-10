@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Threading;
+using ChessBoard.ChessBoardEventArgs;
 using ChessGame;
+using Client.Helpers;
 using Common;
 using Color = System.Windows.Media.Color;
 
@@ -10,17 +13,32 @@ namespace Client.Board
     public class BoardViewModel : DependencyObject
     {
         private SquareViewModel                            m_selectedBoardPosition;
-        private SquareViewModel[]                          m_hintedBoardPositions;
+        private HashSet<SquareViewModel>                   m_hintedBoardPositions;
         private GameManager                                m_gameManager;
-        public  Dictionary<BoardPosition, SquareViewModel> SquaresDictionary { get; }
+        private AvailableMovesHelper                       m_availableMovesHelper;
+        private Dispatcher                                 m_viewDispatcher;
+        public  Dictionary<BoardPosition, SquareViewModel> SquaresDictionary => m_squaresDictionary;
+
+        private volatile Dictionary<BoardPosition, SquareViewModel> m_squaresDictionary;
 
         public event EventHandler<EventArgs> ClickCommandEvent;
-
+        
         public BoardViewModel(GameManager gameManager)
         {
-            m_gameManager     = gameManager;
-            SquaresDictionary = new Dictionary<BoardPosition, SquareViewModel>();
+            m_viewDispatcher              =  Dispatcher.CurrentDispatcher;
+            m_hintedBoardPositions = new HashSet<SquareViewModel>();
+            m_gameManager                 =  gameManager;
+            m_gameManager.ToolMovedEvent  += moveHandler;
+            m_gameManager.ToolKilledEvent += moveHandler;
+            m_availableMovesHelper        =  new AvailableMovesHelper(gameManager);
+            m_squaresDictionary             =  new Dictionary<BoardPosition, SquareViewModel>();
             initSquares();
+        }
+
+        private void moveHandler(object sender, ToolMovedEventArgs e)
+        {
+            Action<BoardPosition, BoardPosition> act = new Action<BoardPosition, BoardPosition>(moveTool);
+            m_viewDispatcher.BeginInvoke( act,e.InitialPosition, e.EndPosition);
         }
 
         private void initSquares()
@@ -38,29 +56,31 @@ namespace Client.Board
 
         public void ClickCommandExecute(BoardPosition position, ITool tool)
         {
-            Color currTeamColor             = m_gameManager.CurrentTeamTurn.Color;
+            Color currTeamColor          = m_gameManager.CurrentTeamTurn.Color;
             bool  isPositionToolSameTeam = null != tool && tool.Color.Equals(currTeamColor);
-            bool  isSelectedPosition        = null != m_selectedBoardPosition;
+            bool  isSelectedPosition     = null != m_selectedBoardPosition;
             if (isPositionToolSameTeam)
             {
+                clearSelectedHintedBoardPositions();
                 setSelectedBoardPosition(position);
-                BoardPosition[] positionToMove = getAvailablePositionsToMove(position, tool); 
+                BoardPosition[] positionToMove = getAvailablePositionsToMove(position, tool);
+                setHintedBoardPosition(positionToMove);
                 return;
             }
-            if (false == isSelectedPosition)
+
+            SquareViewModel squareViewModel    = SquaresDictionary[position];
+            bool            isPositionInHinted = m_hintedBoardPositions.Contains(squareViewModel);
+            if (isPositionInHinted)
             {
-
-
-                clearSelectedHintedBoardPositions();
+                m_gameManager.Move(m_selectedBoardPosition.Position, position);
                 return;
             }
             clearSelectedHintedBoardPositions();
-
         }
 
         private BoardPosition[] getAvailablePositionsToMove(BoardPosition position, ITool tool)
         {
-            
+            return m_availableMovesHelper.GetAvailablePositionToMove(position);
         }
 
         public bool ForceAddTool(ITool tool, BoardPosition position)
@@ -111,37 +131,39 @@ namespace Client.Board
 
         private void clearSelectedHintedBoardPositions()
         {
-            if(null == m_selectedBoardPosition)
+            if(null != m_selectedBoardPosition)
             {
-                return;
+                m_selectedBoardPosition.State = SquareState.Regular;
+                m_selectedBoardPosition       = null;
             }
 
-            m_selectedBoardPosition.State = SquareState.Regular;
-            m_selectedBoardPosition       = null;
             if (null != m_hintedBoardPositions)
             {
                 foreach (SquareViewModel hintedBoardPosition in m_hintedBoardPositions)
                 {
                     hintedBoardPosition.State = SquareState.Regular;
                 }
+                m_hintedBoardPositions.Clear();
             }
-
-            m_hintedBoardPositions = null;
         }
 
         private void setHintedBoardPosition(BoardPosition[] positions)
         {
-            SquareViewModel[] hintedPositions = new SquareViewModel[positions.Length];
-            for (int i=0; i<positions.Length; ++i)
+            foreach (var boardPosition in positions)
             {
-                if(SquaresDictionary.TryGetValue(positions[i], out SquareViewModel squareVM))
+                if(SquaresDictionary.TryGetValue(boardPosition, out SquareViewModel squareVM))
                 {
-                    hintedPositions[i] = squareVM;
-                    squareVM.State  = SquareState.Hinted;
+                    squareVM.State = SquareState.Hinted;
+                    m_hintedBoardPositions.Add(squareVM);
                 }
             }
+        }
 
-            m_hintedBoardPositions = hintedPositions;
+        private void moveTool(BoardPosition start, BoardPosition end)
+        {
+            clearSelectedHintedBoardPositions();
+            RemoveTool(start, out ITool toolAtStart);
+            ForceAddTool(toolAtStart, end);
         }
     }
 

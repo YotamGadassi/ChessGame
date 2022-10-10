@@ -199,6 +199,7 @@
     <Compile Include="Board\ClickSquareCommand.cs" />
     <Compile Include="Board\SquareConverter.cs" />
     <Compile Include="Board\SquareViewModel.cs" />
+    <Compile Include="Helpers\AvailableMovesHelper.cs" />
     <Compile Include="Helpers\InputBindingsAttachedProperty.cs" />
     <Compile Include="MainWindow\MainWindowControl.xaml.cs">
       <DependentUpon>MainWindowControl.xaml</DependentUpon>

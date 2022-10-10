@@ -32,7 +32,7 @@ namespace ChessBoard
         /// <param name="tool">The tool to add</param>
         public void Add(BoardPosition position, ITool tool)
         {
-            if (false == m_gameMoveHelper.ValidatePositionOnBoard(position))
+            if (false == GameMoveHelper.ValidatePositionOnBoard(position))
             {
                 throw new ArgumentOutOfRangeException($"The position {position} is out of range!");
             }
@@ -57,7 +57,7 @@ namespace ChessBoard
         /// <returns>true if tool has moved, O.W. false</returns>
         public bool Move(BoardPosition start, BoardPosition end)
         {
-            if (false == (m_gameMoveHelper.ValidatePositionOnBoard(start) && m_gameMoveHelper.ValidatePositionOnBoard(end)))
+            if (false == (GameMoveHelper.ValidatePositionOnBoard(start) && GameMoveHelper.ValidatePositionOnBoard(end)))
             {
                 throw new
                     ArgumentOutOfRangeException($"The start or end position are not valid: Start:{start}, End:{end}");
