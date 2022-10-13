@@ -2,6 +2,7 @@
 using System.Reflection;
 using ChessBoard.ChessBoardEventArgs;
 using Common;
+using Common.ChessBoardEventArgs;
 using log4net;
 
 namespace ChessBoard

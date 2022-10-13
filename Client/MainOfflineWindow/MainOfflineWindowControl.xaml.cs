@@ -1,11 +1,11 @@
-﻿namespace Client.MainWindow
+﻿namespace Client.MainOfflineWindow
 {
     /// <summary>
     /// Interaction logic for MainWindowControl.xaml
     /// </summary>
-    public partial class MainWindowControl
+    public partial class MainOfflineWindowControl
     {
-        public MainWindowControl()
+        public MainOfflineWindowControl()
         {
             InitializeComponent();
         }

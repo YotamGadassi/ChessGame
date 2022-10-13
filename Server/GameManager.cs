@@ -1,38 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Media;
-using ChessBoard;
 using ChessBoard.ChessBoardEventArgs;
 using Common;
-using Tools;
+using Common.ChessBoardEventArgs;
 
 namespace ChessGame
 {
-    public class GameManager
+    public abstract class BaseGameManager
     {
-        private ChessBoard.ChessBoard          m_gameBoard;
+        public delegate ITool PromotionEventHandler (object sender, PromotionEventArgs e);
+        
+        protected ChessBoard.ChessBoard m_gameBoard;
 
         // public event EventHandler<ChessBoardEventArgs> CheckEvent;
-        public event EventHandler<EventArgs>          CheckmateEvent;
-        public event EventHandler<EventArgs>          EndGameEvent;
-        public event EventHandler<EventArgs>          StartGameEvent;
+        public event EventHandler<EventArgs> CheckmateEvent;
+        public event EventHandler<EventArgs> EndGameEvent;
+        public event EventHandler<EventArgs> StartGameEvent;
         public event EventHandler<ToolMovedEventArgs> ToolMovedEvent;
-        public event EventHandler<KillingEventArgs>   ToolKilledEvent;
+        public event EventHandler<KillingEventArgs> ToolKilledEvent;
+        public event PromotionEventHandler PromotionEvent;
 
-        public event Func<object, ToolMovedEventArgs, ITool> PromotionEvent; 
-        private                 Team[]                       m_teams;
-        private                 int                          m_currentTeamIndex;
-        private static readonly int                          s_teamsAmount = 2;
-        public                  Team                         CurrentTeamTurn => m_teams[m_currentTeamIndex];
+        protected Team[] m_teams;
+        protected                 int    m_currentTeamIndex;
+        protected static readonly int    s_teamsAmount = 2;
+        public                    Team   CurrentTeamTurn => m_teams[m_currentTeamIndex];
 
-
-        public GameManager()
+        protected BaseGameManager()
         {
             m_gameBoard                =  new ChessBoard.ChessBoard();
             m_gameBoard.ToolMovedEvent += toolMovedHandler;
             m_gameBoard.KillingEvent   += toolKilledHandler;
-
         }
         
         public bool Move(BoardPosition start, BoardPosition end)
@@ -71,58 +69,14 @@ namespace ChessGame
             return m_gameBoard.TryGetTool(position, out tool);
         }
         
-        private void switchCurrentTeam()
+        protected void switchCurrentTeam()
         {
             m_currentTeamIndex = (m_currentTeamIndex + 1) % s_teamsAmount;
         }
 
-        private void toolKilledHandler(object sender, KillingEventArgs e)
-        {
-            switchCurrentTeam();
-            // need to handle:
-            //1. king killed - CheckMate
-            ITool killedTool = e.KilledTool;
-            if (killedTool is King)
-            {
-                CheckmateEvent?.Invoke(this, e);
-                return;
-            }
-            //2. promotion
-            ITool movedTool = e.MovedTool;
-            if (movedTool is Pawn)
-            {
-                if ((movedTool.Color == Colors.White && e.EndPosition.Row == 7)
-                 || (movedTool.Color == Colors.Black && e.EndPosition.Row == 0))
-                {
-                    ITool chosenToolAfterPromotion = PromotionEvent?.Invoke(this, e);
-                    //TODO: handle the swap
-                    return;
-                }
-            }
+        protected abstract void toolKilledHandler(object sender, KillingEventArgs e);
 
-            ToolKilledEvent?.Invoke(this, e);
-        }
-
-        private void toolMovedHandler(object sender, ToolMovedEventArgs e)
-        {
-            switchCurrentTeam();
-            // need to handle:
-            // handle promotion
-            ITool movedTool = e.MovedTool;
-            if (movedTool is Pawn)
-            {
-                if ((movedTool.Color == Colors.White && e.EndPosition.Row == 7)
-                    || (movedTool.Color == Colors.Black && e.EndPosition.Row == 0))
-                {
-                    ITool chosenToolAfterPromotion = PromotionEvent?.Invoke(this, e);
-                    //TODO: handle the swap
-                    return;
-                }
-            }
-
-            //TODO: handle check for check
-            ToolMovedEvent?.Invoke(this, e);
-        }
+        protected abstract void toolMovedHandler(object sender, ToolMovedEventArgs e);
 
         private KeyValuePair<BoardPosition, ITool>[] getInitialBoardArrangement(Team team)
         {
@@ -155,6 +109,27 @@ namespace ChessGame
             return toolsList;
         }
 
+        protected virtual void OnToolMovedEvent(ToolMovedEventArgs e)
+        {
+            ToolMovedEvent?.Invoke(this, e);
+        }
+
+        protected virtual void OnToolKilledEvent(KillingEventArgs e)
+        {
+            ToolKilledEvent?.Invoke(this, e);
+        }
+
+        protected virtual void OnCheckmateEvent()
+        {
+            CheckmateEvent?.Invoke(this, EventArgs.Empty);
+        }
+        
+        protected virtual void OnPromotionEvent(PromotionEventArgs e)
+        {
+            ITool newTool = PromotionEvent?.Invoke(this, e);
+            m_gameBoard.Remove(e.ToolPosition);
+            m_gameBoard.Add(e.ToolPosition, newTool);
+        }
     }
 
 }

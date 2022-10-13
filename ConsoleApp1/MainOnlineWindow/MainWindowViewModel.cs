@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace Client.MainWindow
+namespace OnlineFramework.MainOnlineWindow
 {
     public class MainWindowViewModel : DependencyObject
     {

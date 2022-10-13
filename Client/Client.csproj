@@ -188,23 +188,26 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Board\BoardClickEventArgs.cs" />
     <Compile Include="Board\BoardControl.xaml.cs">
       <DependentUpon>BoardControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Board\BoardPanel.cs" />
+    <Compile Include="Board\BaseBoardPanel.cs" />
     <Compile Include="Board\BoardSquare.xaml.cs">
       <DependentUpon>BoardSquare.xaml</DependentUpon>
     </Compile>
     <Compile Include="Board\BoardViewModel.cs" />
     <Compile Include="Board\ClickSquareCommand.cs" />
+    <Compile Include="Board\OfflineBoardPanel.cs" />
+    <Compile Include="Board\OnlineBoardPanel.cs" />
     <Compile Include="Board\SquareConverter.cs" />
     <Compile Include="Board\SquareViewModel.cs" />
     <Compile Include="Helpers\AvailableMovesHelper.cs" />
     <Compile Include="Helpers\InputBindingsAttachedProperty.cs" />
-    <Compile Include="MainWindow\MainWindowControl.xaml.cs">
-      <DependentUpon>MainWindowControl.xaml</DependentUpon>
+    <Compile Include="MainOfflineWindow\MainOfflineWindowControl.xaml.cs">
+      <DependentUpon>MainOfflineWindowControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainWindow\MainWindowViewModel.cs" />
+    <Compile Include="MainOfflineWindow\MainOfflineWindowViewModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Helpers\ToolsImageHelper.cs" />
     <Compile Include="Command\WpfCommand.cs" />
@@ -216,9 +219,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow\MainWindowControl.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="MainOfflineWindow\MainOfflineWindowControl.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>

@@ -1,24 +1,22 @@
-﻿using System;
-using System.Windows.Media;
-using ChessGame;
+﻿using ChessGame;
 using Client.Board;
-using Client.MainOfflineWindow;
+using Client.MainWindow;
 using Common;
 
-namespace Client
+namespace OnlineFramework
 {
-    public class Program
+    internal class Program
     {
         [STAThread]
-        public static void Main(string[] args)
+        static void Main(string[] args)
         {
-            MainOfflineWindowControl mainWindow    = new MainOfflineWindowControl();
-            MainOfflineWindowViewModel mainWindowsVm = new MainOfflineWindowViewModel();
+            MainWindowControl   mainWindow    = new MainWindowControl();
+            MainWindowViewModel mainWindowsVm = new MainWindowViewModel();
 
             BaseGameManager gameManager = new OfflineGameManager();
             gameManager.StartGame(new Team("A", Colors.White, GameDirection.North), new Team("B", Colors.Black, GameDirection.South));
-            
-            BaseBoardPanel  panel       = new OfflineBoardPanel(gameManager);
+
+            BaseBoardPanel panel = new OfflineBoardPanel(gameManager);
             panel.Init();
             mainWindowsVm.CurrentView = panel.Control;
             mainWindow.DataContext    = mainWindowsVm;

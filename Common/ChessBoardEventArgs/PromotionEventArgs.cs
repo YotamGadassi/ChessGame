@@ -1,17 +1,16 @@
 ﻿using System;
-using Common;
 
-namespace ChessBoard.ChessBoardEventArgs
+namespace Common.ChessBoardEventArgs
 {
     public class PromotionEventArgs : EventArgs
     {
-        public ITool PromotedTool { get; }
-        public BoardPosition ToolPosition { get; }
+        public ITool         ToolToPromote { get; }
+        public BoardPosition ToolPosition        { get; }
 
-        public PromotionEventArgs(ITool promotedTool, BoardPosition toolPosition)
+        public PromotionEventArgs(ITool toolBeforePromotion, BoardPosition toolPosition)
         {
-            PromotedTool = promotedTool;
-            ToolPosition = toolPosition;
+            ToolToPromote = toolBeforePromotion;
+            ToolPosition        = toolPosition;
         }
     }
 }

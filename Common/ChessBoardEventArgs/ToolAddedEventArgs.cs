@@ -1,7 +1,6 @@
 ﻿using System;
-using Common;
 
-namespace ChessBoard.ChessBoardEventArgs
+namespace Common.ChessBoardEventArgs
 {
     public class ToolAddedEventArgs : EventArgs
     {
