@@ -1,0 +1,5 @@
+C:\Users\Yotam\Source\Repos\YotamGadassi\ChessGame\OnlineFramework_6\obj\Debug\net6.0\OnlineFramework_6.csproj.AssemblyReference.cache
+C:\Users\Yotam\Source\Repos\YotamGadassi\ChessGame\OnlineFramework_6\obj\Debug\net6.0\OnlineFramework_6.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Yotam\Source\Repos\YotamGadassi\ChessGame\OnlineFramework_6\obj\Debug\net6.0\OnlineFramework_6.AssemblyInfoInputs.cache
+C:\Users\Yotam\Source\Repos\YotamGadassi\ChessGame\OnlineFramework_6\obj\Debug\net6.0\OnlineFramework_6.AssemblyInfo.cs
+C:\Users\Yotam\Source\Repos\YotamGadassi\ChessGame\OnlineFramework_6\obj\Debug\net6.0\OnlineFramework_6.csproj.CoreCompileInputs.cache

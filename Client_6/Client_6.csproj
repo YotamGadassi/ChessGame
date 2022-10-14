@@ -1,0 +1,89 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\b_bishop.png" />
+    <None Remove="Resources\b_king.png" />
+    <None Remove="Resources\b_knight.png" />
+    <None Remove="Resources\b_pawn.png" />
+    <None Remove="Resources\b_queen.png" />
+    <None Remove="Resources\b_rook.png" />
+    <None Remove="Resources\square_brown_dark.png" />
+    <None Remove="Resources\square_brown_light.png" />
+    <None Remove="Resources\w_bishop.png" />
+    <None Remove="Resources\w_king.png" />
+    <None Remove="Resources\w_knight.png" />
+    <None Remove="Resources\w_pawn.png" />
+    <None Remove="Resources\w_queen.png" />
+    <None Remove="Resources\w_rook.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ChessGame_6\ChessGame_6.csproj" />
+    <ProjectReference Include="..\Common_6\Common_6.csproj" />
+    <ProjectReference Include="..\WpfLibrary1\Common_6.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\b_bishop.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\b_king.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\b_knight.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\b_pawn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\b_queen.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\b_rook.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\square_brown_dark.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\square_brown_light.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\w_bishop.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\w_king.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\w_knight.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\w_pawn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\w_queen.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\w_rook.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Board\BoardControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Board\BoardSquare.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="MainOfflineWindow\MainOfflineWindowControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
+</Project>

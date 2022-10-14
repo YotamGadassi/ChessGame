@@ -7,8 +7,4 @@
     <RootNamespace>ChessServer3._0</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj" />
-  </ItemGroup>
-
 </Project>
