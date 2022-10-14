@@ -53,7 +53,7 @@ namespace Client.MainOfflineWindow {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/Client_6;component/mainofflinewindow/mainofflinewindowcontrol.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/Client;component/mainofflinewindow/mainofflinewindowcontrol.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\MainOfflineWindow\MainOfflineWindowControl.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

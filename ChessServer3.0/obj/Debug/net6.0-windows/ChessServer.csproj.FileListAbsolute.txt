@@ -1,0 +1,6 @@
+C:\Users\Yotam\source\repos\YotamGadassi\ChessGame\ChessServer3.0\obj\Debug\net6.0-windows\ChessServer.csproj.AssemblyReference.cache
+C:\Users\Yotam\source\repos\YotamGadassi\ChessGame\ChessServer3.0\obj\Debug\net6.0-windows\ChessServer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Yotam\source\repos\YotamGadassi\ChessGame\ChessServer3.0\obj\Debug\net6.0-windows\ChessServer.AssemblyInfoInputs.cache
+C:\Users\Yotam\source\repos\YotamGadassi\ChessGame\ChessServer3.0\obj\Debug\net6.0-windows\ChessServer.AssemblyInfo.cs
+C:\Users\Yotam\source\repos\YotamGadassi\ChessGame\ChessServer3.0\obj\Debug\net6.0-windows\ChessServer.csproj.CoreCompileInputs.cache
+C:\Users\Yotam\source\repos\YotamGadassi\ChessGame\ChessServer3.0\obj\Debug\net6.0-windows\ChessServer.MvcApplicationPartsAssemblyInfo.cache

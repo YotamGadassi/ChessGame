@@ -12,13 +12,13 @@ using MainWindowControl = OnlineFramework.MainOnlineWindow.MainWindowControl;
 
 namespace OnlineFramework
 {
-    internal class Program
+    public class OnlineFramework
     {
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private static          HubConnection   s_connection;
-        private static          BaseGameManager s_gameManager;
-        private static          Team            s_localMachineTeam;
+        private                 HubConnection   s_connection;
+        private                 BaseGameManager s_gameManager;
+        private                 Team            s_localMachineTeam;
         private static readonly string          s_hubAddress = @"https://localhost:7034/ChessHub";
         
         [STAThread]
@@ -45,7 +45,16 @@ namespace OnlineFramework
             mainWindow.ShowDialog();
         }
 
-        private static async void GameManagerOnToolMovedEvent(object sender, ToolMovedEventArgs e)
+        public void Init()
+        {
+
+        }
+
+        public void RequestGameFromServer()
+        {
+
+        }
+        private async void GameManagerOnToolMovedEvent(object sender, ToolMovedEventArgs e)
         {
             bool isMovedFromServer = e.MovedTool.Color != s_localMachineTeam.Color;
             if (isMovedFromServer)
@@ -55,10 +64,7 @@ namespace OnlineFramework
 
             try
             {
-                int[] start = new[] { e.InitialPosition.Row, e.InitialPosition.Column };
-                int[] end = new[] { e.EndPosition.Row, e.EndPosition.Column };
-
-                await s_connection.InvokeAsync("Move", start, end);
+                await s_connection.InvokeAsync("Move", e.InitialPosition, e.EndPosition);
             }
             catch (Exception exception)
             {
@@ -66,7 +72,7 @@ namespace OnlineFramework
             }    
         }
 
-        private static Team resolveTeam(MessageBoxResult result)
+        private Team resolveTeam(MessageBoxResult result)
         {
             if (result == MessageBoxResult.OK)
             {
@@ -78,7 +84,7 @@ namespace OnlineFramework
             }
         }
 
-        private static void connectToHub()
+        private void connectToHub()
         {
             s_connection.Closed += (error) => new Task(() =>  Console.WriteLine($"connection closed: {error}"));
             registerClientMethods();
@@ -93,14 +99,18 @@ namespace OnlineFramework
             }
         }
 
-        private static void registerClientMethods()
+        private void registerClientMethods()
         {
-            s_connection.On<int[], int[]>("Move", (start, end) =>
-            {
-                Console.WriteLine($"A move request received from server: [start:{start}], [end:{end}]");
-                Task task = Task.Run(() => s_gameManager.Move(new BoardPosition(start[1], start[0]), new BoardPosition( end[1],end[0])));
-                return task;
-            });
+            s_connection.On<BoardPosition, BoardPosition>("Move", (start, end) =>
+                                                                  {
+                                                                      Console.WriteLine($"A move request received from server: [start:{start}], [end:{end}]");
+                                                                      Task task = Task.Run(() => s_gameManager.Move(start,end));
+                                                                      return task;
+                                                                  });
+            // should add methods for StartGame and PlayerQuit
+            s_connection.On("StartGame", ()=> )
         }
+
+
     }
 }

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Kcp6ItxWiT2cwsY2FqqMCDX/PMotGM4mbAQXmXAAHWrDUFtAbLZ/N//VJfgg48hLViRq+PFCRNKHvTB6+FeKpw==",
+  "dgSpecHash": "uH4iGCz09KP/0QBafr94AcmzeaZf8CQy6BGIz/EqGlIyJvT3wSdd1Fq4cyMJlpG173stkst3zVsCXA6TBCgF7g==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Client_6\\Client_6.csproj",
+  "projectFilePath": "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\Client_6\\Client.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Yotam\\.nuget\\packages\\log4net\\2.0.15\\log4net.2.0.15.nupkg.sha512",
     "C:\\Users\\Yotam\\.nuget\\packages\\microsoft.netcore.platforms\\2.0.0\\microsoft.netcore.platforms.2.0.0.nupkg.sha512",

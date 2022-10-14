@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "ymZ/bpSZRyOw7jY8ABNXrV+AzhubHQCjC2swdZ1xq+Fx8hrEbgHDCMxPZWrIQON+pDVH/qywPsEd0Agx71KY3w==",
+  "dgSpecHash": "ey/NJ4SI6JjLvLkYzhNE82XfTmY/6XxRlyem67wiJe03aR1CwkBSfdbJCryqKMKpwtOcVEmYgYk5+1QT65+1bA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Common_6\\Common_6.csproj",
+  "projectFilePath": "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

@@ -52,7 +52,7 @@ namespace Client.Board {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/Client_6;component/board/boardsquare.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/Client;component/board/boardsquare.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\Board\BoardSquare.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

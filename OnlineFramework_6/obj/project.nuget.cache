@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "bAoMMCIH10znpMBkoCmCHfN4iIghjq9tuf6qNctXa69pCvlRGFzKMmvKtxWCKOs5KX1tZDMleYmk11j3acTH2A==",
+  "dgSpecHash": "aYhPWVzG04Cu20bYcJBhhmahH7kGYYukzdek89xNlJsn0paas4iQuLrQhHqBpWtHLtTbdkBwmj0T944hFyZ/BA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\OnlineFramework_6\\OnlineFramework_6.csproj",
+  "projectFilePath": "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\OnlineFramework_6\\OnlineFramework.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Yotam\\.nuget\\packages\\log4net\\2.0.15\\log4net.2.0.15.nupkg.sha512",
     "C:\\Users\\Yotam\\.nuget\\packages\\microsoft.aspnetcore.connections.abstractions\\6.0.10\\microsoft.aspnetcore.connections.abstractions.6.0.10.nupkg.sha512",

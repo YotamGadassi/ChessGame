@@ -52,7 +52,7 @@ namespace OnlineFramework.MainOnlineWindow {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/OnlineFramework_6;component/mainonlinewindow/mainwindowcontrol.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/OnlineFramework;component/mainonlinewindow/mainwindowcontrol.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\MainOnlineWindow\MainWindowControl.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

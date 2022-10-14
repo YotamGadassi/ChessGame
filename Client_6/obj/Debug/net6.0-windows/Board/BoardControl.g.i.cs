@@ -54,7 +54,7 @@ namespace Client.Board {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/Client_6;component/board/boardcontrol.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/Client;component/board/boardcontrol.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\Board\BoardControl.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

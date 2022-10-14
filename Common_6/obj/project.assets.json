@@ -13,9 +13,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\Common_6\\Common_6.csproj",
-      "projectName": "Common_6",
-      "projectPath": "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\Common_6\\Common_6.csproj",
+      "projectUniqueName": "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj",
+      "projectName": "Common",
+      "projectPath": "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj",
       "packagesPath": "C:\\Users\\Yotam\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\Common_6\\obj\\",
       "projectStyle": "PackageReference",
