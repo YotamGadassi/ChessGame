@@ -16,6 +16,7 @@ namespace ChessGame
         public event EventHandler<ToolMovedEventArgs> ToolMovedEvent;
         public event EventHandler<KillingEventArgs> ToolKilledEvent;
         public event PromotionEventHandler PromotionEvent;
+        public event EventHandler<Team> TeamSwitchEvent;
 
         protected Team[] m_teams;
         protected                 int    m_currentTeamIndex;
@@ -68,6 +69,7 @@ namespace ChessGame
         protected void switchCurrentTeam()
         {
             m_currentTeamIndex = (m_currentTeamIndex + 1) % s_teamsAmount;
+            TeamSwitchEvent?.Invoke(this, m_teams[m_currentTeamIndex]);
         }
 
         protected abstract void toolKilledHandler(object sender, KillingEventArgs e);

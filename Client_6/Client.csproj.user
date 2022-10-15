@@ -2,10 +2,18 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
+    <Compile Update="Game\GameControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Board\BoardControl.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Board\BoardSquare.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Game\GameControl.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="MainOfflineWindow\MainOfflineWindowControl.xaml">

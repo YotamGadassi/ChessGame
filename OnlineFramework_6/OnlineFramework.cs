@@ -102,6 +102,7 @@ namespace OnlineFramework
             m_connection.On<BoardPosition, BoardPosition>("Move", (start, end) =>
                                                                   {
                                                                       Console.WriteLine($"A move request received from server: [start:{start}], [end:{end}]");
+                                                                      // TODO: fix thread safe issue!
                                                                       Task task = Task.Run(() => m_gameManager.Move(start,end));
                                                                       return task;
                                                                   });
