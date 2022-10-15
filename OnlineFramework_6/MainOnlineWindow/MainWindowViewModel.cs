@@ -1,16 +1,36 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows;
 
 namespace OnlineFramework.MainOnlineWindow
 {
-    public class MainWindowViewModel : DependencyObject
+    public class MainWindowViewModel : INotifyPropertyChanged
     {
-        public static readonly DependencyProperty CurrentViewProperty = DependencyProperty.Register("CurrentView", typeof(UIElement), typeof(MainWindowViewModel));
+        private DependencyObject m_currentViewModel;
 
-        public UIElement CurrentView
+        public DependencyObject CurrentViewModel
         {
-            get => (UIElement)GetValue(CurrentViewProperty);
-            set => SetValue(CurrentViewProperty, value);
+            get => m_currentViewModel;
+            set
+            {
+                m_currentViewModel = value;
+                OnPropertyChanged();
+            }
         }
 
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+        {
+            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+            field = value;
+            OnPropertyChanged(propertyName);
+            return true;
+        }
     }
 }

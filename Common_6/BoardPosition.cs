@@ -22,6 +22,11 @@ namespace Common_6
         {
             return Equals(Empty);
         }
+
+        public override string ToString()
+        {
+            return $"[Column:{Column}], [Row:{Row}]";
+        }
     }
 
     public class BoardPositionJsonConverter : JsonConverter<BoardPosition>

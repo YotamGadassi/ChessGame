@@ -1,10 +1,10 @@
 ﻿OnlineFramework
 1.0.0.0
 
-exe
+library
 C#
 .cs
-C:\Users\Yotam\source\repos\YotamGadassi\ChessGame\OnlineFramework_6\obj\Debug\net6.0-windows\
+C:\Users\Yotam\Source\Repos\YotamGadassi\ChessGame\OnlineFramework_6\obj\Debug\net6.0-windows\
 OnlineFramework
 none
 false
@@ -12,8 +12,8 @@ TRACE;DEBUG;NET;NET6_0;NETCOREAPP
 
 1-945130705
 
-6-1246107170
-215366783637
+6-1504532066
+215-860898506
 MainOnlineWindow\MainWindowControl.xaml;
 
 False

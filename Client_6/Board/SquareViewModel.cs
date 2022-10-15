@@ -84,11 +84,11 @@ namespace Client.Board
             int sumColAndRow = position.Row + position.Column;
             if (sumColAndRow % 2 == 1)
             {
-                imageUri = new Uri("pack://application:,,,/Client_6;component/Resources/square_brown_dark.png");
+                imageUri = new Uri("pack://application:,,,/Client;component/Resources/square_brown_dark.png");
             }
             else
             {
-                imageUri = new Uri("pack://application:,,,/Client_6;component/Resources/square_brown_light.png");
+                imageUri = new Uri("pack://application:,,,/Client;component/Resources/square_brown_light.png");
             }
             
             BackgroundImageSource = new BitmapImage(imageUri);

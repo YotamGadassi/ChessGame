@@ -1,8 +1,8 @@
 {
   "Version": 1,
-  "Hash": "54bb6eYnc7CTus25Zj3Bsw14h/+aBnRBDx7sc2H3Mks=",
-  "Source": "ChessServer3.0",
-  "BasePath": "_content/ChessServer3.0",
+  "Hash": "3EGxtIkhDeErGwOdDNjkpGKiMukVnwGE2BqeKakz8E0=",
+  "Source": "ChessServer",
+  "BasePath": "_content/ChessServer",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],

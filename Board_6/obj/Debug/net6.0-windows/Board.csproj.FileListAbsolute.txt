@@ -1,0 +1,15 @@
+C:\Users\Yotam\Source\Repos\YotamGadassi\ChessGame\Board_6\bin\Debug\net6.0-windows\Board.deps.json
+C:\Users\Yotam\Source\Repos\YotamGadassi\ChessGame\Board_6\bin\Debug\net6.0-windows\Board.dll
+C:\Users\Yotam\Source\Repos\YotamGadassi\ChessGame\Board_6\bin\Debug\net6.0-windows\Board.pdb
+C:\Users\Yotam\Source\Repos\YotamGadassi\ChessGame\Board_6\bin\Debug\net6.0-windows\Common.dll
+C:\Users\Yotam\Source\Repos\YotamGadassi\ChessGame\Board_6\bin\Debug\net6.0-windows\Common.pdb
+C:\Users\Yotam\Source\Repos\YotamGadassi\ChessGame\Board_6\obj\Debug\net6.0-windows\Board.csproj.AssemblyReference.cache
+C:\Users\Yotam\Source\Repos\YotamGadassi\ChessGame\Board_6\obj\Debug\net6.0-windows\Board.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Yotam\Source\Repos\YotamGadassi\ChessGame\Board_6\obj\Debug\net6.0-windows\Board.AssemblyInfoInputs.cache
+C:\Users\Yotam\Source\Repos\YotamGadassi\ChessGame\Board_6\obj\Debug\net6.0-windows\Board.AssemblyInfo.cs
+C:\Users\Yotam\Source\Repos\YotamGadassi\ChessGame\Board_6\obj\Debug\net6.0-windows\Board.csproj.CoreCompileInputs.cache
+C:\Users\Yotam\Source\Repos\YotamGadassi\ChessGame\Board_6\obj\Debug\net6.0-windows\Board.csproj.CopyComplete
+C:\Users\Yotam\Source\Repos\YotamGadassi\ChessGame\Board_6\obj\Debug\net6.0-windows\Board.dll
+C:\Users\Yotam\Source\Repos\YotamGadassi\ChessGame\Board_6\obj\Debug\net6.0-windows\refint\Board.dll
+C:\Users\Yotam\Source\Repos\YotamGadassi\ChessGame\Board_6\obj\Debug\net6.0-windows\Board.pdb
+C:\Users\Yotam\Source\Repos\YotamGadassi\ChessGame\Board_6\obj\Debug\net6.0-windows\ref\Board.dll

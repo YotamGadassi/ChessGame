@@ -33,7 +33,7 @@ namespace Client.Helpers
             }
         }
 
-        private const string s_resourcesSuffix = @"pack://application:,,,/Client_6;component/Resources/";
+        private const string s_resourcesSuffix = @"pack://application:,,,/Client;component/Resources/";
         private static readonly Dictionary<TypeColorPair, BitmapImage> m_ToolToImageSource =
             new Dictionary<TypeColorPair, BitmapImage>();
 

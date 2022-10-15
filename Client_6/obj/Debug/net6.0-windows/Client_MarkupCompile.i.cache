@@ -4,7 +4,7 @@
 library
 C#
 .cs
-C:\Users\Yotam\source\repos\YotamGadassi\ChessGame\Client_6\obj\Debug\net6.0-windows\
+C:\Users\Yotam\Source\Repos\YotamGadassi\ChessGame\Client_6\obj\Debug\net6.0-windows\
 Client
 none
 false
@@ -13,8 +13,8 @@ TRACE;DEBUG;NET;NET6_0;NETCOREAPP
 3-510684811
 
 19-368197970
-199-1694115101
+199-538565442
 Board\BoardControl.xaml;Board\BoardSquare.xaml;MainOfflineWindow\MainOfflineWindowControl.xaml;
 
-False
+True
 

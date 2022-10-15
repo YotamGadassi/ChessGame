@@ -35,9 +35,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\ChessServer3.0\\ChessServer.csproj",
+      "projectUniqueName": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\ChessServer3.0\\ChessServer.csproj",
       "projectName": "ChessServer",
-      "projectPath": "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\ChessServer3.0\\ChessServer.csproj",
+      "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\ChessServer3.0\\ChessServer.csproj",
       "packagesPath": "C:\\Users\\Yotam\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\ChessServer3.0\\obj\\",
       "projectStyle": "PackageReference",
@@ -56,8 +56,8 @@
         "net6.0-windows7.0": {
           "targetAlias": "net6.0-windows",
           "projectReferences": {
-            "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj": {
-              "projectPath": "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj"
+            "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj": {
+              "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj"
             }
           }
         }

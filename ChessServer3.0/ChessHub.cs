@@ -15,6 +15,8 @@ namespace ChessServer3._0
             await Clients.Others.SendAsync("Move", start, end);
         }
 
+
+
         public override async Task OnConnectedAsync()
         {
             Debug.WriteLine("Connected established");

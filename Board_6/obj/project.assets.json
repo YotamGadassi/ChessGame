@@ -382,9 +382,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\Board_6\\Board.csproj",
+      "projectUniqueName": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Board_6\\Board.csproj",
       "projectName": "Board",
-      "projectPath": "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\Board_6\\Board.csproj",
+      "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Board_6\\Board.csproj",
       "packagesPath": "C:\\Users\\Yotam\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\Board_6\\obj\\",
       "projectStyle": "PackageReference",
@@ -403,11 +403,11 @@
         "net6.0-windows7.0": {
           "targetAlias": "net6.0-windows",
           "projectReferences": {
-            "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj": {
-              "projectPath": "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj"
+            "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj": {
+              "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj"
             },
-            "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\WpfLibrary1\\Common_6.csproj": {
-              "projectPath": "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\WpfLibrary1\\Common_6.csproj"
+            "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\WpfLibrary1\\Common_6.csproj": {
+              "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\WpfLibrary1\\Common_6.csproj"
             }
           }
         }
