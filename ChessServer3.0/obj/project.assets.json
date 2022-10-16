@@ -14,6 +14,16 @@
         "frameworkReferences": [
           "Microsoft.WindowsDesktop.App.WPF"
         ]
+      },
+      "Global/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "compile": {
+          "bin/placeholder/Global.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Global.dll": {}
+        }
       }
     }
   },
@@ -22,11 +32,17 @@
       "type": "project",
       "path": "../Common_6/Common.csproj",
       "msbuildProject": "../Common_6/Common.csproj"
+    },
+    "Global/1.0.0": {
+      "type": "project",
+      "path": "../Global/Global.csproj",
+      "msbuildProject": "../Global/Global.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net6.0-windows7.0": [
-      "Common >= 1.0.0"
+      "Common >= 1.0.0",
+      "Global >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -62,6 +78,9 @@
           "projectReferences": {
             "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Common_6\\Common.csproj": {
               "projectPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Common_6\\Common.csproj"
+            },
+            "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Global\\Global.csproj": {
+              "projectPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Global\\Global.csproj"
             }
           }
         }

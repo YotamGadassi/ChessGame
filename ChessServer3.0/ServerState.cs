@@ -1,12 +1,13 @@
 ﻿using System.Collections.Concurrent;
 using System.Windows.Media;
+using Global.DataStructures;
 using Microsoft.AspNetCore.SignalR;
 
 namespace ChessServer3._0
 {
     public class ServerState
     {
-        private readonly ConcurrentQueue<string>                    m_pendingPlayers      = new();
+        private readonly UniqueQueue<string>                        m_pendingPlayers      = new();
         private          int                                        m_currentGameNumber   = 0;
         private readonly ConcurrentDictionary<string, List<string>> m_groupsToConnections = new();
         private readonly ConcurrentDictionary<string, string>       m_connectionsToGroup  = new();
@@ -19,7 +20,7 @@ namespace ChessServer3._0
                 await startGame(connectionId, connectionIdFromQueue, hub.Clients);
                 return;
             }
-            m_pendingPlayers.Enqueue(connectionId);
+            m_pendingPlayers.TryEnqueue(connectionId);
         }
 
         private async Task startGame(string connectionId, string connectionIdFromQueue, IHubCallerClients clients)
@@ -55,7 +56,7 @@ namespace ChessServer3._0
             m_connectionsToGroup.TryRemove(connectionId, out string groupName);
             m_groupsToConnections.TryRemove(groupName, out List<string>? conncetions);
             await hub.Clients.OthersInGroup(groupName).SendCoreAsync("PlayerQuit",null);
-            foreach (var connection in conncetions)
+            foreach (string connection in conncetions)
             {
                 await hub.Groups.RemoveFromGroupAsync(connection, groupName);
                 m_connectionsToGroup.TryRemove(connection , out _);
@@ -64,7 +65,7 @@ namespace ChessServer3._0
 
         private bool tryRemoveFromQueue(string connectionId)
         {
-            return false;
+            return m_pendingPlayers.TryRemove(connectionId);
         }
     }
 }

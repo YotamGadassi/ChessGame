@@ -1,6 +1,4 @@
 ﻿using System;
-using Common.MainWindow;
-using Frameworks;
 
 namespace Host
 {

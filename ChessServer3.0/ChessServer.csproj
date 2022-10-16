@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common_6\Common.csproj" />
+    <ProjectReference Include="..\Global\Global.csproj" />
   </ItemGroup>
 
 </Project>

@@ -46,3 +46,8 @@ C:\Users\yotamg\source\repos\ChessGame\ChessServer3.0\obj\Debug\net6.0-windows\r
 C:\Users\yotamg\source\repos\ChessGame\ChessServer3.0\obj\Debug\net6.0-windows\ChessServer.pdb
 C:\Users\yotamg\source\repos\ChessGame\ChessServer3.0\obj\Debug\net6.0-windows\ChessServer.genruntimeconfig.cache
 C:\Users\yotamg\source\repos\ChessGame\ChessServer3.0\obj\Debug\net6.0-windows\ref\ChessServer.dll
+C:\Users\yotamg\source\repos\ChessGame\ChessServer3.0\bin\Debug\net6.0-windows\Global.deps.json
+C:\Users\yotamg\source\repos\ChessGame\ChessServer3.0\bin\Debug\net6.0-windows\Global.runtimeconfig.json
+C:\Users\yotamg\source\repos\ChessGame\ChessServer3.0\bin\Debug\net6.0-windows\Global.exe
+C:\Users\yotamg\source\repos\ChessGame\ChessServer3.0\bin\Debug\net6.0-windows\Global.dll
+C:\Users\yotamg\source\repos\ChessGame\ChessServer3.0\bin\Debug\net6.0-windows\Global.pdb

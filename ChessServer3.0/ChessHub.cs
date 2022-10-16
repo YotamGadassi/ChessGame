@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Net.NetworkInformation;
 using Common_6;
 using Microsoft.AspNetCore.SignalR;
 
@@ -14,8 +13,6 @@ namespace ChessServer3._0
         {
             await Clients.Others.SendAsync("Move", start, end);
         }
-
-
 
         public override async Task OnConnectedAsync()
         {
