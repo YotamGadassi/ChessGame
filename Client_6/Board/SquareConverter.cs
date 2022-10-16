@@ -16,14 +16,14 @@ namespace Client.Board
             int       elementCol = Grid.GetColumn(uiElement);
             int       elementRow = Grid.GetRow(uiElement);
 
-            if (elementRow < 0 || elementCol < 0)
+            if (elementRow < 1 || elementCol < 1 ||elementRow > 8 || elementCol > 8)
             {
                 //TODO: log error
                 return Binding.DoNothing;
             }
 
             Dictionary<BoardPosition, SquareViewModel> dict     = (Dictionary<BoardPosition, SquareViewModel>)values[1];
-            BoardPosition                              position = new BoardPosition(elementCol, elementRow);
+            BoardPosition                              position = getBoardPosition(elementCol, elementRow);
             if (false == dict.TryGetValue(position, out SquareViewModel squareVM))
             {
                 // TODO: log
@@ -31,6 +31,13 @@ namespace Client.Board
             }
 
             return squareVM;
+        }
+
+        private BoardPosition getBoardPosition(int elementCol, int elementRow)
+        {
+            int reversedCol = 9 - elementCol;
+            int reveresRow  = 9 - elementRow;
+            return new BoardPosition(reversedCol, reveresRow);
         }
 
         public object[] ConvertBack(object value,  Type[] targetTypes, object parameter, CultureInfo culture)

@@ -13,7 +13,7 @@ namespace Client.Board
 
         protected override void clickCommand(object sender, BoardClickEventArgs args)
         {
-            if (m_gameManager.CurrentTeamTurn.Color != m_currentMachineTeam.Color)
+            if (m_gameManager.CurrentColorTurn != m_currentMachineTeam.Color)
             {
                 return;
             }

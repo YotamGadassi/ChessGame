@@ -1,16 +1,17 @@
-﻿using Common_6;
+﻿using System.Windows.Media;
+using Common_6;
 using Tools;
 
 namespace ChessGame
 {
     public static class GameInitHelper
     {
-        public static IList<KeyValuePair<BoardPosition, ITool>> GeneratePawns(Team team)
+        public static IList<KeyValuePair<BoardPosition, ITool>> GeneratePawns(GameDirection direction, Color color)
         {
             int pawnsAmount = 8;
 
             int yAxis = 0;
-            switch (team.MoveDirection)
+            switch (direction)
             {
                 case GameDirection.North:
                     yAxis = 2;
@@ -25,7 +26,7 @@ namespace ChessGame
             for (int i = 1; i <= pawnsAmount; ++i)
             {
                 BoardPosition newPosition = new BoardPosition(i, yAxis);
-                Pawn newPawn = new Pawn(team.Color);
+                Pawn newPawn = new Pawn(color);
                 KeyValuePair<BoardPosition, ITool> newPair = new KeyValuePair<BoardPosition, ITool>(newPosition, newPawn);
                 list.Add(newPair);
             }
@@ -33,80 +34,80 @@ namespace ChessGame
             return list;
         }
 
-        public static IList<KeyValuePair<BoardPosition, ITool>> GenerateRooks(Team team)
+        public static IList<KeyValuePair<BoardPosition, ITool>> GenerateRooks(GameDirection direction, Color color)
         {
-            int yAxis = GetFirstRow(team.MoveDirection);
+            int yAxis = GetFirstRow(direction);
 
             IList<KeyValuePair<BoardPosition, ITool>> list = new List<KeyValuePair<BoardPosition, ITool>>();
 
-            BoardPosition position = new BoardPosition(1, yAxis);
-            ITool tool = new Rook(team.Color);
-            KeyValuePair<BoardPosition, ITool> pair = new KeyValuePair<BoardPosition, ITool>(position, tool);
+            BoardPosition                      position = new BoardPosition(1, yAxis);
+            ITool                              tool     = new Rook(color);
+            KeyValuePair<BoardPosition, ITool> pair     = new KeyValuePair<BoardPosition, ITool>(position, tool);
             list.Add(pair);
 
             position = new BoardPosition(8, yAxis);
-            tool = new Rook(team.Color);
-            pair = new KeyValuePair<BoardPosition, ITool>(position, tool);
+            tool     = new Rook(color);
+            pair     = new KeyValuePair<BoardPosition, ITool>(position, tool);
 
             list.Add(pair);
 
             return list;
         }
 
-        public static IList<KeyValuePair<BoardPosition,ITool>> GenerateBishops(Team team)
+        public static IList<KeyValuePair<BoardPosition,ITool>> GenerateBishops(GameDirection direction, Color color)
         {
-            int yAxis = GetFirstRow(team.MoveDirection);
+            int yAxis = GetFirstRow(direction);
 
             IList<KeyValuePair<BoardPosition, ITool>> list = new List<KeyValuePair<BoardPosition, ITool>>();
 
-            BoardPosition position = new BoardPosition(3, yAxis);
-            ITool tool = new Bishop(team.Color);
-            KeyValuePair<BoardPosition, ITool> pair = new KeyValuePair<BoardPosition, ITool>(position, tool);
+            BoardPosition                      position = new BoardPosition(3, yAxis);
+            ITool                              tool     = new Bishop(color);
+            KeyValuePair<BoardPosition, ITool> pair     = new KeyValuePair<BoardPosition, ITool>(position, tool);
             list.Add(pair);
 
             position = new BoardPosition(6, yAxis);
-            tool = new Bishop(team.Color);
-            pair = new KeyValuePair<BoardPosition, ITool>(position, tool);
+            tool     = new Bishop(color);
+            pair     = new KeyValuePair<BoardPosition, ITool>(position, tool);
 
             list.Add(pair);
 
             return list;
         }
 
-        public static IList<KeyValuePair<BoardPosition, ITool>> GenerateKnights(Team team)
+        public static IList<KeyValuePair<BoardPosition, ITool>> GenerateKnights(GameDirection direction, Color color)
         {
-            int yAxis = GetFirstRow(team.MoveDirection);
+            int yAxis = GetFirstRow(direction);
 
             IList<KeyValuePair<BoardPosition, ITool>> list = new List<KeyValuePair<BoardPosition, ITool>>();
 
-            BoardPosition position = new BoardPosition(2, yAxis);
-            ITool tool = new Knight(team.Color);
-            KeyValuePair<BoardPosition, ITool> pair = new KeyValuePair<BoardPosition, ITool>(position, tool);
+            BoardPosition                      position = new BoardPosition(2, yAxis);
+            ITool                              tool     = new Knight(color);
+            KeyValuePair<BoardPosition, ITool> pair     = new KeyValuePair<BoardPosition, ITool>(position, tool);
             list.Add(pair);
 
             position = new BoardPosition(7, yAxis);
-            tool = new Knight(team.Color);
-            pair = new KeyValuePair<BoardPosition, ITool>(position, tool);
+            tool     = new Knight(color);
+            pair     = new KeyValuePair<BoardPosition, ITool>(position, tool);
 
             list.Add(pair);
 
             return list;
         }
 
-        public static IList<KeyValuePair<BoardPosition, ITool>> GenerateQueenKing(Team team)
+        public static IList<KeyValuePair<BoardPosition, ITool>> GenerateQueenKing(GameDirection direction, Color color)
         {
-            int yAxis = GetFirstRow(team.MoveDirection);
+            int yAxis = GetFirstRow(direction);
 
             IList<KeyValuePair<BoardPosition, ITool>> list = new List<KeyValuePair<BoardPosition, ITool>>();
 
-            BoardPosition position = new BoardPosition(4, yAxis);
-            ITool tool = new Queen(team.Color);
-            KeyValuePair<BoardPosition, ITool> pair = new KeyValuePair<BoardPosition, ITool>(position, tool);
+            BoardPosition                      position = new BoardPosition(4, yAxis);
+            ITool                              tool     = new Queen(color);
+            KeyValuePair<BoardPosition, ITool> pair     = new KeyValuePair<BoardPosition, ITool>(position, tool);
             list.Add(pair);
 
             position = new BoardPosition(5, yAxis);
-            tool = new King(team.Color);
-            pair = new KeyValuePair<BoardPosition, ITool>(position, tool);
+            tool     = new King(color);
+            pair     = new KeyValuePair<BoardPosition, ITool>(position, tool);
             list.Add(pair);
 
             return list;

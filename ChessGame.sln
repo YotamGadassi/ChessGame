@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChessGame", "ChessGame_6\Ch
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client_6\Client.csproj", "{F6EDEFE6-ADB6-444C-9177-7C77600FBBE4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineFramework", "OnlineFramework_6\OnlineFramework.csproj", "{CD1DFFED-0BEA-4C0B-9F8C-2E5DEAC29284}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Frameworks", "OnlineFramework_6\Frameworks.csproj", "{CD1DFFED-0BEA-4C0B-9F8C-2E5DEAC29284}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tools", "Tools_6\Tools.csproj", "{BE32C8EF-DD66-4D20-A74F-F70060A4AAA1}"
 EndProject
@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Board", "Board_6\Board.cspr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common_6\Common.csproj", "{30321B24-01AD-4526-8802-F44CAA18CDE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Host", "Host\Host.csproj", "{A4F5E622-609C-4C2A-9310-C9A765041FFC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Host", "Host\Host.csproj", "{A4F5E622-609C-4C2A-9310-C9A765041FFC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

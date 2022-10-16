@@ -1,4 +1,5 @@
-﻿using Common_6;
+﻿using System.Windows.Media;
+using Common_6;
 using Common_6.ChessBoardEventArgs;
 
 namespace ChessGame
@@ -16,12 +17,12 @@ namespace ChessGame
         public event EventHandler<ToolMovedEventArgs> ToolMovedEvent;
         public event EventHandler<KillingEventArgs> ToolKilledEvent;
         public event PromotionEventHandler PromotionEvent;
-        public event EventHandler<Team> TeamSwitchEvent;
+        public event EventHandler<Color> TeamSwitchEvent;
 
-        protected Team[] m_teams;
+        protected Color[] m_teams = {Colors.White, Colors.Black};
         protected                 int    m_currentTeamIndex;
         protected static readonly int    s_teamsAmount = 2;
-        public                    Team   CurrentTeamTurn => m_teams[m_currentTeamIndex];
+        public                    Color   CurrentColorTurn => m_teams[m_currentTeamIndex];
 
         protected BaseGameManager()
         {
@@ -42,22 +43,21 @@ namespace ChessGame
             m_currentTeamIndex = 0;
         }
 
-        public void StartGame(Team firstTeam, Team secondTeam)
+        public void StartGame()
         {
-            KeyValuePair<BoardPosition, ITool>[] whiteGroupBoardArrangement = getInitialBoardArrangement(firstTeam);
-            KeyValuePair<BoardPosition, ITool>[] blackGroupBoardArrangement = getInitialBoardArrangement(secondTeam);
+            KeyValuePair<BoardPosition, ITool>[] whiteGroupBoardArrangement = getInitialBoardArrangement(GameDirection.North, Colors.White);
+            KeyValuePair<BoardPosition, ITool>[] blackGroupBoardArrangement = getInitialBoardArrangement(GameDirection.South, Colors.Black);
 
-            foreach (var pair in whiteGroupBoardArrangement)
+            foreach (KeyValuePair<BoardPosition, ITool> pair in whiteGroupBoardArrangement)
             {
                 m_gameBoard.Add(pair.Key, pair.Value);
             }
 
-            foreach (var pair in blackGroupBoardArrangement)
+            foreach (KeyValuePair<BoardPosition, ITool> pair in blackGroupBoardArrangement)
             {
                 m_gameBoard.Add(pair.Key, pair.Value);
             }
 
-            m_teams            = new[] { firstTeam, secondTeam };
             m_currentTeamIndex = 0;
         }
         
@@ -76,7 +76,7 @@ namespace ChessGame
 
         protected abstract void toolMovedHandler(object sender, ToolMovedEventArgs e);
 
-        private KeyValuePair<BoardPosition, ITool>[] getInitialBoardArrangement(Team team)
+        private KeyValuePair<BoardPosition, ITool>[] getInitialBoardArrangement(GameDirection direction, Color color)
         {
             IList<KeyValuePair<BoardPosition, ITool>> pawnList = new List<KeyValuePair<BoardPosition, ITool>>();
             IList<KeyValuePair<BoardPosition, ITool>> rookList = new List<KeyValuePair<BoardPosition, ITool>>();
@@ -84,11 +84,11 @@ namespace ChessGame
             IList<KeyValuePair<BoardPosition, ITool>> knightList = new List<KeyValuePair<BoardPosition, ITool>>();
             IList<KeyValuePair<BoardPosition, ITool>> queenKingList = new List<KeyValuePair<BoardPosition, ITool>>();
 
-            pawnList = GameInitHelper.GeneratePawns(team);
-            rookList = GameInitHelper.GenerateRooks(team);
-            bishopList = GameInitHelper.GenerateBishops(team);
-            knightList = GameInitHelper.GenerateKnights(team);
-            queenKingList = GameInitHelper.GenerateQueenKing(team);
+            pawnList      = GameInitHelper.GeneratePawns(direction, color);
+            rookList      = GameInitHelper.GenerateRooks(direction, color);
+            bishopList    = GameInitHelper.GenerateBishops(direction, color);
+            knightList    = GameInitHelper.GenerateKnights(direction, color);
+            queenKingList = GameInitHelper.GenerateQueenKing(direction, color);
 
             IList<KeyValuePair<BoardPosition, ITool>> toolsList = conctanteLists(pawnList, rookList, bishopList, knightList, queenKingList);
 

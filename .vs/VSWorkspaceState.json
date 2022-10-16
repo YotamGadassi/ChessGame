@@ -1,7 +1,12 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\Common_6",
+    "\\Common_6\\MainWindow",
+    "\\Host",
+    "\\OnlineFramework_6",
+    "\\Tools_6"
   ],
-  "SelectedNode": "\\ChessGame.sln",
+  "SelectedNode": "\\Host\\MainWindowControl.xaml.cs",
   "PreviewInSolutionExplorer": false
 }

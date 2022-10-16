@@ -8,19 +8,23 @@
     "net6.0-windows7.0": []
   },
   "packageFolders": {
-    "C:\\Users\\Yotam\\.nuget\\packages\\": {}
+    "C:\\Users\\yotamg\\.nuget\\packages\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj",
+      "projectUniqueName": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Common_6\\Common.csproj",
       "projectName": "Common",
-      "projectPath": "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj",
-      "packagesPath": "C:\\Users\\Yotam\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\Common_6\\obj\\",
+      "projectPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Common_6\\Common.csproj",
+      "packagesPath": "C:\\Users\\yotamg\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Common_6\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
       "configFilePaths": [
-        "C:\\Users\\Yotam\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\yotamg\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [

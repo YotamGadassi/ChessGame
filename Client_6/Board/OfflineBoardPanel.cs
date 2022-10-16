@@ -12,7 +12,7 @@ namespace Client.Board
 
         protected override void clickCommand(object sender, BoardClickEventArgs args)
         {
-            Color         currTeamColor          = m_gameManager.CurrentTeamTurn.Color;
+            Color         currTeamColor          = m_gameManager.CurrentColorTurn;
             ITool         tool                   = args.Tool;
             BoardPosition position               = args.Position;
             bool          isPositionToolSameTeam = null != tool && tool.Color.Equals(currTeamColor);

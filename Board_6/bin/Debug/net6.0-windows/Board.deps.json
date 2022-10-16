@@ -9,7 +9,6 @@
       "Board/1.0.0": {
         "dependencies": {
           "Common": "1.0.0",
-          "Common_6": "1.0.0",
           "log4net": "2.0.15"
         },
         "runtime": {

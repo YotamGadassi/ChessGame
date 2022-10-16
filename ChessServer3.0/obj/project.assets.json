@@ -30,19 +30,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Yotam\\.nuget\\packages\\": {}
+    "C:\\Users\\yotamg\\.nuget\\packages\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\ChessServer3.0\\ChessServer.csproj",
+      "projectUniqueName": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\ChessServer3.0\\ChessServer.csproj",
       "projectName": "ChessServer",
-      "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\ChessServer3.0\\ChessServer.csproj",
-      "packagesPath": "C:\\Users\\Yotam\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Yotam\\source\\repos\\YotamGadassi\\ChessGame\\ChessServer3.0\\obj\\",
+      "projectPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\ChessServer3.0\\ChessServer.csproj",
+      "packagesPath": "C:\\Users\\yotamg\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\ChessServer3.0\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
       "configFilePaths": [
-        "C:\\Users\\Yotam\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\yotamg\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -56,8 +60,8 @@
         "net6.0-windows7.0": {
           "targetAlias": "net6.0-windows",
           "projectReferences": {
-            "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj": {
-              "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj"
+            "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Common_6\\Common.csproj": {
+              "projectPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Common_6\\Common.csproj"
             }
           }
         }

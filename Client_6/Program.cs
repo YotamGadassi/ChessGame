@@ -16,7 +16,7 @@ namespace Client
             MainOfflineWindowViewModel mainWindowsVm = new MainOfflineWindowViewModel();
 
             BaseGameManager gameManager = new OfflineGameManager();
-            gameManager.StartGame(new Team("A", Colors.White, GameDirection.North), new Team("B", Colors.Black, GameDirection.South));
+            gameManager.StartGame();
             
             BaseBoardPanel  panel       = new OfflineBoardPanel(gameManager);
             panel.Init();

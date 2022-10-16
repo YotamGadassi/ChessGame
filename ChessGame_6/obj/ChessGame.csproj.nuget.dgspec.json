@@ -1,20 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\ChessGame_6\\ChessGame.csproj": {}
+    "C:\\Users\\yotamg\\source\\repos\\ChessGame\\ChessGame_6\\ChessGame.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Board_6\\Board.csproj": {
+    "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Board_6\\Board.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Board_6\\Board.csproj",
+        "projectUniqueName": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Board_6\\Board.csproj",
         "projectName": "Board",
-        "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Board_6\\Board.csproj",
-        "packagesPath": "C:\\Users\\Yotam\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Board_6\\obj\\",
+        "projectPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Board_6\\Board.csproj",
+        "packagesPath": "C:\\Users\\yotamg\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Board_6\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Yotam\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\yotamg\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -28,11 +31,8 @@
           "net6.0-windows7.0": {
             "targetAlias": "net6.0-windows",
             "projectReferences": {
-              "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj": {
-                "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj"
-              },
-              "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\WpfLibrary1\\Common_6.csproj": {
-                "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\WpfLibrary1\\Common_6.csproj"
+              "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Common_6\\Common.csproj": {
+                "projectPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Common_6\\Common.csproj"
               }
             }
           }
@@ -72,82 +72,20 @@
         }
       }
     },
-    "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\ChessBoard_6\\Board_6.csproj": {
+    "C:\\Users\\yotamg\\source\\repos\\ChessGame\\ChessGame_6\\ChessGame.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\ChessBoard_6\\Board_6.csproj",
-        "projectName": "Board_6",
-        "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\ChessBoard_6\\Board_6.csproj",
-        "packagesPath": "C:\\Users\\Yotam\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\ChessBoard_6\\obj\\",
-        "projectStyle": "PackageReference",
-        "configFilePaths": [
-          "C:\\Users\\Yotam\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
-        ],
-        "originalTargetFrameworks": [
-          "net6.0-windows"
-        ],
-        "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {}
-        },
-        "frameworks": {
-          "net6.0-windows7.0": {
-            "targetAlias": "net6.0-windows",
-            "projectReferences": {
-              "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\WpfLibrary1\\Common_6.csproj": {
-                "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\WpfLibrary1\\Common_6.csproj"
-              }
-            }
-          }
-        },
-        "warningProperties": {
-          "warnAsError": [
-            "NU1605"
-          ]
-        }
-      },
-      "frameworks": {
-        "net6.0-windows7.0": {
-          "targetAlias": "net6.0-windows",
-          "dependencies": {
-            "log4net": {
-              "target": "Package",
-              "version": "[2.0.15, )"
-            }
-          },
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48",
-            "net481"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "frameworkReferences": {
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            }
-          },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.402\\RuntimeIdentifierGraph.json"
-        }
-      }
-    },
-    "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\ChessGame_6\\ChessGame.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\ChessGame_6\\ChessGame.csproj",
+        "projectUniqueName": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\ChessGame_6\\ChessGame.csproj",
         "projectName": "ChessGame",
-        "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\ChessGame_6\\ChessGame.csproj",
-        "packagesPath": "C:\\Users\\Yotam\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\ChessGame_6\\obj\\",
+        "projectPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\ChessGame_6\\ChessGame.csproj",
+        "packagesPath": "C:\\Users\\yotamg\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\ChessGame_6\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Yotam\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\yotamg\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -161,20 +99,14 @@
           "net6.0-windows7.0": {
             "targetAlias": "net6.0-windows",
             "projectReferences": {
-              "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Board_6\\Board.csproj": {
-                "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Board_6\\Board.csproj"
+              "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Board_6\\Board.csproj": {
+                "projectPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Board_6\\Board.csproj"
               },
-              "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\ChessBoard_6\\Board_6.csproj": {
-                "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\ChessBoard_6\\Board_6.csproj"
+              "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Common_6\\Common.csproj": {
+                "projectPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Common_6\\Common.csproj"
               },
-              "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj": {
-                "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj"
-              },
-              "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Tools_6\\Tools.csproj": {
-                "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Tools_6\\Tools.csproj"
-              },
-              "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\WpfLibrary1\\Common_6.csproj": {
-                "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\WpfLibrary1\\Common_6.csproj"
+              "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Tools_6\\Tools.csproj": {
+                "projectPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Tools_6\\Tools.csproj"
               }
             }
           }
@@ -208,17 +140,20 @@
         }
       }
     },
-    "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj": {
+    "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Common_6\\Common.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj",
+        "projectUniqueName": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Common_6\\Common.csproj",
         "projectName": "Common",
-        "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj",
-        "packagesPath": "C:\\Users\\Yotam\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Common_6\\obj\\",
+        "projectPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Common_6\\Common.csproj",
+        "packagesPath": "C:\\Users\\yotamg\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Common_6\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Yotam\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\yotamg\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -266,17 +201,20 @@
         }
       }
     },
-    "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Tools_6\\Tools.csproj": {
+    "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Tools_6\\Tools.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Tools_6\\Tools.csproj",
+        "projectUniqueName": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Tools_6\\Tools.csproj",
         "projectName": "Tools",
-        "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Tools_6\\Tools.csproj",
-        "packagesPath": "C:\\Users\\Yotam\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Tools_6\\obj\\",
+        "projectPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Tools_6\\Tools.csproj",
+        "packagesPath": "C:\\Users\\yotamg\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Tools_6\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Yotam\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\yotamg\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -290,71 +228,10 @@
           "net6.0-windows7.0": {
             "targetAlias": "net6.0-windows",
             "projectReferences": {
-              "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj": {
-                "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Common_6\\Common.csproj"
-              },
-              "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\WpfLibrary1\\Common_6.csproj": {
-                "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\WpfLibrary1\\Common_6.csproj"
+              "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Common_6\\Common.csproj": {
+                "projectPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Common_6\\Common.csproj"
               }
             }
-          }
-        },
-        "warningProperties": {
-          "warnAsError": [
-            "NU1605"
-          ]
-        }
-      },
-      "frameworks": {
-        "net6.0-windows7.0": {
-          "targetAlias": "net6.0-windows",
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48",
-            "net481"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "frameworkReferences": {
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            },
-            "Microsoft.WindowsDesktop.App.WPF": {
-              "privateAssets": "none"
-            }
-          },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.402\\RuntimeIdentifierGraph.json"
-        }
-      }
-    },
-    "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\WpfLibrary1\\Common_6.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\WpfLibrary1\\Common_6.csproj",
-        "projectName": "Common_6",
-        "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\WpfLibrary1\\Common_6.csproj",
-        "packagesPath": "C:\\Users\\Yotam\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\WpfLibrary1\\obj\\",
-        "projectStyle": "PackageReference",
-        "configFilePaths": [
-          "C:\\Users\\Yotam\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
-        ],
-        "originalTargetFrameworks": [
-          "net6.0-windows"
-        ],
-        "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {}
-        },
-        "frameworks": {
-          "net6.0-windows7.0": {
-            "targetAlias": "net6.0-windows",
-            "projectReferences": {}
           }
         },
         "warningProperties": {

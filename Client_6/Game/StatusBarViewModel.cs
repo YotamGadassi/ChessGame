@@ -23,9 +23,9 @@ namespace Client.Game
             m_gameManager.TeamSwitchEvent += onTeamSwitchEvent;
         }
 
-        private void onTeamSwitchEvent(object? sender, Team e)
+        private void onTeamSwitchEvent(object? sender, Color e)
         {
-            CurrentTeamColor = e.Color;
+            CurrentTeamColor = e;
         }
     }
 }

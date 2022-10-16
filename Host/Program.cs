@@ -1,6 +1,6 @@
-﻿using System.Windows.Media;
-using System.Windows.Threading;
-using OnlineFramework.MainOnlineWindow;
+﻿using System;
+using Common.MainWindow;
+using Frameworks;
 
 namespace Host
 {
@@ -12,11 +12,6 @@ namespace Host
             MainWindowControl   mainWinControl = new MainWindowControl();
             MainWindowViewModel mainWinVm      = new MainWindowViewModel();
             mainWinControl.DataContext = mainWinVm;
-            OnlineFramework.OnlineFramework
-                onlineFramework = new OnlineFramework.OnlineFramework(mainWinControl, mainWinVm);
-            onlineFramework.Init();
-            onlineFramework.RequestGameFromServer();
-            //Dispatcher.CurrentDispatcher.InvokeAsync(() => onlineFramework.DummyStartGame(Colors.Black));
             mainWinControl.ShowDialog();
         }
     }

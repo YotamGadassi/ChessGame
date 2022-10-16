@@ -15,6 +15,10 @@
                     </MouseBinding>
                 </InputBindingCollection>
                 <board:SquareConverter x:Key="SquareConverter" />
+                <board:RowLabelConverter x:Key="RowLabelConverter" />
+                <board:ColumnLabelConverter x:Key="ColumnLabelConverter" />
+
+
                 <Style TargetType="{x:Type board:BoardSquare}">
                     <Setter Property="DataContext">
                         <Setter.Value>
@@ -23,7 +27,7 @@
                                 <Binding Path="SquaresDictionary" />
                             </MultiBinding>
                         </Setter.Value>
-                        </Setter>
+                    </Setter>
                     <Setter Property="BackgroundImageSource" Value="{Binding BackgroundImageSource}" />
                     <Setter Property="ToolImageSource" Value="{Binding ToolImageSource}" />
                     <Setter Property="helpers:InputBindingsAttach.InputBindings" Value="{StaticResource clickOnSquareInputBindings}"/>
@@ -45,10 +49,10 @@
                     <Setter Property="VerticalAlignment" Value="Center"/>
                 </Style>
                 <Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}" x:Key="FrameColumnLabelStyle">
-                    <Setter Property="Content" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Grid.Column)}"/>
+                    <Setter Property="Content" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Grid.Column), Converter={StaticResource ColumnLabelConverter}}"/>
                 </Style>
                 <Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}" x:Key="FrameRowLabelStyle">
-                    <Setter Property="Content" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Grid.Row)}"/>
+                    <Setter Property="Content" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Grid.Row), Converter={StaticResource RowLabelConverter}}"/>
                 </Style>
             </ResourceDictionary>
         </Grid.Resources>
@@ -93,10 +97,8 @@
         <Label Style="{StaticResource FrameRowLabelStyle}" Grid.Row="7" Grid.Column="0"/>
         <Label Style="{StaticResource FrameRowLabelStyle}" Grid.Row="8" Grid.Column="0"/>
 
-        <board:BoardSquare Grid.Row="1" Grid.Column="1">
-            <board:BoardSquare.InputBindings></board:BoardSquare.InputBindings>
-        </board:BoardSquare>
-            <board:BoardSquare Grid.Row="2" Grid.Column="1"/>
+        <board:BoardSquare Grid.Row="1" Grid.Column="1"/>
+        <board:BoardSquare Grid.Row="2" Grid.Column="1"/>
         <board:BoardSquare Grid.Row="3" Grid.Column="1"/>
         <board:BoardSquare Grid.Row="4" Grid.Column="1"/>
         <board:BoardSquare Grid.Row="5" Grid.Column="1"/>

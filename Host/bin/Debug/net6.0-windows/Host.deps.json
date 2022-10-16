@@ -8,7 +8,8 @@
     ".NETCoreApp,Version=v6.0": {
       "Host/1.0.0": {
         "dependencies": {
-          "OnlineFramework": "1.0.0"
+          "Common": "1.0.0",
+          "Frameworks": "1.0.0"
         },
         "runtime": {
           "Host.dll": {}
@@ -227,7 +228,6 @@
       "Board/1.0.0": {
         "dependencies": {
           "Common": "1.0.0",
-          "Common_6": "1.0.0",
           "log4net": "2.0.15"
         },
         "runtime": {
@@ -237,9 +237,7 @@
       "ChessGame/1.0.0": {
         "dependencies": {
           "Board": "1.0.0",
-          "Board_6": "1.0.0",
           "Common": "1.0.0",
-          "Common_6": "1.0.0",
           "Tools": "1.0.0"
         },
         "runtime": {
@@ -260,20 +258,19 @@
           "Common.dll": {}
         }
       },
-      "OnlineFramework/1.0.0": {
+      "Frameworks/1.0.0": {
         "dependencies": {
           "Client": "1.0.0",
           "Microsoft.AspNetCore.SignalR.Client": "6.0.10",
           "log4net": "2.0.15"
         },
         "runtime": {
-          "OnlineFramework.dll": {}
+          "Frameworks.dll": {}
         }
       },
       "Tools/1.0.0": {
         "dependencies": {
-          "Common": "1.0.0",
-          "Common_6": "1.0.0"
+          "Common": "1.0.0"
         },
         "runtime": {
           "Tools.dll": {}
@@ -482,7 +479,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "OnlineFramework/1.0.0": {
+    "Frameworks/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

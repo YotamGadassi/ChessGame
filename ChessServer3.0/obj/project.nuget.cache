@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "VtPEeBaX2OUStWT2/Bhd1g+tFl0kWJNGKvUkFiacEhCV5HDBMXBcSL/2RFObqytBxS5CamIBqWsmT97KnbLZwA==",
+  "dgSpecHash": "U9fq15kCxw+5nOGP/GrJPgBs64gylDwr85JwfiMLMA7lCmSnCPdTQ/FgDIUV5V2bFYxRLU7n0XJEhHKKiFrnFA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\ChessServer3.0\\ChessServer.csproj",
+  "projectFilePath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\ChessServer3.0\\ChessServer.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

@@ -53,7 +53,6 @@
       "Board/1.0.0": {
         "dependencies": {
           "Common": "1.0.0",
-          "Common_6": "1.0.0",
           "log4net": "2.0.15"
         },
         "runtime": {
@@ -63,9 +62,7 @@
       "ChessGame/1.0.0": {
         "dependencies": {
           "Board": "1.0.0",
-          "Board_6": "1.0.0",
           "Common": "1.0.0",
-          "Common_6": "1.0.0",
           "Tools": "1.0.0"
         },
         "runtime": {
@@ -79,8 +76,7 @@
       },
       "Tools/1.0.0": {
         "dependencies": {
-          "Common": "1.0.0",
-          "Common_6": "1.0.0"
+          "Common": "1.0.0"
         },
         "runtime": {
           "Tools.dll": {}

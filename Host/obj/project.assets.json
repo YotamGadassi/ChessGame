@@ -432,7 +432,6 @@
         "framework": ".NETCoreApp,Version=v6.0",
         "dependencies": {
           "Common": "1.0.0",
-          "Common_6": "1.0.0",
           "log4net": "2.0.15"
         },
         "compile": {
@@ -440,20 +439,6 @@
         },
         "runtime": {
           "bin/placeholder/Board.dll": {}
-        }
-      },
-      "Board_6/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v6.0",
-        "dependencies": {
-          "Common_6": "1.0.0",
-          "log4net": "2.0.15"
-        },
-        "compile": {
-          "bin/placeholder/Board_6.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/Board_6.dll": {}
         }
       },
       "ChessGame/1.0.0": {
@@ -461,9 +446,7 @@
         "framework": ".NETCoreApp,Version=v6.0",
         "dependencies": {
           "Board": "1.0.0",
-          "Board_6": "1.0.0",
           "Common": "1.0.0",
-          "Common_6": "1.0.0",
           "Tools": "1.0.0"
         },
         "compile": {
@@ -503,20 +486,7 @@
           "Microsoft.WindowsDesktop.App.WPF"
         ]
       },
-      "Common_6/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v6.0",
-        "compile": {
-          "bin/placeholder/Common_6.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/Common_6.dll": {}
-        },
-        "frameworkReferences": [
-          "Microsoft.WindowsDesktop.App.WPF"
-        ]
-      },
-      "OnlineFramework/1.0.0": {
+      "Frameworks/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
         "dependencies": {
@@ -525,10 +495,10 @@
           "log4net": "2.0.15"
         },
         "compile": {
-          "bin/placeholder/OnlineFramework.dll": {}
+          "bin/placeholder/Frameworks.dll": {}
         },
         "runtime": {
-          "bin/placeholder/OnlineFramework.dll": {}
+          "bin/placeholder/Frameworks.dll": {}
         },
         "frameworkReferences": [
           "Microsoft.WindowsDesktop.App.WPF"
@@ -538,8 +508,7 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v6.0",
         "dependencies": {
-          "Common": "1.0.0",
-          "Common_6": "1.0.0"
+          "Common": "1.0.0"
         },
         "compile": {
           "bin/placeholder/Tools.dll": {}
@@ -1199,11 +1168,6 @@
       "path": "../Board_6/Board.csproj",
       "msbuildProject": "../Board_6/Board.csproj"
     },
-    "Board_6/1.0.0": {
-      "type": "project",
-      "path": "../ChessBoard_6/Board_6.csproj",
-      "msbuildProject": "../ChessBoard_6/Board_6.csproj"
-    },
     "ChessGame/1.0.0": {
       "type": "project",
       "path": "../ChessGame_6/ChessGame.csproj",
@@ -1219,15 +1183,10 @@
       "path": "../Common_6/Common.csproj",
       "msbuildProject": "../Common_6/Common.csproj"
     },
-    "Common_6/1.0.0": {
+    "Frameworks/1.0.0": {
       "type": "project",
-      "path": "../WpfLibrary1/Common_6.csproj",
-      "msbuildProject": "../WpfLibrary1/Common_6.csproj"
-    },
-    "OnlineFramework/1.0.0": {
-      "type": "project",
-      "path": "../OnlineFramework_6/OnlineFramework.csproj",
-      "msbuildProject": "../OnlineFramework_6/OnlineFramework.csproj"
+      "path": "../OnlineFramework_6/Frameworks.csproj",
+      "msbuildProject": "../OnlineFramework_6/Frameworks.csproj"
     },
     "Tools/1.0.0": {
       "type": "project",
@@ -1237,23 +1196,28 @@
   },
   "projectFileDependencyGroups": {
     "net6.0-windows7.0": [
-      "OnlineFramework >= 1.0.0"
+      "Common >= 1.0.0",
+      "Frameworks >= 1.0.0"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Yotam\\.nuget\\packages\\": {}
+    "C:\\Users\\yotamg\\.nuget\\packages\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Host\\Host.csproj",
+      "projectUniqueName": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Host\\Host.csproj",
       "projectName": "Host",
-      "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Host\\Host.csproj",
-      "packagesPath": "C:\\Users\\Yotam\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\Host\\obj\\",
+      "projectPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Host\\Host.csproj",
+      "packagesPath": "C:\\Users\\yotamg\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Host\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
       "configFilePaths": [
-        "C:\\Users\\Yotam\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\yotamg\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -1267,8 +1231,11 @@
         "net6.0-windows7.0": {
           "targetAlias": "net6.0-windows",
           "projectReferences": {
-            "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\OnlineFramework_6\\OnlineFramework.csproj": {
-              "projectPath": "C:\\Users\\Yotam\\Source\\Repos\\YotamGadassi\\ChessGame\\OnlineFramework_6\\OnlineFramework.csproj"
+            "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Common_6\\Common.csproj": {
+              "projectPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\Common_6\\Common.csproj"
+            },
+            "C:\\Users\\yotamg\\source\\repos\\ChessGame\\OnlineFramework_6\\Frameworks.csproj": {
+              "projectPath": "C:\\Users\\yotamg\\source\\repos\\ChessGame\\OnlineFramework_6\\Frameworks.csproj"
             }
           }
         }
@@ -1296,6 +1263,9 @@
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
+          },
+          "Microsoft.WindowsDesktop.App.WPF": {
+            "privateAssets": "none"
           }
         },
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.402\\RuntimeIdentifierGraph.json"

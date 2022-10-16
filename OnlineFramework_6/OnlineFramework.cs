@@ -9,32 +9,26 @@ using Common_6.ChessBoardEventArgs;
 using log4net;
 using log4net.Config;
 using Microsoft.AspNetCore.SignalR.Client;
-using OnlineFramework.MainOnlineWindow;
-using MainWindowControl = OnlineFramework.MainOnlineWindow.MainWindowControl;
 
-namespace OnlineFramework
+namespace Frameworks
 {
     public class OnlineFramework
     {
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private static          MainWindowViewModel m_mainWindowVm;
         private                 HubConnection       m_connection;
         private                 BaseGameManager     m_gameManager;
         private                 Team                m_localMachineTeam;
         private                 Dispatcher          m_dispatcher;
         private static readonly string              s_hubAddress = @"https://localhost:7034/ChessHub";
         
-        public OnlineFramework (MainWindowControl winControl, MainWindowViewModel winVM)
-        {
-            m_dispatcher   = Dispatcher.CurrentDispatcher;;
-            m_mainWindowVm = winVM;
-            
-            m_connection = new HubConnectionBuilder().WithUrl(s_hubAddress).Build();
-        }
+        public event EventHandler<BaseBoardPanel> OnGameStarted;
+        public event EventHandler OnGameEnd;
 
-        public void Init()
+        public OnlineFramework ()
         {
+            m_dispatcher = Dispatcher.CurrentDispatcher;;
+            m_connection = new HubConnectionBuilder().WithUrl(s_hubAddress).Build();
             setUpLog();
         }
 
@@ -117,24 +111,16 @@ namespace OnlineFramework
             Color currentTeamColor = otherTeamColor == Colors.Black ? Colors.White : Colors.Black;
 
             m_localMachineTeam = resolveTeam(currentTeamColor);
-            Team remoteTeam = resolveTeam(otherTeamColor);
 
             OnlineGameManager gameManager = new OnlineGameManager(m_localMachineTeam);
             m_gameManager = gameManager;
-            if (m_localMachineTeam.Color == Colors.White)
-            {
-                gameManager.StartGame(m_localMachineTeam, remoteTeam);
-            }
-            else
-            {
-                gameManager.StartGame(remoteTeam, m_localMachineTeam);
-            }
-
+            gameManager.StartGame();
+            
             m_gameManager.ToolMovedEvent  += GameManagerOnToolMovedEvent;
             m_gameManager.ToolKilledEvent += GameManagerOnToolMovedEvent;
             BaseBoardPanel panel = new OnlineBoardPanel(gameManager);
             panel.Init();
-            m_mainWindowVm.CurrentViewModel = panel.BoardVm;
+            OnGameStarted?.Invoke(this, panel);
             s_log.Info("Game Started");
 
         }
@@ -144,7 +130,7 @@ namespace OnlineFramework
             s_log.Info("Game ended");
             m_gameManager.EndGame();
             m_gameManager              = null;
-            m_dispatcher.InvokeAsync(()=>m_mainWindowVm.CurrentViewModel = null);
+            OnGameEnd?.Invoke(this, null);
             unregisterClientMethods();
         }
 
@@ -160,6 +146,5 @@ namespace OnlineFramework
             Thread.Sleep(TimeSpan.FromSeconds(4));
             startGame(color);
         }
-
     }
 }
