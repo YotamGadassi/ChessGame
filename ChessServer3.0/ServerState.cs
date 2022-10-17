@@ -46,27 +46,26 @@ namespace ChessServer3._0
             return currentGroup;
         }
 
-        public async Task HandleDisconnection(string connectionId, Hub hub)
+        public async Task RemovePlayer(string connectionId, Hub hub)
         {
-            if (tryRemoveFromQueue(connectionId))
+            bool isAssociatedWithGroup = m_connectionsToGroup.TryRemove(connectionId, out string? groupName);
+            if (false == isAssociatedWithGroup)
             {
+                m_pendingPlayers.TryRemove(connectionId);
                 return;
             }
 
-            m_connectionsToGroup.TryRemove(connectionId, out string groupName);
-            m_groupsToConnections.TryRemove(groupName, out List<string>? conncetions);
-            await hub.Clients.OthersInGroup(groupName).SendCoreAsync("PlayerQuit",null);
-            foreach (string connection in conncetions)
+            m_groupsToConnections.TryRemove(groupName, out List<string>? connections);
+            foreach (string connection in connections)
             {
-                await hub.Groups.RemoveFromGroupAsync(connection, groupName);
-                m_connectionsToGroup.TryRemove(connection, out _);
+                if (false == connection.Equals(connectionId))
+                {
+                    m_connectionsToGroup.TryRemove(connection, out _);
+                    await hub.Clients.Client(connection).SendAsync("EndGame");
+                }
             }
         }
 
-        private bool tryRemoveFromQueue(string connectionId)
-        {
-            return m_pendingPlayers.TryRemove(connectionId);
-        }
 
         public bool TryGetGroup(string connectionId, out string groupName)
         {

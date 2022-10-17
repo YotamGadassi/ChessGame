@@ -22,7 +22,7 @@
                 <Style TargetType="{x:Type board:BoardSquare}">
                     <Setter Property="DataContext">
                         <Setter.Value>
-                            <MultiBinding Converter="{StaticResource SquareConverter}">
+                            <MultiBinding Mode="OneTime" Converter="{StaticResource SquareConverter}">
                                 <Binding RelativeSource="{RelativeSource Self}" Mode="OneTime" />
                                 <Binding Path="SquaresDictionary" />
                             </MultiBinding>

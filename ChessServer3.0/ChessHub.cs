@@ -6,7 +6,7 @@ namespace ChessServer3._0
 {
     public class ChessHub : Hub
     {
-        private static ServerState s_serverState = new ServerState();
+        private static readonly ServerState s_serverState = new ServerState();
 
         [HubMethodName("Move")]
         public async Task Move(BoardPosition start, BoardPosition end)
@@ -19,18 +19,25 @@ namespace ChessServer3._0
             await Clients.OthersInGroup(groupName).SendAsync("Move", start, end);
         }
 
+        public async Task Quit()
+        {
+            Debug.WriteLine($"Player quit: {Context.ConnectionId}");
+            await s_serverState.RemovePlayer(Context.ConnectionId, this);
+        }
+
         public override async Task OnConnectedAsync()
         {
-            Debug.WriteLine("Connected established");
+            Debug.WriteLine($"Connected established: {Context.ConnectionId}");
             await s_serverState.HandleNewConnection(Context.ConnectionId, this);
             await base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            Debug.WriteLine("Disconnected established");
-            await s_serverState.HandleDisconnection(Context.ConnectionId, this);
-            await base.OnDisconnectedAsync(exception);
+            Debug.WriteLine($"Disconnected established {Context.ConnectionId}");
+            await s_serverState.RemovePlayer(Context.ConnectionId, this);
+            await base.OnDisconnectedAsync(exception);  
         }
     }
 }
+    

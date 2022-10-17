@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace Client.Command
+namespace Client
 {
     public class WpfCommand : ICommand
     {
-        private EventHandler m_canExecuteHandler;
+        private readonly Func<object, bool>? m_canExecute;
+        private readonly Action<object>     m_execute;
 
-        private readonly Func<object, bool> m_canExecute;
-        private readonly Action<object> m_execute;
-
-        public WpfCommand(Action<object> executeHandler, Func<object, bool> canExecuteHandler)
+        public WpfCommand(Action<object> executeHandler, Func<object, bool>? canExecuteHandler)
         {
             m_canExecute = canExecuteHandler;
             m_execute    = executeHandler;
@@ -18,18 +16,10 @@ namespace Client.Command
 
         public WpfCommand( Action<object> executeHandler) : this(executeHandler, null){}
 
-        public event EventHandler CanExecuteChanged
+        public event EventHandler? CanExecuteChanged
         {
-            add
-            {
-                m_canExecuteHandler             += value;
-                CommandManager.RequerySuggested += value;
-            }
-            remove 
-            {
-                CommandManager.RequerySuggested -= value;
-                m_canExecuteHandler             -= value;
-            }
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested -= value;
         }
 
         public bool CanExecute(object parameter)

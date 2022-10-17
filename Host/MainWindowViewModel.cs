@@ -1,19 +1,20 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Windows.Input;
 using System.Windows.Threading;
-using ChessGame;
+using Client;
 using Client.Board;
-using Client.Command;
 using Common.MainWindow;
 using Frameworks;
+using log4net;
 
 namespace Host
 {
     public class MainWindowViewModel : BaseMainWindowViewModel
     {
-        public ICommand PlayOnlineCommand { get; }
-        public ICommand PlayOfflineCommand { get; }
+        private static readonly ILog     s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        public                  ICommand PlayOnlineCommand  { get; }
+        public                  ICommand PlayOfflineCommand { get; }
 
         private readonly Dispatcher m_dispatcher;
 
@@ -24,12 +25,13 @@ namespace Host
             PlayOfflineCommand = new WpfCommand(playOfflineCommandExecute);
         }
 
-        private async void playOnlineCommandExecute(object parameter)
+        private void playOnlineCommandExecute(object parameter)
         {
+            s_log.Info("Play online command invoked");
             OnlineFramework onlineFramework = new OnlineFramework();
             onlineFramework.OnGameStarted += onGameStart;
             onlineFramework.OnGameEnd     += onGameEnd;
-            bool isRequestSucceeded = await onlineFramework.AsyncRequestGameFromServer();
+            onlineFramework.AsyncRequestGameFromServer();
         }
 
         private bool playOnlineCommandCanExecute(object parameter)
