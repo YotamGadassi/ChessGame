@@ -33,8 +33,8 @@ namespace ChessServer3._0
         {
             int    currentNumber = Interlocked.Increment(ref m_currentGameNumber);
             string currentGroup  = currentNumber.ToString();
-            await groupManager.AddToGroupAsync(currentGroup, connectionId);
-            await groupManager.AddToGroupAsync(currentGroup, connectionIdFromQueue);
+            await groupManager.AddToGroupAsync(connectionId, currentGroup);
+            await groupManager.AddToGroupAsync(connectionIdFromQueue, currentGroup);
             List<string> groupsConnections = new List<string>() { connectionId, connectionIdFromQueue };
             foreach (string groupsConnection in groupsConnections)
             {
@@ -59,13 +59,18 @@ namespace ChessServer3._0
             foreach (string connection in conncetions)
             {
                 await hub.Groups.RemoveFromGroupAsync(connection, groupName);
-                m_connectionsToGroup.TryRemove(connection , out _);
+                m_connectionsToGroup.TryRemove(connection, out _);
             }
         }
 
         private bool tryRemoveFromQueue(string connectionId)
         {
             return m_pendingPlayers.TryRemove(connectionId);
+        }
+
+        public bool TryGetGroup(string connectionId, out string groupName)
+        {
+            return m_connectionsToGroup.TryGetValue(connectionId, out groupName);
         }
     }
 }

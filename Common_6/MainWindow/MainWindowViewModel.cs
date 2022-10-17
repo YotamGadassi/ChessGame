@@ -7,9 +7,9 @@ namespace Common.MainWindow
 {
     public class BaseMainWindowViewModel : INotifyPropertyChanged
     {
-        private DependencyObject m_currentViewModel;
+        private DependencyObject? m_currentViewModel;
 
-        public DependencyObject CurrentViewModel
+        public DependencyObject? CurrentViewModel
         {
             get => m_currentViewModel;
             set

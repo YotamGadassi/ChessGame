@@ -11,7 +11,12 @@ namespace ChessServer3._0
         [HubMethodName("Move")]
         public async Task Move(BoardPosition start, BoardPosition end)
         {
-            await Clients.Others.SendAsync("Move", start, end);
+            if (false == s_serverState.TryGetGroup(Context.ConnectionId, out string groupName))
+            {
+                //log
+                return;
+            }
+            await Clients.OthersInGroup(groupName).SendAsync("Move", start, end);
         }
 
         public override async Task OnConnectedAsync()

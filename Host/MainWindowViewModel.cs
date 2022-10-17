@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
 using ChessGame;
@@ -23,12 +24,12 @@ namespace Host
             PlayOfflineCommand = new WpfCommand(playOfflineCommandExecute);
         }
 
-        private void playOnlineCommandExecute(object parameter)
+        private async void playOnlineCommandExecute(object parameter)
         {
             OnlineFramework onlineFramework = new OnlineFramework();
             onlineFramework.OnGameStarted += onGameStart;
             onlineFramework.OnGameEnd     += onGameEnd;
-            onlineFramework.RequestGameFromServer();
+            bool isRequestSucceeded = await onlineFramework.AsyncRequestGameFromServer();
         }
 
         private bool playOnlineCommandCanExecute(object parameter)

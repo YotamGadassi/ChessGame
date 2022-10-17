@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Windows.Media;
 using System.Windows.Threading;
 using ChessGame;
@@ -7,7 +6,6 @@ using Client.Board;
 using Common_6;
 using Common_6.ChessBoardEventArgs;
 using log4net;
-using log4net.Config;
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Frameworks
@@ -29,17 +27,11 @@ namespace Frameworks
         {
             m_dispatcher = Dispatcher.CurrentDispatcher;;
             m_connection = new HubConnectionBuilder().WithUrl(s_hubAddress).Build();
-            setUpLog();
         }
 
-        private void setUpLog()
+        public Task<bool> AsyncRequestGameFromServer()
         {
-            XmlConfigurator.Configure(new FileInfo("LogConfiguration.xml"));
-        }
-
-        public void RequestGameFromServer()
-        {
-            connectToHubAsync();
+            return connectToHubAsync();
         }
 
         private async void GameManagerOnToolMovedEvent(object sender, ToolMovedEventArgs e)
@@ -74,14 +66,22 @@ namespace Frameworks
             }
         }
 
-        private async void connectToHubAsync()
+        private async Task<bool> connectToHubAsync()
         {
             m_connection.Closed += (error) => new Task(() =>  Console.WriteLine($"connection closed: {error}"));
             registerClientMethods();
             try
             {
                 s_log.Info($"Starting connection to client. server state:{m_connection.State}");
-                await m_connection.StartAsync();
+                try
+                {
+                    await m_connection.StartAsync();
+                }
+                catch (Exception e)
+                {
+                    s_log.Error(e.Message);
+                    return false;
+                }
                 s_log.Info($"connection to client completed. server state:{m_connection.State}");
             }
             catch (Exception e)

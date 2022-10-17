@@ -52,6 +52,7 @@
                 if (Any())
                 {
                     item = m_queue.First();
+                    m_queue.RemoveFirst();
                     m_dictionary.Remove(item);
                     return true;
                 }
