@@ -10,7 +10,7 @@ namespace Client.Board
 {
     public abstract class BaseBoardPanel
     {
-        protected BaseGameManager          m_gameManager;
+        protected BaseGameManager      m_gameManager;
         protected Dispatcher           m_viewDispatcher;
         protected AvailableMovesHelper m_availableMoveHelper;
         public    FrameworkElement     Control { get; }
