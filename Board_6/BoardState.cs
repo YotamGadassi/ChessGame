@@ -1,7 +1,7 @@
 ﻿
 using Common_6;
 
-namespace ChessBoard_6
+namespace Board
 {
     public class BoardState
     {

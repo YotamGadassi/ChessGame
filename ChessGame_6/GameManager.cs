@@ -1,17 +1,17 @@
 ﻿using System.ComponentModel;
 using System.Windows.Media;
-using ChessBoard;
+using Board;
+using Common;
+using Common.ChessBoardEventArgs;
 using Common_6;
 using Common_6.ChessBoardEventArgs;
 using Tools;
 
 namespace ChessGame
 {
-    public abstract class BaseGameManager
+    public abstract class BaseGameManager : IGameManager
     {
-        public delegate ITool PromotionEventHandler(object sender, PromotionEventArgs e);
-
-        protected ChessBoard.ChessBoard m_gameBoard;
+        protected ChessBoard m_gameBoard;
 
         // public event EventHandler<ChessBoardEventArgs> CheckEvent;
         public event EventHandler<EventArgs>          CheckmateEvent;
@@ -21,41 +21,43 @@ namespace ChessGame
         public event EventHandler<KillingEventArgs>   ToolKilledEvent;
         public event PromotionEventHandler            PromotionEvent;
         public event EventHandler<Color>              TeamSwitchEvent;
+        public                    Color    CurrentColorTurn => m_teams[m_currentTeamIndex];
 
         protected                 Color[]? m_teams = { Colors.White, Colors.Black };
         protected                 int      m_currentTeamIndex;
         protected static readonly int      s_teamsAmount = 2;
-        public                    Color    CurrentColorTurn => m_teams[m_currentTeamIndex];
 
         protected BaseGameManager()
         {
-            m_gameBoard                =  new ChessBoard.ChessBoard();
+            m_gameBoard                =  new Board.ChessBoard();
         }
         
-        public bool Move(BoardPosition start, BoardPosition end)
+        public MoveResult Move(BoardPosition start, BoardPosition end)
         {
             MoveResult result = m_gameBoard.Move(start, end);
             switch (result.Result)
             {
-                case MoveResultEnum.NoChangeOccured:
+                case MoveResultEnum.NoChangeOccurred:
                 {
-                    return false;
+                    break;
                 }
                 case MoveResultEnum.ToolKilled:
                 { 
                     toolKilledHandler(this, new KillingEventArgs(result.ToolAtInitial, start, end, result.ToolAtEnd));
-                    return true;
+                    break;
                 }
                 case MoveResultEnum.ToolMoved:
                 {
                     toolMovedHandler(this, new ToolMovedEventArgs(result.ToolAtInitial, start, end));
-                    return true;
+                    break;
                 }
                 default:
                 {
                     throw new InvalidEnumArgumentException($"The enum value {result.Result} is not known.");
                 }
             }
+
+            return result;
         }
 
         public void EndGame()
@@ -63,6 +65,7 @@ namespace ChessGame
             m_gameBoard.ClearBoard();
             m_teams            = null;
             m_currentTeamIndex = 0;
+            EndGameEvent?.Invoke(this, EventArgs.Empty);
         }
 
         public void StartGame()
@@ -83,6 +86,7 @@ namespace ChessGame
             }
 
             m_currentTeamIndex = 0;
+            StartGameEvent?.Invoke(this, EventArgs.Empty);
         }
         
         public bool TryGetTool(BoardPosition position, out ITool tool)
@@ -122,6 +126,7 @@ namespace ChessGame
 
             OnToolKilledEvent(e);
         }
+
         private void toolMovedHandler(object sender, ToolMovedEventArgs e)
         {
             switchCurrentTeam();

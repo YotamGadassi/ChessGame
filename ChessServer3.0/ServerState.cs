@@ -66,7 +66,6 @@ namespace ChessServer3._0
             }
         }
 
-
         public bool TryGetGroup(string connectionId, out string groupName)
         {
             return m_connectionsToGroup.TryGetValue(connectionId, out groupName);

@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Windows.Media;
 using Common_6;
 using log4net;
 
-namespace ChessBoard
+namespace Board
 {
     public class GameMoveHelper
     {
@@ -18,9 +16,9 @@ namespace ChessBoard
 
         private  Dictionary<Color, GameDirection> m_colorToDirection;
 
-        private ChessBoard m_chessBoard;
+        private Board.ChessBoard m_chessBoard;
 
-        public GameMoveHelper(ChessBoard chessBoard)
+        public GameMoveHelper(Board.ChessBoard chessBoard)
         {
             m_chessBoard = chessBoard;
             initMoveLegalDelegates();
