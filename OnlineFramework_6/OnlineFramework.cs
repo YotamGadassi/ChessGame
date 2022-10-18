@@ -3,6 +3,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using ChessGame;
 using Client.Board;
+using Client.Game;
 using Common_6;
 using Common_6.ChessBoardEventArgs;
 using log4net;
@@ -14,15 +15,15 @@ public class OnlineFramework
 {
     private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-    private readonly HubConnection   m_connection;
-    private          BaseGameManager m_gameManager;
-    private          Team            m_localMachineTeam;
-    private readonly Dispatcher      m_dispatcher;
+    private readonly        HubConnection     m_connection;
+    private                 BaseGameManager   m_gameManager;
+    private                 Team              m_localMachineTeam;
+    private readonly        Dispatcher        m_dispatcher;
+    public                  BaseGameViewModel ViewModel;
+    private static readonly string            s_hubAddress = @"https://localhost:7034/ChessHub";
 
-    private static readonly string s_hubAddress = @"https://localhost:7034/ChessHub";
-
-    public event EventHandler<BaseBoardPanel> OnGameStarted;
-    public event EventHandler                 OnGameEnd;
+    public event EventHandler<BaseGameViewModel> OnGameStarted;
+    public event EventHandler                    OnGameEnd;
 
     public HubConnectionState ConnectionState => m_connection.State;
 
@@ -46,7 +47,11 @@ public class OnlineFramework
     private async void GameManagerOnToolMovedEvent(object sender, ToolMovedEventArgs e)
     {
         bool isMovedFromServer = e.MovedTool.Color != m_localMachineTeam.Color;
-        if (isMovedFromServer) return;
+        bool isFirstArrangement = e.InitialPosition.IsEmpty();
+        if (isMovedFromServer || isFirstArrangement)
+        {
+            return;
+        }
 
         try
         {
@@ -131,13 +136,27 @@ public class OnlineFramework
 
         OnlineGameManager gameManager = new(m_localMachineTeam);
         m_gameManager = gameManager;
-        gameManager.StartGame();
 
         m_gameManager.ToolMovedEvent  += GameManagerOnToolMovedEvent;
         m_gameManager.ToolKilledEvent += GameManagerOnToolMovedEvent;
-        BaseBoardPanel panel = new OnlineBoardPanel(gameManager);
-        panel.Init();
-        OnGameStarted?.Invoke(this, panel);
+
+        Team northTeam;
+        Team southTeam;
+
+        if (currentTeamColor == Colors.White)
+        {
+            southTeam = new Team("Local",  Colors.White, GameDirection.North);
+            northTeam = new Team("Remote", Colors.Black,  GameDirection.South);
+        }
+        else
+        {
+            southTeam = new Team("Remote",  Colors.White, GameDirection.North);
+            northTeam = new Team("Local", Colors.Black,   GameDirection.South);
+        }
+
+        ViewModel = new OnlineGameViewModel(m_gameManager, northTeam, southTeam, m_localMachineTeam);
+        OnGameStarted?.Invoke(this, ViewModel);
+        gameManager.StartGame();
         s_log.Info("Game Started");
     }
 

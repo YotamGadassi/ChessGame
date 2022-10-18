@@ -9,7 +9,7 @@ namespace Client.Board
         public OfflineBoardPanel(BaseGameManager gameManager) : base(gameManager)
         {
         }
-
+        
         protected override void clickCommand(object sender, BoardClickEventArgs args)
         {
             Color         currTeamColor          = m_gameManager.CurrentColorTurn;

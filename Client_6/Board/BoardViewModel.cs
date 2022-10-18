@@ -2,44 +2,41 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Threading;
-using Client.Helpers;
+using ChessGame;
 using Common_6;
+using Common_6.ChessBoardEventArgs;
 
 namespace Client.Board
 {
-    public class BoardViewModel : DependencyObject
+    public abstract class BaseBoardViewModel : DependencyObject
     {
-        public SquareViewModel                            m_selectedBoardPosition;
+        public  SquareViewModel                            m_selectedBoardPosition;
         private HashSet<SquareViewModel>                   m_hintedBoardPositions;
-        private AvailableMovesHelper                       m_availableMovesHelper;
-        private Dispatcher                                 m_viewDispatcher;
+        protected Dispatcher                                 m_dispatcher;
+        protected BaseGameManager                            m_gameManager;
         public  Dictionary<BoardPosition, SquareViewModel> SquaresDictionary => m_squaresDictionary;
 
         private volatile Dictionary<BoardPosition, SquareViewModel> m_squaresDictionary;
 
         public event EventHandler<BoardClickEventArgs> ClickCommandEvent;
         
-        public BoardViewModel()
+        protected BaseBoardViewModel(BaseGameManager gameManager)
         {
-            m_viewDispatcher       = Dispatcher.CurrentDispatcher;
+            m_gameManager          = gameManager;
+            m_dispatcher           = Dispatcher.CurrentDispatcher;
             m_hintedBoardPositions = new HashSet<SquareViewModel>();
             m_squaresDictionary    = new Dictionary<BoardPosition, SquareViewModel>();
             initSquares();
+            registerEvents();
         }
 
-        private void initSquares()
+        private void registerEvents()
         {
-            for (int rowNumber = 1; rowNumber <= 8; ++rowNumber)
-            {
-                for (int colNumber = 1; colNumber <= 8; ++colNumber)
-                {
-                    BoardPosition pos = new BoardPosition(colNumber, rowNumber);
-                    SquaresDictionary.Add(pos , new SquareViewModel(ClickCommandExecute, pos));
-                }
-            }
+            m_gameManager.ToolKilledEvent += moveHandler;
+            m_gameManager.ToolMovedEvent  += moveHandler;
         }
 
-        public void ClickCommandExecute(BoardPosition position, ITool tool)
+        protected virtual void ClickCommandExecute(BoardPosition position, ITool? tool)
         {
             BoardClickEventArgs eventArgs = new BoardClickEventArgs(position, tool);
             ClickCommandEvent?.Invoke(this, eventArgs);
@@ -124,7 +121,36 @@ namespace Client.Board
                 }
             }
         }
+        
+        private void initSquares()
+        {
+            for (int rowNumber = 1; rowNumber <= 8; ++rowNumber)
+            {
+                for (int colNumber = 1; colNumber <= 8; ++colNumber)
+                {
+                    BoardPosition   pos      = new BoardPosition(colNumber, rowNumber);
+                    SquareViewModel squareVM = new SquareViewModel(ClickCommandExecute,  pos);
+                    if (m_gameManager.TryGetTool(pos, out ITool tool))
+                    {
+                        squareVM.Tool = tool;
+                    }
+                    SquaresDictionary.Add(pos , new SquareViewModel(ClickCommandExecute, pos));
+                }
+            }
+        }
 
+        private void moveHandler(object sender, ToolMovedEventArgs e)
+        {
+            Action<BoardPosition, BoardPosition, ITool> act = MoveTool;
+            m_dispatcher.BeginInvoke(act, e.InitialPosition, e.EndPosition, e.MovedTool);
+        }
+
+        protected void MoveTool(BoardPosition start, BoardPosition end, ITool tool)
+        {
+            ClearSelectedAndHintedBoardPositions();
+            RemoveTool(start, out ITool toolAtStart);
+            ForceAddTool(tool, end);
+        }
     }
 
 }

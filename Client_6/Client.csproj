@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Board\BaseBoardPanel.cs" />
+    <Compile Remove="Board\OfflineBoardPanel.cs" />
+    <Compile Remove="Board\OnlineBoardPanel.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Resources\b_bishop.png" />
     <None Remove="Resources\b_king.png" />
     <None Remove="Resources\b_knight.png" />

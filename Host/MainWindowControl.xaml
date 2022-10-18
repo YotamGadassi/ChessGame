@@ -4,13 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:board="clr-namespace:Client.Board;assembly=Client"
+        xmlns:game="clr-namespace:Client.Game;assembly=Client"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Grid.Resources>
             <ResourceDictionary>
-                <DataTemplate DataType="{x:Type board:BoardViewModel}">
-                    <board:BoardControl/>
+                <DataTemplate DataType="{x:Type game:OfflineGameViewModel}">
+                    <game:BaseGameControl/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type game:OnlineGameViewModel}">
+                    <game:BaseGameControl/>
                 </DataTemplate>
             </ResourceDictionary>
         </Grid.Resources>

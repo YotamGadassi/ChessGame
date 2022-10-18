@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="Client.Game.BaseGameControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:board="clr-namespace:Client.Board"
+             xmlns:game="clr-namespace:Client.Game"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.Resources>
+            <ResourceDictionary>
+                <DataTemplate DataType="{x:Type board:BaseBoardViewModel}">
+                    <board:BoardControl/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type game:TeamStatusViewModel}">
+                    <game:StatusBarControl/>
+                </DataTemplate>
+            </ResourceDictionary>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <ContentControl Grid.Row="0" Content="{Binding NorthTeamStatus}"/>
+        <ContentControl Grid.Row="1" Content="{Binding Board}"/>
+        <ContentControl Grid.Row="2" Content="{Binding SouthTeamStatus}"/>
+    </Grid>
+</UserControl>

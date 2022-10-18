@@ -51,11 +51,13 @@ namespace ChessGame
             foreach (KeyValuePair<BoardPosition, ITool> pair in whiteGroupBoardArrangement)
             {
                 m_gameBoard.Add(pair.Key, pair.Value);
+                toolMovedHandler(this, new ToolMovedEventArgs(pair.Value, BoardPosition.Empty, pair.Key));
             }
 
             foreach (KeyValuePair<BoardPosition, ITool> pair in blackGroupBoardArrangement)
             {
                 m_gameBoard.Add(pair.Key, pair.Value);
+                toolMovedHandler(this, new ToolMovedEventArgs(pair.Value, BoardPosition.Empty, pair.Key));
             }
 
             m_currentTeamIndex = 0;
