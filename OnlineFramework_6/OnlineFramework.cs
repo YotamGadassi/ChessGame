@@ -2,7 +2,6 @@
 using System.Windows.Media;
 using System.Windows.Threading;
 using ChessGame;
-using Client.Board;
 using Client.Game;
 using Common_6;
 using Common_6.ChessBoardEventArgs;

@@ -2,7 +2,7 @@
 
 namespace ChessGame
 {
-    public class OnlineGameManager : OfflineGameManager
+    public class OnlineGameManager : BaseGameManager
     {
         public Team CurrentMachineTeam { get; }
 

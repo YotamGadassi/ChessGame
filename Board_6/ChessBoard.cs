@@ -6,6 +6,34 @@ using log4net;
 
 namespace ChessBoard
 {
+    public enum MoveResultEnum
+    {
+        ToolMoved = 1,
+        ToolKilled = 2,
+        NoChangeOccured = 3
+    }
+
+    public class MoveResult
+    {
+        public static readonly MoveResult NoChangeOccuredResult =
+            new MoveResult(MoveResultEnum.NoChangeOccured, BoardPosition.Empty, BoardPosition.Empty, null, null); 
+        
+        public MoveResultEnum Result          { get; }
+        public BoardPosition  InitialPosition { get; }
+        public BoardPosition  EndPosition     { get; }
+        public ITool          ToolAtInitial   { get; }
+        public ITool          ToolAtEnd       { get; }
+
+        public MoveResult(MoveResultEnum result, BoardPosition initialPosition, BoardPosition endPosition, ITool toolAtInitial, ITool toolAtEnd)
+        {
+            Result          = result;
+            InitialPosition = initialPosition;
+            EndPosition     = endPosition;
+            ToolAtInitial   = toolAtInitial;
+            ToolAtEnd       = toolAtEnd;
+        }
+    }
+
     public class ChessBoard
     {
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -55,7 +83,7 @@ namespace ChessBoard
         /// <param name="start">The position from which to move a tool</param>
         /// <param name="end">The position to move a tool to it</param>
         /// <returns>true if tool has moved, O.W. false</returns>
-        public bool Move(BoardPosition start, BoardPosition end)
+        public MoveResult Move(BoardPosition start, BoardPosition end)
         {
             if (false == (GameMoveHelper.ValidatePositionOnBoard(start) && GameMoveHelper.ValidatePositionOnBoard(end)))
             {
@@ -66,14 +94,14 @@ namespace ChessBoard
             if (false == m_gameMoveHelper.IsMoveLegal(start, end))
             {
                 s_log.Info($"Move from {start} to {end} is not legal!");
-                return false;
+                return MoveResult.NoChangeOccuredResult;
             }
 
             bool isThereToolToMove = m_board.TryGetTool(start, out ITool toolToMove);
             if (false == isThereToolToMove)
             {
                 s_log.Error($"Position {start} doesn't contain any tool. So no move occurred");
-                return false;
+                return MoveResult.NoChangeOccuredResult;
             }
 
             bool isThereToolToKill = m_board.TryGetTool(end, out ITool toolOnEndPosition);
@@ -82,7 +110,7 @@ namespace ChessBoard
                 if (isOnSameTeam(toolToMove, toolOnEndPosition))
                 {
                     s_log.Info($"Cannot move tool {toolToMove} from {start} to {end}, because tool {toolOnEndPosition} is on the same team and is at end position");
-                    return false;
+                    return MoveResult.NoChangeOccuredResult;
                 }
 
                 m_board.Remove(end);
@@ -90,19 +118,20 @@ namespace ChessBoard
                 m_board.Add(end, toolToMove);
 
                 s_log.Info($"Killing event has occurred: tool at start: {toolToMove}, start: {start}, end: {end}, tool at end: {toolOnEndPosition}");
-                KillingEventArgs eventArgs = new KillingEventArgs(toolToMove, start, end, toolOnEndPosition);
-                KillingEvent?.Invoke(this, eventArgs);
-                return true;
+
+                // KillingEventArgs eventArgs = new KillingEventArgs(toolToMove, start, end, toolOnEndPosition);
+                // KillingEvent?.Invoke(this, eventArgs);
+                return new MoveResult(MoveResultEnum.ToolKilled, start, end, toolToMove, toolOnEndPosition);
             }
 
             m_board.Remove(start);
             m_board.Add(end, toolToMove);
 
             s_log.Info($"Tool Moved Event: tool:{toolToMove}, start:{start}, end:{end}");
-            ToolMovedEventArgs evengArgs = new ToolMovedEventArgs(toolToMove, start, end);
-            ToolMovedEvent?.Invoke(this, evengArgs);
+            // ToolMovedEventArgs evengArgs = new ToolMovedEventArgs(toolToMove, start, end);
+            // ToolMovedEvent?.Invoke(this, evengArgs);
 
-            return true;
+            return new MoveResult(MoveResultEnum.ToolMoved, start, end, toolToMove, toolOnEndPosition);
         }
 
         private bool isOnSameTeam(ITool toolA, ITool toolB)

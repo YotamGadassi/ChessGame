@@ -1,39 +1,61 @@
-﻿using System.Windows.Media;
+﻿using System.ComponentModel;
+using System.Windows.Media;
+using ChessBoard;
 using Common_6;
 using Common_6.ChessBoardEventArgs;
+using Tools;
 
 namespace ChessGame
 {
     public abstract class BaseGameManager
     {
-        public delegate ITool PromotionEventHandler (object sender, PromotionEventArgs e);
-        
+        public delegate ITool PromotionEventHandler(object sender, PromotionEventArgs e);
+
         protected ChessBoard.ChessBoard m_gameBoard;
 
         // public event EventHandler<ChessBoardEventArgs> CheckEvent;
-        public event EventHandler<EventArgs> CheckmateEvent;
-        public event EventHandler<EventArgs> EndGameEvent;
-        public event EventHandler<EventArgs> StartGameEvent;
+        public event EventHandler<EventArgs>          CheckmateEvent;
+        public event EventHandler<EventArgs>          EndGameEvent;
+        public event EventHandler<EventArgs>          StartGameEvent;
         public event EventHandler<ToolMovedEventArgs> ToolMovedEvent;
-        public event EventHandler<KillingEventArgs> ToolKilledEvent;
-        public event PromotionEventHandler PromotionEvent;
-        public event EventHandler<Color> TeamSwitchEvent;
+        public event EventHandler<KillingEventArgs>   ToolKilledEvent;
+        public event PromotionEventHandler            PromotionEvent;
+        public event EventHandler<Color>              TeamSwitchEvent;
 
-        protected Color[] m_teams = {Colors.White, Colors.Black};
-        protected                 int    m_currentTeamIndex;
-        protected static readonly int    s_teamsAmount = 2;
-        public                    Color   CurrentColorTurn => m_teams[m_currentTeamIndex];
+        protected                 Color[]? m_teams = { Colors.White, Colors.Black };
+        protected                 int      m_currentTeamIndex;
+        protected static readonly int      s_teamsAmount = 2;
+        public                    Color    CurrentColorTurn => m_teams[m_currentTeamIndex];
 
         protected BaseGameManager()
         {
             m_gameBoard                =  new ChessBoard.ChessBoard();
-            m_gameBoard.ToolMovedEvent += toolMovedHandler;
-            m_gameBoard.KillingEvent   += toolKilledHandler;
         }
         
         public bool Move(BoardPosition start, BoardPosition end)
         {
-            return m_gameBoard.Move(start, end);
+            MoveResult result = m_gameBoard.Move(start, end);
+            switch (result.Result)
+            {
+                case MoveResultEnum.NoChangeOccured:
+                {
+                    return false;
+                }
+                case MoveResultEnum.ToolKilled:
+                { 
+                    toolKilledHandler(this, new KillingEventArgs(result.ToolAtInitial, start, end, result.ToolAtEnd));
+                    return true;
+                }
+                case MoveResultEnum.ToolMoved:
+                {
+                    toolMovedHandler(this, new ToolMovedEventArgs(result.ToolAtInitial, start, end));
+                    return true;
+                }
+                default:
+                {
+                    throw new InvalidEnumArgumentException($"The enum value {result.Result} is not known.");
+                }
+            }
         }
 
         public void EndGame()
@@ -74,9 +96,52 @@ namespace ChessGame
             TeamSwitchEvent?.Invoke(this, m_teams[m_currentTeamIndex]);
         }
 
-        protected abstract void toolKilledHandler(object sender, KillingEventArgs e);
+        private void toolKilledHandler(object sender, KillingEventArgs e)
+        {
+            switchCurrentTeam();
+            // need to handle:
+            //1. king killed - CheckMate
+            ITool killedTool = e.KilledTool;
+            if (killedTool is King)
+            {
+                OnCheckmateEvent();
+                return;
+            }
+            //2. promotion
+            ITool movedTool = e.MovedTool;
+            if (movedTool is Pawn)
+            {
+                if ((movedTool.Color == Colors.White && e.EndPosition.Row == 7)
+                 || (movedTool.Color == Colors.Black && e.EndPosition.Row == 0))
+                {
+                    PromotionEventArgs promotionEventArgs = new PromotionEventArgs(e.MovedTool, e.EndPosition);
+                    OnPromotionEvent(promotionEventArgs);
+                    return;
+                }
+            }
 
-        protected abstract void toolMovedHandler(object sender, ToolMovedEventArgs e);
+            OnToolKilledEvent(e);
+        }
+        private void toolMovedHandler(object sender, ToolMovedEventArgs e)
+        {
+            switchCurrentTeam();
+            // need to handle:
+            // handle promotion
+            ITool movedTool = e.MovedTool;
+            if (movedTool is Pawn)
+            {
+                if ((movedTool.Color == Colors.White && e.EndPosition.Row == 7)
+                 || (movedTool.Color == Colors.Black && e.EndPosition.Row == 0))
+                {
+                    PromotionEventArgs promotionEventArgs = new PromotionEventArgs(e.MovedTool, e.EndPosition);
+                    OnPromotionEvent(promotionEventArgs);
+                    return;
+                }
+            }
+
+            //TODO: handle check for check
+            OnToolMovedEvent(e);
+        }
 
         private KeyValuePair<BoardPosition, ITool>[] getInitialBoardArrangement(GameDirection direction, Color color)
         {
