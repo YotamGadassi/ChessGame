@@ -1,13 +1,19 @@
-﻿using Common_6;
-using Microsoft.AspNetCore.SignalR;
+﻿using Common;
 
 namespace ChessServer3._0
 {
     public class PlayerObject
     {
-        public GameUnit GameUnit     { get; }
-        public string   ConnectionId { get; private set; }
+        public GameUnit GameUnit     { get; set; }
+        public string   ConnectionId { get; }
+        public string   Name         { get; }
+        public Team     PlayersTeam  { get; set; }
 
-        public Team PlayersTeam { get; set; }
+        public PlayerObject(string  connectionId
+                          , string  name)
+        {
+            ConnectionId = connectionId;
+            Name         = name;
+        }
     }
 }

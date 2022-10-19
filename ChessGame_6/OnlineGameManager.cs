@@ -1,4 +1,5 @@
-﻿using Common_6;
+﻿using Common;
+using Common_6;
 
 namespace ChessGame
 {

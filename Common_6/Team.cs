@@ -1,6 +1,7 @@
 ﻿using System.Windows.Media;
+using Common_6;
 
-namespace Common_6
+namespace Common
 {
     public class Team
     {

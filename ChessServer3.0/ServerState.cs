@@ -2,73 +2,109 @@
 using System.Windows.Media;
 using Global.DataStructures;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Primitives;
 
 namespace ChessServer3._0
 {
     public class ServerState
     {
-        private readonly UniqueQueue<string>                        m_pendingPlayers      = new();
-        private          int                                        m_currentGameNumber   = 0;
-        private readonly ConcurrentDictionary<string, List<string>> m_groupsToConnections = new();
-        private readonly ConcurrentDictionary<string, string>       m_connectionsToGroup  = new();
-
-        public async Task HandleNewConnection(string connectionId, Hub hub)
+        private readonly UniqueQueue<PlayerObject>                   m_pendingPlayers      = new();
+        private readonly ConcurrentDictionary<string, GameUnit>      m_groups              = new();
+        private readonly ConcurrentDictionary<string, PlayerObject?> m_connectionIdToPlayer = new();
+        public async Task onGameRequest(Hub          hub)
         {
-            if (m_pendingPlayers.TryDequeue(out string connectionIdFromQueue))
+            // TODO: handle error
+            m_connectionIdToPlayer.TryGetValue(hub.Context.ConnectionId, out PlayerObject? player);
+            
+            if (m_pendingPlayers.TryDequeue(out PlayerObject otherPlayer))
             {
-                string group = await createNewGroup(connectionId, connectionIdFromQueue, hub.Groups);
-                await startGame(connectionId, connectionIdFromQueue, hub.Clients);
-                return;
-            }
-            m_pendingPlayers.TryEnqueue(connectionId);
-        }
-
-        private async Task startGame(string connectionId, string connectionIdFromQueue, IHubCallerClients clients)
-        {
-            await clients.Client(connectionId).SendCoreAsync("StartGame", new object?[] { Colors.White });
-            await clients.Client(connectionIdFromQueue).SendCoreAsync("StartGame", new object?[] { Colors.Black });
-        }
-
-        private async Task<string> createNewGroup(string connectionId, string connectionIdFromQueue, IGroupManager groupManager)
-        {
-            int    currentNumber = Interlocked.Increment(ref m_currentGameNumber);
-            string currentGroup  = currentNumber.ToString();
-            await groupManager.AddToGroupAsync(connectionId, currentGroup);
-            await groupManager.AddToGroupAsync(connectionIdFromQueue, currentGroup);
-            List<string> groupsConnections = new List<string>() { connectionId, connectionIdFromQueue };
-            foreach (string groupsConnection in groupsConnections)
-            {
-                m_connectionsToGroup.TryAdd(groupsConnection, currentGroup);
-            }
-
-            m_groupsToConnections.TryAdd(currentGroup, groupsConnections);
-
-            return currentGroup;
-        }
-
-        public async Task RemovePlayer(string connectionId, Hub hub)
-        {
-            bool isAssociatedWithGroup = m_connectionsToGroup.TryRemove(connectionId, out string? groupName);
-            if (false == isAssociatedWithGroup)
-            {
-                m_pendingPlayers.TryRemove(connectionId);
+                GameUnit newGame = new(player, otherPlayer);
+                m_groups[newGame.GroupName] = newGame;
+                await Task.WhenAll(newGame.StartGame(hub),
+                                   sendStartGame(hub, newGame));
                 return;
             }
 
-            m_groupsToConnections.TryRemove(groupName, out List<string>? connections);
-            foreach (string connection in connections)
-            {
-                if (false == connection.Equals(connectionId))
-                {
-                    m_connectionsToGroup.TryRemove(connection, out _);
-                    await hub.Clients.Client(connection).SendAsync("EndGame");
-                }
-            }
+            bool isEnqueued = m_pendingPlayers.TryEnqueue(player);
+            sendEnteredToWaitingList(player, hub);
         }
 
-        public bool TryGetGroup(string connectionId, out string groupName)
+        private async Task sendStartGame(Hub      hub
+                                       , GameUnit game)
         {
-            return m_connectionsToGroup.TryGetValue(connectionId, out groupName);
+            await
+                Task.WhenAll(hub.Clients.Client(game.Player1.ConnectionId).SendAsync("StartGame", game.Player1.PlayersTeam, game.Player2.PlayersTeam)
+                            ,
+                             hub.Clients.Client(game.Player2.ConnectionId)
+                                .SendAsync("StartGame", game.Player2.PlayersTeam, game.Player1.PlayersTeam));
+        }
+
+        public bool onConnection(Hub hub)
+        {
+            string name;
+            if (hub.Context.GetHttpContext().Request.Query.TryGetValue("Name", out StringValues nameStrings))
+            {
+                name = nameStrings[0];
+            }
+            else
+            {
+                name = getRandomName();
+            }
+
+            PlayerObject player = new(hub.Context.ConnectionId, name);
+
+            return m_connectionIdToPlayer.TryAdd(hub.Context.ConnectionId, player);
+        }
+
+        private string getRandomName()
+        {
+            return "Guest";
+        }
+
+        private void sendEnteredToWaitingList(PlayerObject player, Hub hub)
+        {
+            hub.Clients.Caller.SendAsync("EnteredWaitingList");
+        }
+
+        public bool TryGetGame(string connectionId, out GameUnit game)
+        {
+            bool isConnected = m_connectionIdToPlayer.TryGetValue(connectionId, out PlayerObject? player);
+            game = null;
+            if (false == isConnected)
+            {
+                return false;
+            }
+
+            game = player.GameUnit;
+            return game != null;
+        }
+
+        public async Task onPlayerDisconnected(Hub hub)
+        {
+            string connectionId = hub.Context.ConnectionId;
+            bool   isConnected  = m_connectionIdToPlayer.Remove(connectionId, out PlayerObject? player);
+            if (false == isConnected)
+            {
+                return;
+            }
+
+            GameUnit game           = player.GameUnit;
+            bool     isPlayerInGame = null != game;
+            if (false == isPlayerInGame)
+            {
+                return;
+            }
+
+            //TODO: handle error
+            m_groups.Remove(game.GroupName, out _);
+            PlayerObject otherPlayer = game.GetOtherPlayer(player);
+            await sendEndGame(hub, otherPlayer);
+        }
+
+        private async Task sendEndGame(Hub          hub
+                                     , PlayerObject otherPlayer)
+        {
+            throw new NotImplementedException();
         }
     }
 }

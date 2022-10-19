@@ -3,6 +3,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using ChessGame;
 using Client.Game;
+using Common;
 using Common_6;
 using Common_6.ChessBoardEventArgs;
 using log4net;

@@ -25,6 +25,11 @@ namespace ChessServer3._0
             await s_serverState.RemovePlayer(Context.ConnectionId, this);
         }
 
+        public async Task RequestGame(string name)
+        {
+
+        }
+
         public override async Task OnConnectedAsync()
         {
             Debug.WriteLine($"Connected established: {Context.ConnectionId}");
