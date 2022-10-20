@@ -26,17 +26,17 @@ namespace ChessServer3._0
             }
 
             bool isEnqueued = m_pendingPlayers.TryEnqueue(player);
-            sendEnteredToWaitingList(player, hub);
+            // sendEnteredToWaitingList(player, hub);
         }
 
         private async Task sendStartGame(Hub      hub
                                        , GameUnit game)
         {
             await
-                Task.WhenAll(hub.Clients.Client(game.Player1.ConnectionId).SendAsync("StartGame", game.Player1.PlayersTeam, game.Player2.PlayersTeam)
+                Task.WhenAll(hub.Clients.Client(game.WhitePlayer1.ConnectionId).SendAsync("StartGame", game.WhitePlayer1.PlayersTeam, game.BlackPlayer2.PlayersTeam, game.CurrentGameVersion)
                             ,
-                             hub.Clients.Client(game.Player2.ConnectionId)
-                                .SendAsync("StartGame", game.Player2.PlayersTeam, game.Player1.PlayersTeam));
+                             hub.Clients.Client(game.BlackPlayer2.ConnectionId)
+                                .SendAsync("StartGame", game.BlackPlayer2.PlayersTeam, game.WhitePlayer1.PlayersTeam, Guid.Empty));
         }
 
         public bool onConnection(Hub hub)
@@ -68,7 +68,7 @@ namespace ChessServer3._0
 
         public bool TryGetGame(string connectionId, out GameUnit game)
         {
-            bool isConnected = m_connectionIdToPlayer.TryGetValue(connectionId, out PlayerObject? player);
+            bool isConnected = TryGetPlayer(connectionId, out PlayerObject player);
             game = null;
             if (false == isConnected)
             {
@@ -79,7 +79,13 @@ namespace ChessServer3._0
             return game != null;
         }
 
-        public async Task onPlayerDisconnected(Hub hub)
+        public bool TryGetPlayer(string           connectionId
+                               , out PlayerObject player)
+        {
+            return m_connectionIdToPlayer.TryGetValue(connectionId, out player);
+        }
+
+        public async Task onPlayerQuit(Hub hub)
         {
             string connectionId = hub.Context.ConnectionId;
             bool   isConnected  = m_connectionIdToPlayer.Remove(connectionId, out PlayerObject? player);
@@ -104,7 +110,7 @@ namespace ChessServer3._0
         private async Task sendEndGame(Hub          hub
                                      , PlayerObject otherPlayer)
         {
-            throw new NotImplementedException();
+            await hub.Clients.Client(otherPlayer.ConnectionId).SendAsync("EndGame");
         }
     }
 }

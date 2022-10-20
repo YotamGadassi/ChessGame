@@ -1,10 +1,13 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Data.OleDb;
+using System.Diagnostics;
 using System.Windows.Media;
 using ChessGame;
 using Common;
 using Common.ChessBoardEventArgs;
 using Common_6;
 using Microsoft.AspNetCore.SignalR;
+using static System.Windows.Media.Colors;
+using Timer = System.Timers.Timer;
 
 namespace ChessServer3._0;
 
@@ -12,17 +15,19 @@ public class GameUnit : IDisposable
 {
     public GameUnit(PlayerObject player1, PlayerObject player2)
     {
-        GroupName            = Guid.NewGuid().ToString();
-        CurrentGameVersion   = Guid.Empty;
-        m_gameManager        = new OfflineGameManager();
+        GroupName          = Guid.NewGuid().ToString();
+        CurrentGameVersion = Guid.Empty;
+        m_gameManager      = new OfflineGameManager();
+        WhitePlayer1            = player1;
+        BlackPlayer2            = player2;
     }
 
     public  string          GroupName          { get; }
     public  Guid            CurrentGameVersion { get; private set; }
 
     private BaseGameManager m_gameManager;
-    public  PlayerObject    Player1 { get; }
-    public  PlayerObject    Player2 { get; }
+    public  PlayerObject    WhitePlayer1 { get; }
+    public  PlayerObject    BlackPlayer2 { get; }
 
     public bool IsStarted => !CurrentGameVersion.Equals(Guid.Empty);
 
@@ -36,13 +41,13 @@ public class GameUnit : IDisposable
         CurrentGameVersion = Guid.NewGuid();
 
         m_gameManager.StartGame();
-        Player1.PlayersTeam = new Team(Player1.Name, Colors.White, GameDirection.North);
-        Player1.GameUnit    = this;
-        Player2.PlayersTeam = new Team(Player2.Name, Colors.Black, GameDirection.South);
-        Player2.GameUnit    = this;
+        WhitePlayer1.PlayersTeam = new Team(WhitePlayer1.Name, White, GameDirection.North);
+        WhitePlayer1.GameUnit    = this;
+        BlackPlayer2.PlayersTeam = new Team(BlackPlayer2.Name, Black, GameDirection.South);
+        BlackPlayer2.GameUnit    = this;
 
-        await Task.WhenAll(hub.Groups.AddToGroupAsync(Player1.ConnectionId, GroupName),
-                           hub.Groups.AddToGroupAsync(Player2.ConnectionId, GroupName));
+        await Task.WhenAll(hub.Groups.AddToGroupAsync(WhitePlayer1.ConnectionId, GroupName),
+                           hub.Groups.AddToGroupAsync(BlackPlayer2.ConnectionId, GroupName));
     }
 
     public async void EndGame(Hub hub)
@@ -56,48 +61,38 @@ public class GameUnit : IDisposable
 
         m_gameManager.EndGame();
 
-        await Task.WhenAll(hub.Groups.RemoveFromGroupAsync(Player1.ConnectionId, GroupName),
-                           hub.Groups.RemoveFromGroupAsync(Player2.ConnectionId, GroupName)
+        await Task.WhenAll(hub.Groups.RemoveFromGroupAsync(WhitePlayer1.ConnectionId, GroupName),
+                           hub.Groups.RemoveFromGroupAsync(BlackPlayer2.ConnectionId, GroupName)
                           );
     }
 
-    public void Move(Hub           hub
-                   , Guid          gameVersion
-                   , BoardPosition start
-                   , BoardPosition end)
+    public MoveResult Move(Hub           hub
+                         , Guid          gameVersion
+                         , BoardPosition start
+                         , BoardPosition end)
     {
         if (false == gameVersion.Equals(CurrentGameVersion))
         {
-            return;
+            return MoveResult.NoChangeOccurredResult;
         }
 
         MoveResult result = m_gameManager.Move(start, end);
-        if (result.Result == MoveResultEnum.NoChangeOccurred)
+        if (result.Result != MoveResultEnum.NoChangeOccurred)
         {
-            return;
+            CurrentGameVersion = Guid.NewGuid();
         }
 
-        CurrentGameVersion = Guid.NewGuid();
-        switch (result.Result)
-        {
-            case MoveResultEnum.ToolMoved:
-            case MoveResultEnum.ToolKilled:
-            {
-                hub.Clients.Group(GroupName)
-                   .SendAsync("Move", start, end, CurrentGameVersion);
-                break;
-            }
-        }
+        return result;
     }
 
     public PlayerObject GetOtherPlayer(PlayerObject player)
     {
-        if (player.Equals(Player1))
+        if (player.Equals(WhitePlayer1))
         {
-            return Player2;
+            return BlackPlayer2;
         }
 
-        return Player1;
+        return WhitePlayer1;
     }
 
     public void Dispose()

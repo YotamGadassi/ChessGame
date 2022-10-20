@@ -29,7 +29,7 @@ namespace ChessGame
 
         protected BaseGameManager()
         {
-            m_gameBoard                =  new Board.ChessBoard();
+            m_gameBoard                =  new ChessBoard();
         }
         
         public MoveResult Move(BoardPosition start, BoardPosition end)
