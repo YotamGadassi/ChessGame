@@ -1,33 +1,38 @@
-﻿using System.Data.OleDb;
-using System.Diagnostics;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 using ChessGame;
 using Common;
 using Common.ChessBoardEventArgs;
 using Common_6;
 using Microsoft.AspNetCore.SignalR;
 using static System.Windows.Media.Colors;
-using Timer = System.Timers.Timer;
 
 namespace ChessServer3._0;
 
+public delegate void PlayerTimeChanged(PlayerObject player
+                                     , TimeSpan     timeLeft);
 public class GameUnit : IDisposable
 {
     public GameUnit(PlayerObject player1, PlayerObject player2)
     {
-        GroupName          = Guid.NewGuid().ToString();
-        CurrentGameVersion = Guid.Empty;
-        m_gameManager      = new OfflineGameManager();
-        WhitePlayer1            = player1;
-        BlackPlayer2            = player2;
+        GroupName                     =  Guid.NewGuid().ToString();
+        CurrentGameVersion            =  Guid.Empty;
+        m_gameManager                 =  new OfflineGameManager();
+        WhitePlayer1                  =  player1;
+        WhitePlayer1.OneSecPassEvent  += onPlayerOneSecElapsed;
+        BlackPlayer2                  =  player2;
+        BlackPlayer2.OneSecPassEvent  += onPlayerOneSecElapsed;
+        m_gameManager.TeamSwitchEvent += onTeamSwitch;
     }
 
-    public  string          GroupName          { get; }
-    public  Guid            CurrentGameVersion { get; private set; }
+    private BaseGameManager       m_gameManager;
+    private IHubContext<ChessHub> m_hubContext;
+    public  string                GroupName          { get; }
+    public  Guid                  CurrentGameVersion { get; private set; }
 
-    private BaseGameManager m_gameManager;
     public  PlayerObject    WhitePlayer1 { get; }
     public  PlayerObject    BlackPlayer2 { get; }
+
+    public event PlayerTimeChanged PlayerTimeChangedEvent;
 
     public bool IsStarted => !CurrentGameVersion.Equals(Guid.Empty);
 
@@ -48,6 +53,7 @@ public class GameUnit : IDisposable
 
         await Task.WhenAll(hub.Groups.AddToGroupAsync(WhitePlayer1.ConnectionId, GroupName),
                            hub.Groups.AddToGroupAsync(BlackPlayer2.ConnectionId, GroupName));
+        WhitePlayer1.StartTimer();
     }
 
     public async void EndGame(Hub hub)
@@ -66,8 +72,7 @@ public class GameUnit : IDisposable
                           );
     }
 
-    public MoveResult Move(Hub           hub
-                         , Guid          gameVersion
+    public MoveResult Move(Guid          gameVersion
                          , BoardPosition start
                          , BoardPosition end)
     {
@@ -97,6 +102,30 @@ public class GameUnit : IDisposable
 
     public void Dispose()
     {
+
+    }
+
+    private void onPlayerOneSecElapsed(object? sender, TimeSpan timeLeft)
+    {
+        if (false == sender is PlayerObject player)
+        {
+            return;
+        }
+
+        PlayerTimeChangedEvent?.Invoke(player, timeLeft);
+    }
+
+    private void onTeamSwitch(object? sender, Color teamColor)
+    {
+        if (teamColor == Colors.Black)
+        {
+            WhitePlayer1.StopTimer();
+            BlackPlayer2.StartTimer();
+            return;
+        }
+
+        BlackPlayer2.StopTimer();
+        WhitePlayer1.StartTimer();
 
     }
 }

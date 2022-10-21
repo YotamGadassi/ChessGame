@@ -13,5 +13,6 @@
         
         <Label BorderThickness="2" BorderBrush="Yellow" VerticalAlignment="Top" Padding="5" Background="{Binding Path=Color, Converter={StaticResource ColorToBrushConverter}}" Content="  "/>
         <Label VerticalContentAlignment="Top" VerticalAlignment="Top" Padding="5" Content="{Binding Name}"/>
+        <Label Content="{Binding TimeLeft}"></Label>
     </StackPanel>
 </UserControl>

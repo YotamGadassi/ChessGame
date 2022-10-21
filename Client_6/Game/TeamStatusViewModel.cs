@@ -17,7 +17,7 @@ namespace Client.Game
         private static readonly DependencyProperty MovingDirectionProperty = DependencyProperty.Register("MovingDirection", typeof(GameDirection), typeof(TeamStatusViewModel));
         private static readonly DependencyProperty NameProperty = DependencyProperty.Register("Name", typeof(string), typeof(TeamStatusViewModel));
         private static readonly DependencyProperty IsTeamTurnProperty = DependencyProperty.Register("IsTeamTurn", typeof(bool), typeof(TeamStatusViewModel), new FrameworkPropertyMetadata(false));
-        private static readonly DependencyProperty TimerProperty = DependencyProperty.Register("Timer", typeof(TimeSpan), typeof(TeamStatusViewModel), new PropertyMetadata(TimeSpan.FromMinutes(10)));
+        private static readonly DependencyProperty TimeLeftProperty = DependencyProperty.Register("TimeLeft", typeof(TimeSpan), typeof(TeamStatusViewModel), new PropertyMetadata(TimeSpan.FromMinutes(10)));
 
 
         private readonly Dispatcher m_dispatcher;
@@ -46,10 +46,10 @@ namespace Client.Game
             set => SetValue(NameProperty, value);
         }
 
-        public TimeSpan Timer
+        public TimeSpan TimeLeft
         {
-            get=> (TimeSpan)GetValue(TimerProperty);
-            set=> SetValue(TimerProperty, value);
+            get=> (TimeSpan)GetValue(TimeLeftProperty);
+            set=> SetValue(TimeLeftProperty, value);
         }
 
         private readonly Timer m_timer;
@@ -60,8 +60,7 @@ namespace Client.Game
             Color           = team.Color;
             MovingDirection = team.MoveDirection;
             Name            = team.Name;
-            m_timer         = new Timer();
-            setTimer();
+            TimeLeft = TimeSpan.FromMinutes(10);
         }
 
         public void StartTimer()
@@ -79,26 +78,6 @@ namespace Client.Game
         {
             IsTeamTurn = isTeamTurn;
         }
-
-        private void setTimer()
-        {
-            m_timer.Interval =  s_elapsedTimerIntervalMs;
-            m_timer.Elapsed  += onElapsed;
-
-        }
-
-        private void onElapsed(object? sender, ElapsedEventArgs e)
-        {
-            m_dispatcher.Invoke(
-                                () =>
-                                {
-                                    DateTime currentTime = DateTime.Now;
-                                    TimeSpan diff        = currentTime - m_lastElapsedTime;
-                                    m_lastElapsedTime =  currentTime;
-                                    Timer             -= diff;
-                                });
-        }
-
 
     }
 }

@@ -15,16 +15,16 @@ public class OnlineFramework
 {
     private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-    private        HubConnection     m_connection;
-    private                 BaseGameManager   m_gameManager;
-    private                 Team              m_localMachineTeam;
-    private readonly        Dispatcher        m_dispatcher;
-    public                  BaseGameViewModel ViewModel;
-    private static readonly string            s_hubAddress = @"https://localhost:7034/ChessHub";
+    private                 HubConnection       m_connection;
+    private                 BaseGameManager     m_gameManager;
+    private                 Team                m_localMachineTeam;
+    private readonly        Dispatcher          m_dispatcher;
+    public                  OnlineGameViewModel ViewModel;
+    private static readonly string              s_hubAddress = @"https://localhost:7034/ChessHub";
 
-    private static Guid                          lastGameVersion;
-    public event EventHandler<BaseGameViewModel> OnGameStarted;
-    public event EventHandler                    OnGameEnd;
+    private static Guid                            lastGameVersion;
+    public event EventHandler<OnlineGameViewModel> OnGameStarted;
+    public event EventHandler                      OnGameEnd;
 
     public HubConnectionState ConnectionState => m_connection.State;
 
@@ -105,6 +105,7 @@ public class OnlineFramework
         m_connection.On<BoardPosition, BoardPosition,Guid>("Move", handleMoveRequest);
         m_connection.On<Team, Team, Guid>("StartGame", handleStartGameRequest);
         m_connection.On("EndGame", handleEndGameRequest);
+        m_connection.On<Team, TimeSpan>("UpdateTime", handleTimeUpdate);
     }
 
     private void handleMoveRequest(BoardPosition start, BoardPosition end, Guid newGameVersion)
@@ -126,6 +127,25 @@ public class OnlineFramework
     private void handleEndGameRequest()
     {
         m_dispatcher.InvokeAsync(endGame);
+    }
+
+    private void handleTimeUpdate(Team     team
+                                , TimeSpan timeLeft)
+    {
+        m_dispatcher.Invoke(() => updateTime(team, timeLeft));
+    }
+
+    private void updateTime(Team     team
+                          , TimeSpan timeLeft)
+    {
+        if (team.MoveDirection == GameDirection.North)
+        {
+            ViewModel.SouthTeamStatus.TimeLeft = timeLeft;
+        }
+        else
+        {
+            ViewModel.NorthTeamStatus.TimeLeft = timeLeft;
+        }
     }
 
     private void startGame(Team localTeam, Team remoteTeam, Guid gameVersion)

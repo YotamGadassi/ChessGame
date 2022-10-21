@@ -35,6 +35,7 @@ namespace Host
             OnlineFramework onlineFramework = new();
             onlineFramework.OnGameStarted += onGameStart;
             onlineFramework.OnGameEnd     += onGameEnd;
+            onlineFramework.ConnectToHubAsync("Yotam");
             onlineFramework.AsyncRequestGameFromServer();
         }
 

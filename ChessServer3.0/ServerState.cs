@@ -6,12 +6,31 @@ using Microsoft.Extensions.Primitives;
 
 namespace ChessServer3._0
 {
-    public class ServerState
+    public interface IServerState
     {
-        private readonly UniqueQueue<PlayerObject>                   m_pendingPlayers      = new();
-        private readonly ConcurrentDictionary<string, GameUnit>      m_groups              = new();
+        Task OnGameRequest(Hub   hub);
+        bool OnConnection(string name,         string       connectionId);
+        bool TryGetGame(string   connectionId, out GameUnit game);
+
+        bool TryGetPlayer(string           connectionId
+                        , out PlayerObject player);
+
+        Task OnPlayerQuit(string connectionId);
+    }
+
+    public class ServerState : IServerState
+    {
+        private readonly IHubContext<ChessHub>                       m_hubContext;
+        private readonly UniqueQueue<PlayerObject>                   m_pendingPlayers       = new();
+        private readonly ConcurrentDictionary<string, GameUnit>      m_groups               = new();
         private readonly ConcurrentDictionary<string, PlayerObject?> m_connectionIdToPlayer = new();
-        public async Task onGameRequest(Hub          hub)
+
+        public ServerState(IHubContext<ChessHub> hubContext)
+        {
+            m_hubContext = hubContext;
+        }
+
+        public async Task OnGameRequest(Hub          hub)
         {
             // TODO: handle error
             m_connectionIdToPlayer.TryGetValue(hub.Context.ConnectionId, out PlayerObject? player);
@@ -19,8 +38,9 @@ namespace ChessServer3._0
             if (m_pendingPlayers.TryDequeue(out PlayerObject otherPlayer))
             {
                 GameUnit newGame = new(player, otherPlayer);
-                m_groups[newGame.GroupName] = newGame;
-                await Task.WhenAll(newGame.StartGame(hub),
+                m_groups[newGame.GroupName]    =  newGame;
+                newGame.PlayerTimeChangedEvent += onPlayerOneSecElapsed;
+                await Task.WhenAll(newGame.StartGame(hub), 
                                    sendStartGame(hub, newGame));
                 return;
             }
@@ -39,31 +59,16 @@ namespace ChessServer3._0
                                 .SendAsync("StartGame", game.BlackPlayer2.PlayersTeam, game.WhitePlayer1.PlayersTeam, Guid.Empty));
         }
 
-        public bool onConnection(Hub hub)
+        public bool OnConnection(string name, string connectionId)
         {
-            string name;
-            if (hub.Context.GetHttpContext().Request.Query.TryGetValue("Name", out StringValues nameStrings))
-            {
-                name = nameStrings[0];
-            }
-            else
-            {
-                name = getRandomName();
-            }
+            PlayerObject player = new(connectionId, name);
 
-            PlayerObject player = new(hub.Context.ConnectionId, name);
-
-            return m_connectionIdToPlayer.TryAdd(hub.Context.ConnectionId, player);
+            return m_connectionIdToPlayer.TryAdd(connectionId, player);
         }
 
-        private string getRandomName()
+        private void sendEnteredToWaitingList(PlayerObject player)
         {
-            return "Guest";
-        }
-
-        private void sendEnteredToWaitingList(PlayerObject player, Hub hub)
-        {
-            hub.Clients.Caller.SendAsync("EnteredWaitingList");
+            m_hubContext.Clients.Client(player.ConnectionId).SendAsync("EnteredWaitingList");
         }
 
         public bool TryGetGame(string connectionId, out GameUnit game)
@@ -85,9 +90,8 @@ namespace ChessServer3._0
             return m_connectionIdToPlayer.TryGetValue(connectionId, out player);
         }
 
-        public async Task onPlayerQuit(Hub hub)
+        public async Task OnPlayerQuit(string connectionId)
         {
-            string connectionId = hub.Context.ConnectionId;
             bool   isConnected  = m_connectionIdToPlayer.Remove(connectionId, out PlayerObject? player);
             if (false == isConnected)
             {
@@ -104,13 +108,18 @@ namespace ChessServer3._0
             //TODO: handle error
             m_groups.Remove(game.GroupName, out _);
             PlayerObject otherPlayer = game.GetOtherPlayer(player);
-            await sendEndGame(hub, otherPlayer);
+            await sendEndGame(otherPlayer);
         }
 
-        private async Task sendEndGame(Hub          hub
-                                     , PlayerObject otherPlayer)
+        private async Task sendEndGame(PlayerObject otherPlayer)
         {
-            await hub.Clients.Client(otherPlayer.ConnectionId).SendAsync("EndGame");
+            await m_hubContext.Clients.Client(otherPlayer.ConnectionId).SendAsync("EndGame");
+        }
+
+        private void onPlayerOneSecElapsed(PlayerObject player, TimeSpan timeLeft)
+        {
+            string groupName = player.GameUnit.GroupName;
+            m_hubContext.Clients.Group(groupName).SendAsync("UpdateTime", player.PlayersTeam, timeLeft);
         }
     }
 }
