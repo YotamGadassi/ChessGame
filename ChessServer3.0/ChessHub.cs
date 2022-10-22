@@ -7,12 +7,12 @@ namespace ChessServer3._0
 {
     public class ChessHub : Hub
     {
-        private readonly IServerState m_serverState;
-
-        private readonly IHubContext<ChessHub> m_hubContext;
-        public ChessHub(IServerState serverState)
+        private readonly IServerState      m_serverState;
+        private readonly ILogger<ChessHub> m_log;
+        public ChessHub(IServerState serverState, ILogger<ChessHub> logger)
         {
             m_serverState = serverState;
+            m_log         = logger;
         }
 
         [HubMethodName("Move")]
@@ -52,18 +52,45 @@ namespace ChessServer3._0
 
         public async Task RequestGame()
         {
-            await m_serverState.OnGameRequest(this);
+            GameRequestResult result =  await m_serverState.OnGameRequest(Context.ConnectionId);
+            switch (result)
+            {
+                case GameRequestResult.GameStarted:
+                {
+                    await sendStartGameToGroup();
+                    break;
+                }
+                default:
+                {
+                        break;
+                }
+            }
+        }
+
+        private async Task sendStartGameToGroup()
+        {
+            bool isGameExists = m_serverState.TryGetGame(Context.ConnectionId, out GameUnit game);
+            if (false == isGameExists)
+            {
+                return;
+            }
+
+            await
+                Task.WhenAll(Clients.Client(game.WhitePlayer1.ConnectionId).SendAsync("StartGame", game.WhitePlayer1.PlayersTeam, game.BlackPlayer2.PlayersTeam, game.CurrentGameVersion)
+                            ,
+                             Clients.Client(game.BlackPlayer2.ConnectionId)
+                                    .SendAsync("StartGame", game.BlackPlayer2.PlayersTeam, game.WhitePlayer1.PlayersTeam, Guid.Empty));
         }
 
         public override async Task OnConnectedAsync()
         {
             Debug.WriteLine($"Connected established: {Context.ConnectionId}");
-            string name = getName();
+            string name = getNameForConnection();
             m_serverState.OnConnection(name, Context.ConnectionId);
             await base.OnConnectedAsync();
         }
 
-        private string getName()
+        private string getNameForConnection()
         {
             return Context.GetHttpContext().Request.Query["Name"];
         }

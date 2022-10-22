@@ -36,11 +36,11 @@ public class GameUnit : IDisposable
 
     public bool IsStarted => !CurrentGameVersion.Equals(Guid.Empty);
 
-    public async Task StartGame(Hub hub)
+    public async Task<bool> StartGame()
     {
         if (IsStarted)
         {
-            return;
+            return false;
         }
 
         CurrentGameVersion = Guid.NewGuid();
@@ -51,9 +51,10 @@ public class GameUnit : IDisposable
         BlackPlayer2.PlayersTeam = new Team(BlackPlayer2.Name, Black, GameDirection.South);
         BlackPlayer2.GameUnit    = this;
 
-        await Task.WhenAll(hub.Groups.AddToGroupAsync(WhitePlayer1.ConnectionId, GroupName),
-                           hub.Groups.AddToGroupAsync(BlackPlayer2.ConnectionId, GroupName));
+        await Task.WhenAll(m_hubContext.Groups.AddToGroupAsync(WhitePlayer1.ConnectionId, GroupName),
+                           m_hubContext.Groups.AddToGroupAsync(BlackPlayer2.ConnectionId, GroupName));
         WhitePlayer1.StartTimer();
+        return true;
     }
 
     public async void EndGame(Hub hub)

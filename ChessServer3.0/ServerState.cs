@@ -6,11 +6,19 @@ using Microsoft.Extensions.Primitives;
 
 namespace ChessServer3._0
 {
+    public enum GameRequestResult
+    {
+        GameStarted = 1,
+        CannotStartGame = 2,
+        PlayerAddedToPendingList = 3,
+        CannotAddPlayerToPendingList = 4
+    }
+    
     public interface IServerState
     {
-        Task OnGameRequest(Hub   hub);
-        bool OnConnection(string name,         string       connectionId);
-        bool TryGetGame(string   connectionId, out GameUnit game);
+        Task<GameRequestResult> OnGameRequest(string connectionId);
+        bool                    OnConnection(string  name,         string       connectionId);
+        bool                    TryGetGame(string    connectionId, out GameUnit game);
 
         bool TryGetPlayer(string           connectionId
                         , out PlayerObject player);
@@ -24,39 +32,32 @@ namespace ChessServer3._0
         private readonly UniqueQueue<PlayerObject>                   m_pendingPlayers       = new();
         private readonly ConcurrentDictionary<string, GameUnit>      m_groups               = new();
         private readonly ConcurrentDictionary<string, PlayerObject?> m_connectionIdToPlayer = new();
-
-        public ServerState(IHubContext<ChessHub> hubContext)
+        private readonly ILogger<ServerState>                        m_log;
+        public ServerState(IHubContext<ChessHub> hubContext, ILogger<ServerState> logger)
         {
             m_hubContext = hubContext;
+            m_log        = logger;
+            m_log.LogInformation($"Server state has been created");
         }
 
-        public async Task OnGameRequest(Hub          hub)
+        public async Task<GameRequestResult> OnGameRequest(string connectionId)
         {
             // TODO: handle error
-            m_connectionIdToPlayer.TryGetValue(hub.Context.ConnectionId, out PlayerObject? player);
+            m_connectionIdToPlayer.TryGetValue(connectionId, out PlayerObject? player);
             
             if (m_pendingPlayers.TryDequeue(out PlayerObject otherPlayer))
             {
                 GameUnit newGame = new(player, otherPlayer);
                 m_groups[newGame.GroupName]    =  newGame;
                 newGame.PlayerTimeChangedEvent += onPlayerOneSecElapsed;
-                await Task.WhenAll(newGame.StartGame(hub), 
-                                   sendStartGame(hub, newGame));
-                return;
+                bool isGameStarted = await newGame.StartGame();
+                return isGameStarted ? GameRequestResult.GameStarted : GameRequestResult.CannotStartGame;
             }
 
             bool isEnqueued = m_pendingPlayers.TryEnqueue(player);
-            // sendEnteredToWaitingList(player, hub);
-        }
-
-        private async Task sendStartGame(Hub      hub
-                                       , GameUnit game)
-        {
-            await
-                Task.WhenAll(hub.Clients.Client(game.WhitePlayer1.ConnectionId).SendAsync("StartGame", game.WhitePlayer1.PlayersTeam, game.BlackPlayer2.PlayersTeam, game.CurrentGameVersion)
-                            ,
-                             hub.Clients.Client(game.BlackPlayer2.ConnectionId)
-                                .SendAsync("StartGame", game.BlackPlayer2.PlayersTeam, game.WhitePlayer1.PlayersTeam, Guid.Empty));
+            return isEnqueued
+                       ? GameRequestResult.PlayerAddedToPendingList
+                       : GameRequestResult.CannotAddPlayerToPendingList;
         }
 
         public bool OnConnection(string name, string connectionId)
