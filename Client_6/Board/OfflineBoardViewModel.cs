@@ -1,7 +1,7 @@
 ﻿using System.Windows.Media;
 using ChessGame;
 using Client.Helpers;
-using Common_6;
+using Common;
 
 namespace Client.Board
 {

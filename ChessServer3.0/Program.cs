@@ -1,6 +1,4 @@
-using System.Reflection;
 using ChessServer3._0;
-using log4net.Config;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSignalR();

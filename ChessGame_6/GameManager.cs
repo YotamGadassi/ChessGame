@@ -4,7 +4,6 @@ using Board;
 using Common;
 using Common.ChessBoardEventArgs;
 using Common_6;
-using Common_6.ChessBoardEventArgs;
 using Tools;
 
 namespace ChessGame
@@ -14,14 +13,15 @@ namespace ChessGame
         protected ChessBoard m_gameBoard;
 
         // public event EventHandler<ChessBoardEventArgs> CheckEvent;
-        public event EventHandler<EventArgs>          CheckmateEvent;
+        public event EventHandler<CheckmateEventArgs> CheckmateEvent;
         public event EventHandler<EventArgs>          EndGameEvent;
         public event EventHandler<EventArgs>          StartGameEvent;
         public event EventHandler<ToolMovedEventArgs> ToolMovedEvent;
         public event EventHandler<KillingEventArgs>   ToolKilledEvent;
         public event PromotionEventHandler            PromotionEvent;
         public event EventHandler<Color>              TeamSwitchEvent;
-        public                    Color    CurrentColorTurn => m_teams[m_currentTeamIndex];
+
+        public Color                                  CurrentColorTurn => m_teams[m_currentTeamIndex];
 
         protected                 Color[]? m_teams = { Colors.White, Colors.Black };
         protected                 int      m_currentTeamIndex;
@@ -42,13 +42,31 @@ namespace ChessGame
                     break;
                 }
                 case MoveResultEnum.ToolKilled:
-                { 
-                    toolKilledHandler(this, new KillingEventArgs(result.ToolAtInitial, start, end, result.ToolAtEnd));
+                {
+                    ITool toolKilled  = result.ToolAtEnd;
+                    bool  isCheckmate = toolKilled is King;
+                    if (isCheckmate)
+                    {
+                        OnCheckmateEvent(new CheckmateEventArgs(toolKilled.Color, result.EndPosition, result.InitialPosition));
+                        break;
+                    }
+
+                    toolKilledHandler(new KillingEventArgs(result.ToolAtInitial, start, end, result.ToolAtEnd));
+                    if (isPromotion(result))
+                    {
+                        OnPromotionEvent(new PromotionEventArgs(result.ToolAtInitial, result.EndPosition));
+                    }
+                    switchCurrentTeam();
                     break;
                 }
                 case MoveResultEnum.ToolMoved:
                 {
-                    toolMovedHandler(this, new ToolMovedEventArgs(result.ToolAtInitial, start, end));
+                    toolMovedHandler(new ToolMovedEventArgs(result.ToolAtInitial, start, end));
+                    if (isPromotion(result))
+                    {
+                        OnPromotionEvent(new PromotionEventArgs(result.ToolAtInitial, result.EndPosition));
+                    }
+                    switchCurrentTeam();
                     break;
                 }
                 default:
@@ -58,6 +76,20 @@ namespace ChessGame
             }
 
             return result;
+        }
+
+        private bool isPromotion(MoveResult result)
+        {
+            ITool         toolMoved   = result.ToolAtInitial;
+            BoardPosition endPosition = result.EndPosition;
+            return toolMoved is Pawn && isLastRow(toolMoved, endPosition);
+        }
+
+        private bool isLastRow(ITool         movedTool
+                             , BoardPosition endPosition)
+        {
+            return movedTool.Color == Colors.White && endPosition.Row == 7
+                || movedTool.Color == Colors.Black && endPosition.Row == 0;
         }
 
         public void EndGame()
@@ -76,13 +108,13 @@ namespace ChessGame
             foreach (KeyValuePair<BoardPosition, ITool> pair in whiteGroupBoardArrangement)
             {
                 m_gameBoard.Add(pair.Key, pair.Value);
-                toolMovedHandler(this, new ToolMovedEventArgs(pair.Value, BoardPosition.Empty, pair.Key));
+                toolMovedHandler(new ToolMovedEventArgs(pair.Value, BoardPosition.Empty, pair.Key));
             }
 
             foreach (KeyValuePair<BoardPosition, ITool> pair in blackGroupBoardArrangement)
             {
                 m_gameBoard.Add(pair.Key, pair.Value);
-                toolMovedHandler(this, new ToolMovedEventArgs(pair.Value, BoardPosition.Empty, pair.Key));
+                toolMovedHandler(new ToolMovedEventArgs(pair.Value, BoardPosition.Empty, pair.Key));
             }
 
             m_currentTeamIndex = 0;
@@ -100,51 +132,13 @@ namespace ChessGame
             TeamSwitchEvent?.Invoke(this, m_teams[m_currentTeamIndex]);
         }
 
-        private void toolKilledHandler(object sender, KillingEventArgs e)
+        private void toolKilledHandler(KillingEventArgs e)
         {
-            switchCurrentTeam();
-            // need to handle:
-            //1. king killed - CheckMate
-            ITool killedTool = e.KilledTool;
-            if (killedTool is King)
-            {
-                OnCheckmateEvent();
-                return;
-            }
-            //2. promotion
-            ITool movedTool = e.MovedTool;
-            if (movedTool is Pawn)
-            {
-                if ((movedTool.Color == Colors.White && e.EndPosition.Row == 7)
-                 || (movedTool.Color == Colors.Black && e.EndPosition.Row == 0))
-                {
-                    PromotionEventArgs promotionEventArgs = new PromotionEventArgs(e.MovedTool, e.EndPosition);
-                    OnPromotionEvent(promotionEventArgs);
-                    return;
-                }
-            }
-
             OnToolKilledEvent(e);
         }
 
-        private void toolMovedHandler(object sender, ToolMovedEventArgs e)
+        private void toolMovedHandler(ToolMovedEventArgs e)
         {
-            switchCurrentTeam();
-            // need to handle:
-            // handle promotion
-            ITool movedTool = e.MovedTool;
-            if (movedTool is Pawn)
-            {
-                if ((movedTool.Color == Colors.White && e.EndPosition.Row == 7)
-                 || (movedTool.Color == Colors.Black && e.EndPosition.Row == 0))
-                {
-                    PromotionEventArgs promotionEventArgs = new PromotionEventArgs(e.MovedTool, e.EndPosition);
-                    OnPromotionEvent(promotionEventArgs);
-                    return;
-                }
-            }
-
-            //TODO: handle check for check
             OnToolMovedEvent(e);
         }
 
@@ -189,9 +183,9 @@ namespace ChessGame
             ToolKilledEvent?.Invoke(this, e);
         }
 
-        protected virtual void OnCheckmateEvent()
+        protected virtual void OnCheckmateEvent(CheckmateEventArgs args)
         {
-            CheckmateEvent?.Invoke(this, EventArgs.Empty);
+            CheckmateEvent?.Invoke(this, args);
         }
         
         protected virtual void OnPromotionEvent(PromotionEventArgs e)

@@ -1,5 +1,5 @@
 ﻿
-using Common_6;
+using Common;
 
 namespace Board
 {

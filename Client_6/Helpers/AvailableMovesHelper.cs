@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 using ChessGame;
+using Common;
 using Common_6;
 using Tools;
 

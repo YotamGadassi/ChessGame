@@ -4,7 +4,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Client.Helpers;
-using Common_6;
+using Common;
 
 namespace Client.Board
 {

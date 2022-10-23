@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
+using Common;
 using Common.ChessBoardEventArgs;
-using Common_6;
-using Common_6.ChessBoardEventArgs;
 using log4net;
 
 namespace Board

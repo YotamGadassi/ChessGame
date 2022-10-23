@@ -2,7 +2,6 @@
 using ChessGame;
 using Client.Board;
 using Common;
-using Common_6;
 
 namespace Client.Game
 {

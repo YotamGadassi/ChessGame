@@ -1,5 +1,5 @@
 ﻿using System;
-using Common_6;
+using Common;
 
 namespace Client.Board
 {

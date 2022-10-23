@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Threading;
 using ChessGame;
-using Common_6;
-using Common_6.ChessBoardEventArgs;
+using Common;
+using Common.ChessBoardEventArgs;
 
 namespace Client.Board
 {
     public abstract class BaseBoardViewModel : DependencyObject
     {
-        public  SquareViewModel                            m_selectedBoardPosition;
-        private HashSet<SquareViewModel>                   m_hintedBoardPositions;
+        public    SquareViewModel                            m_selectedBoardPosition;
+        private   HashSet<SquareViewModel>                   m_hintedBoardPositions;
         protected Dispatcher                                 m_dispatcher;
         protected BaseGameManager                            m_gameManager;
-        public  Dictionary<BoardPosition, SquareViewModel> SquaresDictionary => m_squaresDictionary;
+        public    Dictionary<BoardPosition, SquareViewModel> SquaresDictionary => m_squaresDictionary;
 
         private volatile Dictionary<BoardPosition, SquareViewModel> m_squaresDictionary;
 
@@ -34,6 +34,13 @@ namespace Client.Board
         {
             m_gameManager.ToolKilledEvent += moveHandler;
             m_gameManager.ToolMovedEvent  += moveHandler;
+            m_gameManager.CheckmateEvent  += onCheckmateEvent;
+        }
+
+        private static void onCheckmateEvent(object?            sender
+                                           , CheckmateEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         protected virtual void ClickCommandExecute(BoardPosition position, ITool? tool)

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Reflection;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Client;
-using Client.Board;
 using Client.Game;
 using Common;
 using Common.MainWindow;
@@ -66,6 +66,11 @@ namespace Host
         private void onGameStart(object sender, BaseGameViewModel gameViewModel)
         {
             m_dispatcher.Invoke(()=>CurrentViewModel = gameViewModel);
+        }
+
+        private void onMessageShow(Window win)
+        {
+            win.ShowDialog();
         }
     }
 }

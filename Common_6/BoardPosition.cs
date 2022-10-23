@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Common_6
+namespace Common
 {
     [JsonConverter(typeof(BoardPositionJsonConverter))]
     public readonly struct BoardPosition

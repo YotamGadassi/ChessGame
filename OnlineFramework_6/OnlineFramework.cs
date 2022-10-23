@@ -4,8 +4,8 @@ using System.Windows.Threading;
 using ChessGame;
 using Client.Game;
 using Common;
+using Common.ChessBoardEventArgs;
 using Common_6;
-using Common_6.ChessBoardEventArgs;
 using log4net;
 using Microsoft.AspNetCore.SignalR.Client;
 
@@ -38,7 +38,7 @@ public class OnlineFramework
         await m_connection.InvokeAsync("RequestGame");
     }
 
-    private async void GameManagerOnToolMovedEvent(object sender, ToolMovedEventArgs e)
+    private async void onToolMovedEvent(object sender, ToolMovedEventArgs e)
     {
         bool isMovedFromServer = e.MovedTool.Color != m_localMachineTeam.Color;
         bool isFirstArrangement = e.InitialPosition.IsEmpty();
@@ -156,8 +156,8 @@ public class OnlineFramework
 
         m_gameManager = new OnlineGameManager(m_localMachineTeam);
 
-        m_gameManager.ToolMovedEvent  += GameManagerOnToolMovedEvent;
-        m_gameManager.ToolKilledEvent += GameManagerOnToolMovedEvent;
+        m_gameManager.ToolMovedEvent  += onToolMovedEvent;
+        m_gameManager.ToolKilledEvent += onToolMovedEvent;
         if (localTeam.MoveDirection.Equals(GameDirection.South))
         {
             ViewModel = new OnlineGameViewModel(m_gameManager, localTeam, remoteTeam, m_localMachineTeam);

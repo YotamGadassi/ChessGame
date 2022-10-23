@@ -1,6 +1,5 @@
 ﻿using ChessGame;
 using Common;
-using Common_6;
 
 namespace Client.Board
 {

@@ -1,6 +1,5 @@
-﻿using System;
-using System.Windows.Media;
-using Common_6;
+﻿using System.Windows.Media;
+using Common;
 
 namespace Tools
 {

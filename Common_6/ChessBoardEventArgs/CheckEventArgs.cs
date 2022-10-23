@@ -1,18 +1,19 @@
 ﻿using System;
+using System.Windows.Media;
 
-namespace Common_6.ChessBoardEventArgs
+namespace Common.ChessBoardEventArgs
 {
-    public class CheckEventArgs : EventArgs
+    public class CheckmateEventArgs : EventArgs
     {
-        public TeamColor TeamMadeCheck { get; }
-        public BoardPosition KingPosition { get; }
-        public BoardPosition CheckToolPosition { get; }
+        public Color WinningTeamColor { get; }
+        public BoardPosition KingLastPosition { get; }
+        public BoardPosition KillerPosition { get; }
 
-        public CheckEventArgs(TeamColor teamMadeCheck, BoardPosition kingPosition, BoardPosition checkToolPosition)
+        public CheckmateEventArgs(Color winningTeamColor, BoardPosition kingPosition, BoardPosition killerPosition)
         {
-            TeamMadeCheck = teamMadeCheck;
-            KingPosition = kingPosition;
-            CheckToolPosition = checkToolPosition;
+            WinningTeamColor = winningTeamColor;
+            KingLastPosition = kingPosition;
+            KillerPosition   = killerPosition;
         }
     }
 }

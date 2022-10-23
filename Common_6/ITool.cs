@@ -1,13 +1,12 @@
 ﻿using System.Windows.Media;
 
-namespace Common_6
+namespace Common;
+
+public interface ITool
 {
-    public interface ITool
-    {
-        Color Color { get; }
+    Color Color { get; }
 
-        string Type { get; }
+    string Type { get; }
 
-        ITool GetCopy();
-    }
+    ITool GetCopy();
 }

@@ -1,4 +1,4 @@
-﻿namespace Common_6.ChessBoardEventArgs
+﻿namespace Common.ChessBoardEventArgs
 {
     public class KillingEventArgs : ToolMovedEventArgs
     {

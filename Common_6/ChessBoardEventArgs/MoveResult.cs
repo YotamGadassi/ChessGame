@@ -1,6 +1,4 @@
-﻿using Common_6;
-
-namespace Common.ChessBoardEventArgs
+﻿namespace Common.ChessBoardEventArgs
 {
     public enum MoveResultEnum
     {
