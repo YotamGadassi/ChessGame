@@ -18,7 +18,6 @@
                 <board:RowLabelConverter x:Key="RowLabelConverter" />
                 <board:ColumnLabelConverter x:Key="ColumnLabelConverter" />
 
-
                 <Style TargetType="{x:Type board:BoardSquare}">
                     <Setter Property="DataContext">
                         <Setter.Value>

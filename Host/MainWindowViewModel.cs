@@ -20,6 +20,8 @@ namespace Host
         public                  ICommand PlayOnlineCommand  { get; }
         public                  ICommand PlayOfflineCommand { get; }
 
+
+
         private readonly Dispatcher m_dispatcher;
 
         public MainWindowViewModel()

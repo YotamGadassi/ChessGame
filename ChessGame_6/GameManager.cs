@@ -27,9 +27,12 @@ namespace ChessGame
         protected                 int      m_currentTeamIndex;
         protected static readonly int      s_teamsAmount = 2;
 
+        public bool IsGameRunning { get; private set; }
+
         protected BaseGameManager()
         {
-            m_gameBoard                =  new ChessBoard();
+            IsGameRunning = false;
+            m_gameBoard     = new ChessBoard();
         }
         
         public MoveResult Move(BoardPosition start, BoardPosition end)
@@ -94,6 +97,7 @@ namespace ChessGame
 
         public void EndGame()
         {
+            IsGameRunning = false;
             m_gameBoard.ClearBoard();
             m_teams            = null;
             m_currentTeamIndex = 0;
@@ -118,6 +122,7 @@ namespace ChessGame
             }
 
             m_currentTeamIndex = 0;
+            IsGameRunning    = true;
             StartGameEvent?.Invoke(this, EventArgs.Empty);
         }
         

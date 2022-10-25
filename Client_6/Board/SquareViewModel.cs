@@ -23,11 +23,11 @@ namespace Client.Board
         private Action<BoardPosition, ITool> m_clickHandler;
         private ITool m_tool;
 
-        public SquareViewModel(Action<BoardPosition, ITool> clickHandler, BoardPosition position)
+        public SquareViewModel(Action<BoardPosition, ITool> clickHandler, Func<object,bool> canExecuteClick,BoardPosition position)
         {
             Position       = position;
             m_clickHandler = clickHandler;
-            ClickCommand   = new WpfCommand(clickCommandExecute);
+            ClickCommand   = new WpfCommand(clickCommandExecute, canExecuteClick);
             setBackground(position);
         }
 

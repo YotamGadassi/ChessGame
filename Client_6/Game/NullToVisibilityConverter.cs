@@ -1,33 +1,17 @@
 ﻿using System;
 using System.Globalization;
-using System.Windows;
 using System.Windows.Data;
 
-namespace Client.Helpers
+namespace Client.Game
 {
-    public class StringToVisibilityConverter : IValueConverter
+    public class NullToVisibilityConverter : IValueConverter
     {
         public object Convert(object      value
                             , Type        targetType
                             , object      parameter
                             , CultureInfo culture)
         {
-            if (null == value)
-            {
-                return Visibility.Hidden;
-            }
-            
-            if (value is string str)
-            {
-                if (string.IsNullOrEmpty(str))
-                {
-                    return Visibility.Hidden;
-                }
-
-                return Visibility.Visible;
-            }
-
-            return Binding.DoNothing;
+            return value != null;
         }
 
         public object ConvertBack(object      value

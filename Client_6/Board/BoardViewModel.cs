@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Threading;
 using ChessGame;
 using Common;
@@ -10,15 +11,19 @@ namespace Client.Board
 {
     public abstract class BaseBoardViewModel : DependencyObject
     {
-        public    SquareViewModel                            m_selectedBoardPosition;
-        private   HashSet<SquareViewModel>                   m_hintedBoardPositions;
-        protected Dispatcher                                 m_dispatcher;
-        protected BaseGameManager                            m_gameManager;
-        public    Dictionary<BoardPosition, SquareViewModel> SquaresDictionary => m_squaresDictionary;
+        public    SquareViewModel          m_selectedBoardPosition;
+        private   HashSet<SquareViewModel> m_hintedBoardPositions;
+        protected Dispatcher               m_dispatcher;
+        protected BaseGameManager          m_gameManager;
 
+        public           Dictionary<BoardPosition, SquareViewModel> SquaresDictionary => m_squaresDictionary;
         private volatile Dictionary<BoardPosition, SquareViewModel> m_squaresDictionary;
-
-        public event EventHandler<BoardClickEventArgs> ClickCommandEvent;
+        public event EventHandler<BoardClickEventArgs>              ClickCommandEvent;
+        public event EventHandler<CheckmateEventArgs> CheckmateEventHandler
+        {
+            add => m_gameManager.CheckmateEvent += value;
+            remove => m_gameManager.CheckmateEvent -= value;
+        }
         
         protected BaseBoardViewModel(BaseGameManager gameManager)
         {
@@ -37,10 +42,10 @@ namespace Client.Board
             m_gameManager.CheckmateEvent  += onCheckmateEvent;
         }
 
-        private static void onCheckmateEvent(object?            sender
-                                           , CheckmateEventArgs e)
+        private void onCheckmateEvent(object?            sender
+                                               , CheckmateEventArgs e)
         {
-            throw new NotImplementedException();
+            m_dispatcher.Invoke(m_gameManager.EndGame);
         }
 
         protected virtual void ClickCommandExecute(BoardPosition position, ITool? tool)
@@ -135,15 +140,20 @@ namespace Client.Board
             {
                 for (int colNumber = 1; colNumber <= 8; ++colNumber)
                 {
-                    BoardPosition   pos      = new BoardPosition(colNumber, rowNumber);
-                    SquareViewModel squareVM = new SquareViewModel(ClickCommandExecute,  pos);
+                    BoardPosition   pos      = new(colNumber, rowNumber);
+                    SquareViewModel squareVM = new(ClickCommandExecute, canExecute,pos);
                     if (m_gameManager.TryGetTool(pos, out ITool tool))
                     {
                         squareVM.Tool = tool;
                     }
-                    SquaresDictionary.Add(pos , new SquareViewModel(ClickCommandExecute, pos));
+                    SquaresDictionary.Add(pos , squareVM);
                 }
             }
+        }
+
+        protected virtual bool canExecute(object param)
+        {
+            return m_gameManager.IsGameRunning;
         }
 
         private void moveHandler(object sender, ToolMovedEventArgs e)

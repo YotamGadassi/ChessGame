@@ -1,7 +1,9 @@
 ﻿using System.Windows;
 using ChessGame;
 using Client.Board;
+using Client.Messages;
 using Common;
+using Common.ChessBoardEventArgs;
 
 namespace Client.Game
 {
@@ -14,9 +16,24 @@ namespace Client.Game
     {
         public BaseBoardViewModel Board { get; }
 
+        private static readonly DependencyProperty messageProperty = DependencyProperty.Register("Message", typeof(UserMessageViewModel), typeof(BaseGameViewModel));
+
+        public UserMessageViewModel Message
+        {
+            get => (UserMessageViewModel)GetValue(messageProperty);
+            set => SetValue(messageProperty, value);
+        }
+
         protected BaseGameViewModel(BaseBoardViewModel boardVm)
         {
             Board = boardVm;
+            Board.CheckmateEventHandler += BoardOnCheckmateEventHandler;
+        }
+
+        private void BoardOnCheckmateEventHandler(object?            sender
+                                                , CheckmateEventArgs e)
+        {
+            Message = new UserMessageViewModel("Checkmate", "OK", () => Message = null);
         }
     }
 

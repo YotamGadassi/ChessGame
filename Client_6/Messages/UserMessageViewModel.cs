@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Client.Annotations;
 
 namespace Client.Messages
@@ -14,9 +15,10 @@ namespace Client.Messages
       , Right     = 2
     }
     
-    internal class UserMessageViewModel : INotifyPropertyChanged
+    public class UserMessageViewModel : INotifyPropertyChanged
     {
-        private string m_leftButtonStr;
+        private Dispatcher m_dispatcher;
+        private string     m_leftButtonStr;
         public string LeftButtonStr
         {
             get=> m_leftButtonStr;
@@ -74,11 +76,12 @@ namespace Client.Messages
                                     ,Action rightButtonAction = null
                                    , string rightButtonStr     = null)
         {
-            m_msgStr            = msgStr;
-            m_leftButtonStr     = leftButtonStr;
+            m_dispatcher        = Dispatcher.CurrentDispatcher;
+            MessageStr          = msgStr;
+            LeftButtonStr       = leftButtonStr;
             m_leftButtonAction  = leftButtonAction;
             m_rightButtonAction = rightButtonAction;
-            m_rightButtonStr    = rightButtonStr;
+            RightButtonStr      = rightButtonStr;
 
             LeftButtonCommand  = new WpfCommand(onLeftButtonClick);
             RightButtonCommand = new WpfCommand(onRightButtonClick);
@@ -87,17 +90,19 @@ namespace Client.Messages
         private void onLeftButtonClick(object param)
         {
             ButtonPressed = ButtonPressed.Left;
-            Window userMessage = param as Window;
-            userMessage.Close();
-            m_leftButtonAction?.Invoke();
+            if (null != m_leftButtonAction)
+            {
+                m_dispatcher.Invoke(m_leftButtonAction);
+            }
         }
 
         private void onRightButtonClick(object param)
         {
             ButtonPressed = ButtonPressed.Right;
-            Window userMessage = param as Window;
-            userMessage.Close();
-            m_rightButtonAction?.Invoke();
+            if (null != m_rightButtonAction)
+            {
+                m_dispatcher.Invoke(m_rightButtonAction);
+            }
         }
         
         public event PropertyChangedEventHandler? PropertyChanged;
