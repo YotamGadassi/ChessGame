@@ -21,6 +21,9 @@
                 <DataTemplate DataType="{x:Type messages:UserMessageViewModel}">
                     <messages:UserMessage/>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type messages:PromotionMessageViewModel}">
+                    <messages:PromotionMessageComtrol/>
+                </DataTemplate>
             </ResourceDictionary>
         </Grid.Resources>
         <Grid.RowDefinitions>

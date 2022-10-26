@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using ChessGame;
 using Client.Board;
 using Client.Messages;
@@ -16,22 +17,33 @@ namespace Client.Game
     {
         public BaseBoardViewModel Board { get; }
 
-        private static readonly DependencyProperty messageProperty = DependencyProperty.Register("Message", typeof(UserMessageViewModel), typeof(BaseGameViewModel));
+        private static readonly DependencyProperty messageProperty = DependencyProperty.Register("Message", typeof(object), typeof(BaseGameViewModel));
 
-        public UserMessageViewModel Message
+        public object Message
         {
-            get => (UserMessageViewModel)GetValue(messageProperty);
+            get => GetValue(messageProperty);
             set => SetValue(messageProperty, value);
         }
 
         protected BaseGameViewModel(BaseBoardViewModel boardVm)
         {
             Board = boardVm;
-            Board.CheckmateEventHandler += BoardOnCheckmateEventHandler;
+            Board.CheckmateEventHandler += onCheckmateEventHandler;
+            Board.PromotionEvent += onPromotionAsyncEvent;
+        }
+        
+        private async Task<ITool> onPromotionAsyncEvent(object             sender
+                                                 , PromotionEventArgs e)
+        {
+            PromotionMessageViewModel promotionViewModel = new PromotionMessageViewModel(e.ToolToPromote.Color);
+            Message = promotionViewModel;
+            ITool tool =  await promotionViewModel.ToolAwaiter;
+            Message = null;
+            return tool;
         }
 
-        private void BoardOnCheckmateEventHandler(object?            sender
-                                                , CheckmateEventArgs e)
+        private void onCheckmateEventHandler(object?            sender
+                                           , CheckmateEventArgs e)
         {
             Message = new UserMessageViewModel("Checkmate", "OK", () => Message = null);
         }

@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using Common.ChessBoardEventArgs;
 
 namespace Common
 {
-    public delegate ITool PromotionEventHandler(object sender, PromotionEventArgs e);
+    public delegate Task<ITool> PromotionEventHandler(object sender, PromotionEventArgs e);
 
     public interface IGameManager
     {

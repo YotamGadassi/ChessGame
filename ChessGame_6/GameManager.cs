@@ -91,8 +91,8 @@ namespace ChessGame
         private bool isLastRow(ITool         movedTool
                              , BoardPosition endPosition)
         {
-            return movedTool.Color == Colors.White && endPosition.Row == 7
-                || movedTool.Color == Colors.Black && endPosition.Row == 0;
+            return movedTool.Color == Colors.White && endPosition.Row == 8
+                || movedTool.Color == Colors.Black && endPosition.Row == 1;
         }
 
         public void EndGame()
@@ -193,9 +193,9 @@ namespace ChessGame
             CheckmateEvent?.Invoke(this, args);
         }
         
-        protected virtual void OnPromotionEvent(PromotionEventArgs e)
+        protected async void OnPromotionEvent(PromotionEventArgs e)
         {
-            ITool newTool = PromotionEvent?.Invoke(this, e);
+            ITool newTool = await PromotionEvent?.Invoke(this, e);
             m_gameBoard.Remove(e.ToolPosition);
             m_gameBoard.Add(e.ToolPosition, newTool);
         }

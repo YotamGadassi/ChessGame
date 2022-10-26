@@ -1,10 +1,6 @@
-﻿using System.Windows;
-using System.Windows.Interop;
-using ChessGame;
+﻿using ChessGame;
 using Client.Game;
-using Client.Messages;
 using Common;
-using Common.ChessBoardEventArgs;
 
 namespace Frameworks
 {

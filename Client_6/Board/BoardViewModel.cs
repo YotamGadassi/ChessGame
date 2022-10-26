@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Threading;
 using ChessGame;
 using Common;
@@ -24,7 +23,13 @@ namespace Client.Board
             add => m_gameManager.CheckmateEvent += value;
             remove => m_gameManager.CheckmateEvent -= value;
         }
-        
+
+        public event PromotionEventHandler PromotionEvent
+        {
+            add=> m_gameManager.PromotionEvent += value;
+            remove => m_gameManager.PromotionEvent -= value;
+        }
+
         protected BaseBoardViewModel(BaseGameManager gameManager)
         {
             m_gameManager          = gameManager;
