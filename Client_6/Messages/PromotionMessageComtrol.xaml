@@ -19,7 +19,7 @@
         <ListBox Grid.Row="0" ItemsSource="{Binding Tools}" SelectedItem="{Binding ChosenTool}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <ContentPresenter Content="{Binding}"/>
+                    <ContentPresenter Content="{Binding}" Height="20" Width="20"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
             <behaviors:Interaction.Triggers>
