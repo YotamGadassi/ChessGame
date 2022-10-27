@@ -17,7 +17,6 @@
                 <board:SquareConverter x:Key="SquareConverter" />
                 <board:RowLabelConverter x:Key="RowLabelConverter" />
                 <board:ColumnLabelConverter x:Key="ColumnLabelConverter" />
-
                 <Style TargetType="{x:Type board:BoardSquare}">
                     <Setter Property="DataContext">
                         <Setter.Value>
@@ -27,21 +26,7 @@
                             </MultiBinding>
                         </Setter.Value>
                     </Setter>
-                    <Setter Property="BackgroundImageSource" Value="{Binding BackgroundImageSource}" />
-                    <Setter Property="ToolImageSource" Value="{Binding ToolImageSource}" />
                     <Setter Property="helpers:InputBindingsAttach.InputBindings" Value="{StaticResource clickOnSquareInputBindings}"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding State}" Value="Regular">
-                            <Setter Property="BorderThickness" Value="1"/>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding State}" Value="Chosen">
-                            <Setter Property="BorderThickness" Value="5"/>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding State}" Value="Hinted">
-                            <Setter Property="BorderThickness" Value="5"/>
-                            <Setter Property="BorderBrush" Value="Brown"/>
-                        </DataTrigger>
-                    </Style.Triggers>
                 </Style>
                 <Style TargetType="{x:Type Label}">
                     <Setter Property="HorizontalAlignment" Value="Center"/>

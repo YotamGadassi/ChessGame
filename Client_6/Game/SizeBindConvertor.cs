@@ -1,22 +1,25 @@
 ﻿using System;
 using System.Globalization;
-using System.Windows;
 using System.Windows.Data;
 
 namespace Client.Game
 {
-    public class NullToVisibilityConverter : IValueConverter
+    public class SizeBindConverter : IValueConverter
     {
         public object Convert(object      value
                             , Type        targetType
                             , object      parameter
                             , CultureInfo culture)
         {
-            if (value == null)
+            if (value is double size)
             {
-                return Visibility.Collapsed;
+                if (double.TryParse(parameter.ToString(), out double factor))
+                {
+                    return size * factor;
+                }
             }
-            return Visibility.Visible;
+
+            return Binding.DoNothing;
         }
 
         public object ConvertBack(object      value

@@ -12,10 +12,6 @@ namespace Board
         private BoardState     m_board;
         private GameMoveHelper m_gameMoveHelper;
 
-        public event EventHandler<ToolMovedEventArgs> ToolMovedEvent;
-        public event EventHandler<KillingEventArgs>   KillingEvent;
-        public event EventHandler<ToolAddedEventArgs> AddedToolEvent;
-
         public ChessBoard()
         {
             m_board          = new BoardState();
@@ -35,18 +31,14 @@ namespace Board
             {
                 throw new ArgumentOutOfRangeException($"The position {position} is out of range!");
             }
-
             m_board.Add(position, tool);
-
-            ToolAddedEventArgs eventArgs = new ToolAddedEventArgs(tool, position);
-
-            AddedToolEvent?.Invoke(this, eventArgs);
         }
 
         public bool Remove(BoardPosition position)
         {
             return m_board.Remove(position);
         }
+
         /// <summary>
         /// Moves a tool from start to end.
         /// </summary>

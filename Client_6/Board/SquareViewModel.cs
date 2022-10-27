@@ -20,18 +20,23 @@ namespace Client.Board
 
     public class SquareViewModel : DependencyObject
     {
+        public delegate void SquareClickCommandExecute(BoardPosition    BoardPosition, ITool? tool);
+        public delegate bool SquareClickCommandCanExecute(BoardPosition BoardPosition, ITool? tool);
+
+        private SquareClickCommandExecute m_clickHandler;
+        private SquareClickCommandCanExecute m_clickkHandlerCanExecute;
+
         public static readonly DependencyProperty SquareShadeProperty = DependencyProperty.Register("SquareShade", typeof(SquareShadeEnum), typeof(SquareViewModel));
         public static readonly DependencyProperty ToolProperty = DependencyProperty.Register("Tool", typeof(ITool), typeof(SquareViewModel));
         public static readonly DependencyProperty StateProperty = DependencyProperty.Register("State", typeof(SquareState), typeof(SquareViewModel), new UIPropertyMetadata(SquareState.Regular));
-        private Action<BoardPosition, ITool> m_clickHandler;
-        private ITool m_tool;
 
-        public SquareViewModel(Action<BoardPosition, ITool> clickHandler, Func<object,bool> canExecuteClick,BoardPosition position)
+        public SquareViewModel(SquareClickCommandExecute clickHandler, SquareClickCommandCanExecute canExecuteClick,BoardPosition position)
         {
-            Position       = position;
-            m_clickHandler = clickHandler;
-            ClickCommand   = new WpfCommand(clickCommandExecute, canExecuteClick);
-            SquareShade = ResolveBackgroundShade(position);
+            Position                  = position;
+            m_clickHandler            = clickHandler;
+            m_clickkHandlerCanExecute = canExecuteClick;
+            ClickCommand              = new WpfCommand(clickCommandExecute, clickCommandCanExecute);
+            SquareShade               = ResolveBackgroundShade(position);
         }
 
         public SquareShadeEnum SquareShade
@@ -39,6 +44,7 @@ namespace Client.Board
             get => (SquareShadeEnum)GetValue(SquareShadeProperty);
             set => SetValue(SquareShadeProperty, value);
         }
+
         public ITool Tool
         {
             get => (ITool)GetValue(ToolProperty);
@@ -67,6 +73,11 @@ namespace Client.Board
         private void clickCommandExecute(object parameter)
         {
             m_clickHandler.Invoke(Position, Tool);
+        }
+
+        private bool clickCommandCanExecute(object parameter)
+        {
+            return m_clickkHandlerCanExecute.Invoke(Position, Tool);
         }
     }
 }

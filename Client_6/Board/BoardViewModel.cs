@@ -8,58 +8,22 @@ using Common.ChessBoardEventArgs;
 
 namespace Client.Board
 {
-    public abstract class BaseBoardViewModel : DependencyObject
+    public class BoardViewModel : DependencyObject
     {
         public    SquareViewModel          m_selectedBoardPosition;
         private   HashSet<SquareViewModel> m_hintedBoardPositions;
-        protected Dispatcher               m_dispatcher;
-        protected BaseGameManager          m_gameManager;
 
         public           Dictionary<BoardPosition, SquareViewModel> SquaresDictionary => m_squaresDictionary;
         private volatile Dictionary<BoardPosition, SquareViewModel> m_squaresDictionary;
-        public event EventHandler<BoardClickEventArgs>              ClickCommandEvent;
-        public event EventHandler<CheckmateEventArgs> CheckmateEventHandler
-        {
-            add => m_gameManager.CheckmateEvent += value;
-            remove => m_gameManager.CheckmateEvent -= value;
-        }
 
-        public event PromotionEventHandler PromotionEvent
+        public BoardViewModel(SquareViewModel.SquareClickCommandExecute squareClick, SquareViewModel.SquareClickCommandCanExecute suqareCanExecute)
         {
-            add=> m_gameManager.PromotionEvent += value;
-            remove => m_gameManager.PromotionEvent -= value;
-        }
-
-        protected BaseBoardViewModel(BaseGameManager gameManager)
-        {
-            m_gameManager          = gameManager;
-            m_dispatcher           = Dispatcher.CurrentDispatcher;
             m_hintedBoardPositions = new HashSet<SquareViewModel>();
             m_squaresDictionary    = new Dictionary<BoardPosition, SquareViewModel>();
-            initSquares();
-            registerEvents();
+            initSquares(squareClick, suqareCanExecute);
         }
 
-        private void registerEvents()
-        {
-            m_gameManager.ToolKilledEvent += moveHandler;
-            m_gameManager.ToolMovedEvent  += moveHandler;
-            m_gameManager.CheckmateEvent  += onCheckmateEvent;
-        }
-
-        private void onCheckmateEvent(object?            sender
-                                               , CheckmateEventArgs e)
-        {
-            m_dispatcher.Invoke(m_gameManager.EndGame);
-        }
-
-        protected virtual void ClickCommandExecute(BoardPosition position, ITool? tool)
-        {
-            BoardClickEventArgs eventArgs = new BoardClickEventArgs(position, tool);
-            ClickCommandEvent?.Invoke(this, eventArgs);
-        }
-
-        public bool ForceAddTool(ITool tool, BoardPosition position)
+        public bool AddTool(ITool tool, BoardPosition position)
         {
             bool isPositionValid = SquaresDictionary.TryGetValue(position, out SquareViewModel squareVM);
             if (false == isPositionValid)
@@ -71,7 +35,7 @@ namespace Client.Board
             return true;
         }
 
-        public bool RemoveTool(BoardPosition position, out ITool tool)
+        public bool RemoveTool(BoardPosition position, out ITool? tool)
         {
             bool isPositionValid = SquaresDictionary.TryGetValue(position, out SquareViewModel squareVM);
             if (false == isPositionValid)
@@ -139,39 +103,17 @@ namespace Client.Board
             }
         }
         
-        private void initSquares()
+        private void initSquares(SquareViewModel.SquareClickCommandExecute squareExecute, SquareViewModel.SquareClickCommandCanExecute squareCanExeucte)
         {
             for (int rowNumber = 1; rowNumber <= 8; ++rowNumber)
             {
                 for (int colNumber = 1; colNumber <= 8; ++colNumber)
                 {
                     BoardPosition   pos      = new(colNumber, rowNumber);
-                    SquareViewModel squareVM = new(ClickCommandExecute, canExecute, pos);
-                    if (m_gameManager.TryGetTool(pos, out ITool tool))
-                    {
-                        squareVM.Tool = tool;
-                    }
+                    SquareViewModel squareVM = new(squareExecute, squareCanExeucte, pos);
                     SquaresDictionary.Add(pos , squareVM);
                 }
             }
-        }
-
-        protected virtual bool canExecute(object param)
-        {
-            return m_gameManager.IsGameRunning;
-        }
-
-        private void moveHandler(object sender, ToolMovedEventArgs e)
-        {
-            Action<BoardPosition, BoardPosition, ITool> act = MoveTool;
-            m_dispatcher.BeginInvoke(act, e.InitialPosition, e.EndPosition, e.MovedTool);
-        }
-
-        protected void MoveTool(BoardPosition start, BoardPosition end, ITool tool)
-        {
-            ClearSelectedAndHintedBoardPositions();
-            RemoveTool(start, out ITool toolAtStart);
-            ForceAddTool(tool, end);
         }
     }
 

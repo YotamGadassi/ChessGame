@@ -12,7 +12,8 @@
         <Grid.Resources>
             <ResourceDictionary>
                 <game:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
-                <DataTemplate DataType="{x:Type board:BaseBoardViewModel}">
+                <game:SizeBindConverter x:Key="SizeBindConvertorResource"/>
+                <DataTemplate DataType="{x:Type board:BoardViewModel}">
                     <board:BoardControl/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type game:TeamStatusViewModel}">
@@ -32,9 +33,33 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <ContentControl Grid.Row="0" Content="{Binding NorthTeamStatus}"/>
-            <Grid Grid.Row="1">
-                <ContentControl Grid.Row="0" Content="{Binding Board}"/>
-                <ContentControl HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" Content="{Binding Message}" Visibility="{Binding Path=Message ,Converter={StaticResource NullToVisibilityConverter}}"/>
+        <Grid Grid.Row="1">
+            <ContentControl x:Name="m_board" Grid.Row="0" Content="{Binding Board}">
+                <ContentControl.Style>
+                    <Style TargetType="ContentControl">
+                        <Setter Property="IsEnabled" Value="True"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=m_message, Path=Visibility}" Value="Visible">
+                                <Setter Property="IsEnabled" Value="False"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ElementName=m_message, Path=Visibility}" Value="Hidden">
+                                <Setter Property="IsEnabled" Value="True"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ElementName=m_message, Path=Visibility}" Value="Collapsed">
+                                <Setter Property="IsEnabled" Value="True"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentControl.Style>
+            </ContentControl>
+            <ContentControl x:Name="m_message" 
+                            Width="{Binding ElementName=m_board, Path=ActualWidth, Converter={StaticResource SizeBindConvertorResource}, ConverterParameter=0.25}" 
+                            Height="{Binding ElementName=m_board, Path=ActualHeight, Converter={StaticResource SizeBindConvertorResource}, ConverterParameter=0.25}" 
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Center" 
+                            Grid.Row="0" 
+                            Content="{Binding Message}" 
+                            Visibility="{Binding Path=Message ,Converter={StaticResource NullToVisibilityConverter}}"/>
         </Grid>
         <ContentControl Grid.Row="2" Content="{Binding SouthTeamStatus}"/>
     </Grid>

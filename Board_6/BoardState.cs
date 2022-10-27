@@ -8,17 +8,20 @@ namespace Board
         private Dictionary<BoardPosition, ITool> m_positionToTool = new Dictionary<BoardPosition, ITool>();
         private Dictionary<ITool, BoardPosition> m_toolToPosition = new Dictionary<ITool, BoardPosition>();
 
-        public bool Add(BoardPosition position, ITool tool)
+        public void Add(BoardPosition position, ITool tool)
         {
-            if (m_positionToTool.ContainsKey(position)
-                ||m_toolToPosition.ContainsKey((tool)))
+            if (m_positionToTool.ContainsKey(position))
+            {
+                throw new ArgumentException($"Board already contains position {position}!");
+            }
+
+            if (m_toolToPosition.ContainsKey((tool)))
             {
                 throw new ArgumentException($"Board already contains tool {tool}!");
             }
-            
+
             m_positionToTool[position] = tool;
             m_toolToPosition[tool] = position;
-            return true;
         }
 
         public bool Remove(BoardPosition position)
