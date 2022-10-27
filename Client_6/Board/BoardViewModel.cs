@@ -146,7 +146,7 @@ namespace Client.Board
                 for (int colNumber = 1; colNumber <= 8; ++colNumber)
                 {
                     BoardPosition   pos      = new(colNumber, rowNumber);
-                    SquareViewModel squareVM = new(ClickCommandExecute, canExecute,pos);
+                    SquareViewModel squareVM = new(ClickCommandExecute, canExecute, pos);
                     if (m_gameManager.TryGetTool(pos, out ITool tool))
                     {
                         squareVM.Tool = tool;

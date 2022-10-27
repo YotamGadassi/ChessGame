@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using Client.Helpers;
 using Common;
 
 namespace Client.Board
@@ -15,10 +12,16 @@ namespace Client.Board
         Hinted  = 3
     }
 
+    public enum SquareShadeEnum
+    {
+        Light = 1,
+        Dark = 2,
+    }
+
     public class SquareViewModel : DependencyObject
     {
-        public static readonly DependencyProperty BackgroundImageSourceProperty = DependencyProperty.Register("BackgroundImageSource", typeof(BitmapImage), typeof(SquareViewModel));
-        public static readonly DependencyProperty ToolImageSourceProperty = DependencyProperty.Register("ToolImageSource", typeof(BitmapImage), typeof(SquareViewModel));
+        public static readonly DependencyProperty SquareShadeProperty = DependencyProperty.Register("SquareShade", typeof(SquareShadeEnum), typeof(SquareViewModel));
+        public static readonly DependencyProperty ToolProperty = DependencyProperty.Register("Tool", typeof(ITool), typeof(SquareViewModel));
         public static readonly DependencyProperty StateProperty = DependencyProperty.Register("State", typeof(SquareState), typeof(SquareViewModel), new UIPropertyMetadata(SquareState.Regular));
         private Action<BoardPosition, ITool> m_clickHandler;
         private ITool m_tool;
@@ -28,68 +31,38 @@ namespace Client.Board
             Position       = position;
             m_clickHandler = clickHandler;
             ClickCommand   = new WpfCommand(clickCommandExecute, canExecuteClick);
-            setBackground(position);
+            SquareShade = ResolveBackgroundShade(position);
         }
 
-        public BitmapImage BackgroundImageSource
+        public SquareShadeEnum SquareShade
         {
-            get => (BitmapImage)GetValue(BackgroundImageSourceProperty);
-            set => SetValue(BackgroundImageSourceProperty, value);
-        }
-        public BitmapImage ToolImageSource
-        {
-            get => (BitmapImage)GetValue(ToolImageSourceProperty);
-            set => SetValue(ToolImageSourceProperty, value);
+            get => (SquareShadeEnum)GetValue(SquareShadeProperty);
+            set => SetValue(SquareShadeProperty, value);
         }
         public ITool Tool
         {
-            get => m_tool;
-            set
-            {
-                m_tool = value;
-                setImageSource(m_tool);
-            }
+            get => (ITool)GetValue(ToolProperty);
+            set => SetValue(ToolProperty, value);
         }
+    
         public SquareState State
         {
             get => (SquareState)GetValue(StateProperty);
             set => SetValue(StateProperty, value);
         }
         public  BoardPosition Position     { get; }
-        private void setImageSource(ITool tool)
-        {
-            if (null == tool)
-            {
-                ToolImageSource = null;
-                return;
-            }
-            Type  toolType      = tool.GetType();
-            Color toolColor     = tool.Color;
-            bool  isImageExists = ToolsImageHelper.TryGetBitmapImage(toolType, toolColor, out BitmapImage bitmapImage);
-            if (false == isImageExists)
-            {
-                ToolImageSource = null;
-                //log
-            }
 
-            ToolImageSource = bitmapImage;
-
-        }
         public ICommand      ClickCommand { get; }
-        private void setBackground(BoardPosition position)
+        private SquareShadeEnum ResolveBackgroundShade(BoardPosition position)
         {
-            Uri imageUri;
             int sumColAndRow = position.Row + position.Column;
             if (sumColAndRow % 2 == 1)
             {
-                imageUri = new Uri("pack://application:,,,/Client;component/Resources/square_brown_dark.png");
+                return SquareShadeEnum.Dark;
             }
-            else
-            {
-                imageUri = new Uri("pack://application:,,,/Client;component/Resources/square_brown_light.png");
-            }
-            
-            BackgroundImageSource = new BitmapImage(imageUri);
+
+            return SquareShadeEnum.Light;
+
         }
         private void clickCommandExecute(object parameter)
         {

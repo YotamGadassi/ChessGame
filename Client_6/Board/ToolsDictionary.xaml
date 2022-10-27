@@ -1,0 +1,100 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:tools="clr-namespace:Tools;assembly=Tools">
+    <DataTemplate DataType="{x:Type tools:Rook}">
+        <Image>
+            <Image.Style>
+                <Style TargetType="Image">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Color}" Value="Black">
+                            <Setter Property="Source" Value="pack://application:,,,/Client;Component/Resources/b_rook.png"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Color}" Value="White">
+                            <Setter Property="Source" Value="pack://application:,,,/Client;Component/Resources/w_rook.png"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Image.Style>
+        </Image>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type tools:Pawn}">
+        <Image>
+            <Image.Style>
+                <Style TargetType="Image">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Color}" Value="Black">
+                            <Setter Property="Source" Value="pack://application:,,,/Client;Component/Resources/b_pawn.png"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Color}" Value="White">
+                            <Setter Property="Source" Value="pack://application:,,,/Client;Component/Resources/w_pawn.png"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Image.Style>
+        </Image>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type tools:Bishop}">
+        <Image>
+            <Image.Style>
+                <Style TargetType="Image">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Color}" Value="Black">
+                            <Setter Property="Source" Value="pack://application:,,,/Client;Component/Resources/b_bishop.png"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Color}" Value="White">
+                            <Setter Property="Source" Value="pack://application:,,,/Client;Component/Resources/w_bishop.png"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Image.Style>
+        </Image>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type tools:King}">
+        <Image>
+            <Image.Style>
+                <Style TargetType="Image">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Color}" Value="Black">
+                            <Setter Property="Source" Value="pack://application:,,,/Client;Component/Resources/b_king.png"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Color}" Value="White">
+                            <Setter Property="Source" Value="pack://application:,,,/Client;Component/Resources/w_king.png"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Image.Style>
+        </Image>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type tools:Knight}">
+        <Image>
+            <Image.Style>
+                <Style TargetType="Image">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Color}" Value="Black">
+                            <Setter Property="Source" Value="pack://application:,,,/Client;Component/Resources/b_knight.png"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Color}" Value="White">
+                            <Setter Property="Source" Value="pack://application:,,,/Client;Component/Resources/w_knight.png"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Image.Style>
+        </Image>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type tools:Queen}">
+        <Image>
+            <Image.Style>
+                <Style TargetType="Image">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Color}" Value="Black">
+                            <Setter Property="Source" Value="pack://application:,,,/Client;Component/Resources/b_queen.png"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Color}" Value="White">
+                            <Setter Property="Source" Value="pack://application:,,,/Client;Component/Resources/w_queen.png"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Image.Style>
+        </Image>
+    </DataTemplate>
+</ResourceDictionary>
