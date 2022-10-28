@@ -28,9 +28,12 @@ namespace Client.Messages
             }
         }
 
+        private string m_basicMessage = "Please choose a tool for promotion of pawn in position ";
+
+        public string   Message           { get; }
         public ICommand SelectToolCommand { get; }
 
-        public PromotionMessageViewModel(Color promotedToolColor)
+        public PromotionMessageViewModel(Color promotedToolColor, BoardPosition toolPosition)
         {
             m_toolChosenEvent = new ManualResetEvent(false);
             Tools        = new List<ITool>();
@@ -41,6 +44,7 @@ namespace Client.Messages
                                           });
             initTools(promotedToolColor);
             SelectToolCommand = new WpfCommand(ChooseToolExecute);
+            Message           = m_basicMessage + toolPosition;
             ToolAwaiter.Start();
         }
 
@@ -55,11 +59,6 @@ namespace Client.Messages
         public void ChooseToolExecute(object param)
         {
             m_toolChosenEvent.Set();
-        }
-
-        public bool ChooseToolCanExecute(object param)
-        {
-            return null != ChosenTool;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

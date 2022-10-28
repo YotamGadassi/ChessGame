@@ -5,9 +5,9 @@ namespace Client.Game
     /// <summary>
     /// Interaction logic for GameControl.xaml
     /// </summary>
-    public partial class BaseGameControl : UserControl
+    public partial class GameControl : UserControl
     {
-        public BaseGameControl()
+        public GameControl()
         {
             InitializeComponent();
         }

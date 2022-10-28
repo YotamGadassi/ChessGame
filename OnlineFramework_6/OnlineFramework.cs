@@ -129,6 +129,11 @@ public class OnlineFramework
         m_dispatcher.InvokeAsync(endGame);
     }
 
+    private void handlePromotionEvent()
+    {
+
+    }
+
     private void handleTimeUpdate(Team     team
                                 , TimeSpan timeLeft)
     {

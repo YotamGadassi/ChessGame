@@ -10,10 +10,10 @@
         <Grid.Resources>
             <ResourceDictionary>
                 <DataTemplate DataType="{x:Type game:OfflineGameViewModel}">
-                    <game:BaseGameControl/>
+                    <game:GameControl/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type game:OnlineGameViewModel}">
-                    <game:BaseGameControl/>
+                    <game:GameControl/>
                 </DataTemplate>
             </ResourceDictionary>
         </Grid.Resources>

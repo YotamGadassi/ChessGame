@@ -15,11 +15,14 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-
-        <ListBox Grid.Row="0" ItemsSource="{Binding Tools}" SelectedItem="{Binding ChosenTool}">
+        <Viewbox>
+            <Label Content="{Binding Message}" Padding="5"/>
+        </Viewbox>
+        <Viewbox Grid.Row="1">
+        <ListBox ItemsSource="{Binding Tools}" SelectedItem="{Binding ChosenTool}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <ContentPresenter Content="{Binding}" Height="20" Width="20"/>
+                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Content="{Binding}"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
             <behaviors:Interaction.Triggers>
@@ -33,5 +36,6 @@
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ListBox>
+        </Viewbox>
     </Grid>
 </UserControl>

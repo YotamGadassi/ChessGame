@@ -47,7 +47,7 @@ namespace Client.Game
         private async Task<ITool> onPromotionAsyncEvent(object             sender
                                                  , PromotionEventArgs e)
         {
-            PromotionMessageViewModel promotionViewModel = new(e.ToolToPromote.Color);
+            PromotionMessageViewModel promotionViewModel = new(e.ToolToPromote.Color, e.ToolPosition);
             Message = promotionViewModel;
             ITool tool =  await promotionViewModel.ToolAwaiter;
             Message = null;
