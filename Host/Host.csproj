@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="LogConfiguration.xml">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
 

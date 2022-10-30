@@ -1,7 +1,6 @@
 ﻿using System.Windows.Media;
 using ChessGame;
 using Common;
-using Common.ChessBoardEventArgs;
 using Common_6;
 using Microsoft.AspNetCore.SignalR;
 

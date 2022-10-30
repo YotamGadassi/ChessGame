@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Drawing;
 using System.Reflection;
+using System.Threading.Tasks;
 using Client.Helpers;
 using Common;
+using Common.ChessBoardEventArgs;
 using log4net;
 
 namespace Client.Game;
@@ -14,25 +15,48 @@ public class OnlineGameViewModel : BaseGameViewModel
     public TeamStatusViewModel NorthTeamStatus { get; }
     public TeamStatusViewModel SouthTeamStatus { get; }
 
-    public  IGameManager                             m_gameManger { get; }
-    private Team                                     m_localTeam;
-    private Func<BoardPosition, BoardPosition, bool> m_sendMoveRequest;
-    private AvailableMovesHelper                     m_availableMovesHelper;
-    public OnlineGameViewModel(IGameManager                      gameManager, 
-                               Team                              northTeam, 
-                               Team                              southTeam, 
-                               Team                              localTeam,
-                               Func<BoardPosition, BoardPosition, bool> sendMoveRequest)
+    private bool isWaitingForServer = false;
+
+    public  IGameManager                                   m_gameManager { get; }
+    private Team                                           m_localTeam;
+    private Func<BoardPosition, BoardPosition, Task<bool>> m_sendMoveRequest;
+    private AvailableMovesHelper                           m_availableMovesHelper;
+    public OnlineGameViewModel(IGameManager                                 gameManager, 
+                               Team                                         northTeam, 
+                               Team                                         southTeam, 
+                               Team                                         localTeam,
+                               Func<BoardPosition, BoardPosition, Task<bool>> sendMoveRequest)
     {
-        m_gameManger           = gameManager;
+        m_gameManager           = gameManager;
         m_availableMovesHelper = new AvailableMovesHelper(gameManager);
         m_localTeam            = localTeam;
         NorthTeamStatus        = new TeamStatusViewModel(northTeam);
         SouthTeamStatus        = new TeamStatusViewModel(southTeam);
         m_sendMoveRequest      = sendMoveRequest;
+        registerEvents();
     }
 
-    protected override void SquareClickHandler(BoardPosition position
+    private void registerEvents()
+    {
+        m_gameManager.ToolPromotedEvent += onToolPromotedEvent;
+        m_gameManager.ToolKilledEvent   += moveHandler;
+        m_gameManager.ToolMovedEvent    += moveHandler;
+    }
+
+    private void moveHandler(object sender, ToolMovedEventArgs e)
+    {
+        Action<BoardPosition, BoardPosition, ITool> act = MoveTool;
+        m_dispatcher.BeginInvoke(act, e.InitialPosition, e.EndPosition, e.MovedTool);
+    }
+
+    private void onToolPromotedEvent(object?               sender
+                                   , ToolPromotedEventArgs e)
+    {
+        Board.RemoveTool(e.ToolPosition, out _);
+        Board.AddTool(e.ToolAfterPromotion, e.ToolPosition);
+    }
+
+    protected override async void SquareClickHandler(BoardPosition position
                                              , ITool?        tool)
     {
         bool isPositionToolSameTeam = null != tool && tool.Color.Equals(m_localTeam.Color);
@@ -47,11 +71,13 @@ public class OnlineGameViewModel : BaseGameViewModel
 
         if (false == Board.SelectedBoardPosition.IsEmpty())
         {
-            bool isMoveApproved = m_sendMoveRequest(Board.SelectedBoardPosition, position);
+            isWaitingForServer = true;
+            bool isMoveApproved = await m_sendMoveRequest(Board.SelectedBoardPosition, position);
+            isWaitingForServer = false;
             if (isMoveApproved)
             {
                 s_log.Info($"Move from {Board.SelectedBoardPosition} to {position} approved by server");
-                m_gameManger.Move(Board.SelectedBoardPosition, position);
+                m_gameManager.Move(Board.SelectedBoardPosition, position);
             }
             else
             {
@@ -64,7 +90,11 @@ public class OnlineGameViewModel : BaseGameViewModel
     protected override bool SquareClickHandlerCanExecute(BoardPosition poistion
                                                        , ITool?        tool)
     {
-        bool isLocalTeamTurn = m_gameManger.CurrentColorTurn.Equals(m_localTeam.Color);
+        if (isWaitingForServer)
+        {
+            return false;
+        }
+        bool isLocalTeamTurn = m_gameManager.CurrentColorTurn.Equals(m_localTeam.Color);
         return isLocalTeamTurn;
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Windows.Media;
 using Common;
-using Common.ChessBoardEventArgs;
 using Microsoft.AspNetCore.SignalR;
 
 namespace ChessServer3._0;
@@ -133,7 +132,7 @@ public class ChessHub : Hub
         {
             BoardPosition         position  = pair.Key;
             ITool                 tool      = pair.Value;
-            string                toolType  = tool.Type;
+            string                toolType  = tool.GetType().AssemblyQualifiedName;
             Color                toolColor = tool.Color;
             PositionAndToolBundle bundle    = new PositionAndToolBundle(position, toolType, toolColor);
             toolsArr[i++] = bundle;

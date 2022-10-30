@@ -8,6 +8,7 @@ using Common.ChessBoardEventArgs;
 using Common_6;
 using log4net;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Logging;
 
 namespace Frameworks;
 
@@ -75,7 +76,9 @@ public class OnlineFramework
             return true;
         }
 
-        m_connection        =  new HubConnectionBuilder().WithUrl(s_hubAddress + $"?name={name}").Build();
+        m_connection = new HubConnectionBuilder().WithUrl(s_hubAddress + $"?name={name}")
+                                                 .ConfigureLogging(builder => builder.AddLog4Net("LogConfiguration.xml"))
+                                                 .Build();
         m_connection.Closed += onConnectionClosed;
         registerClientMethods();
         s_log.Info($"Starting connection to client. server state:{m_connection.State}");
@@ -144,7 +147,7 @@ public class OnlineFramework
                                      foreach (PositionAndToolBundle bundle in toolArr)
                                      {
                                          Type  toolType = Type.GetType(bundle.ToolName);
-                                         ITool tool     = (ITool)Activator.CreateInstance(toolType, 0, null, bundle.ToolColor);
+                                         ITool tool     = (ITool)Activator.CreateInstance(toolType, bundle.ToolColor);
                                          m_gameManager.ForceAddTool(bundle.Position, tool);
                                      }
                                  });
@@ -201,12 +204,11 @@ public class OnlineFramework
         OnGameEnd?.Invoke(this, null);
     }
 
-    private bool sendMoveRequest(BoardPosition initial
-                                     , BoardPosition end)
+    private async Task<bool> sendMoveRequest(BoardPosition initial
+                                           , BoardPosition end)
     {
-        Task<MoveResult> task = m_connection.InvokeAsync<MoveResult>("MoveRequest", initial, end, lastGameVersion);
-        task.Wait();
-        return task.Result.Result != MoveResultEnum.NoChangeOccurred;
+        MoveResult moveResult = await m_connection.InvokeAsync<MoveResult>("MoveRequest", initial, end, lastGameVersion);
+        return moveResult.Result != MoveResultEnum.NoChangeOccurred;
     }
 
 }

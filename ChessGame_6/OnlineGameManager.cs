@@ -33,7 +33,7 @@ namespace ChessGame
         public event PromotionEventHandler?               PromotionEvent;
         public event EventHandler<ToolPromotedEventArgs>? ToolPromotedEvent;
         public event EventHandler<Color>?                 TeamSwitchEvent;
-        public Color                                      CurrentColorTurn { get; }
+        public Color                                      CurrentColorTurn => m_teams[m_currentTeamIndex];
         public bool                                       IsGameRunning    { get; private set; }
 
         public void StartGame()

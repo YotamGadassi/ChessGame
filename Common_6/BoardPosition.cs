@@ -35,9 +35,13 @@ namespace Common
         {
             int column = -1;
             int row = -1;
-            
-            while (reader.Read())
+
+            reader.Read();
+            reader.Read();
+            for (int i = 0; i < 2; ++i)
             {
+                reader.Read();
+                reader.Read();
                 if (reader.TokenType == JsonTokenType.PropertyName)
                 {
                     string propertyName = reader.GetString();
@@ -51,8 +55,10 @@ namespace Common
                         row = reader.GetInt32();
                     }
                 }
+                reader.Read();
             }
-
+            reader.Read();
+            reader.Read();
             return new BoardPosition(column, row);
         }
 
