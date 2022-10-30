@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -19,31 +20,48 @@ namespace Host
         private static readonly ILog     s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         public                  ICommand PlayOnlineCommand  { get; }
         public                  ICommand PlayOfflineCommand { get; }
-
-
+        private                 OnlineFramework m_onlineFramework;
+        private                 bool isOnlineCommandExecuting;
 
         private readonly Dispatcher m_dispatcher;
 
         public MainWindowViewModel()
         {
-            m_dispatcher       = Dispatcher.CurrentDispatcher;
-            PlayOnlineCommand  = new WpfCommand(playOnlineCommandExecute, playOnlineCommandCanExecute);
-            PlayOfflineCommand = new WpfCommand(playOfflineCommandExecute);
+            isOnlineCommandExecuting        =  false;
+            m_dispatcher                    =  Dispatcher.CurrentDispatcher;
+            PlayOnlineCommand               =  new WpfCommand(playOnlineCommandExecute, playOnlineCommandCanExecute);
+            PlayOfflineCommand              =  new WpfCommand(playOfflineCommandExecute);
+            m_onlineFramework               =  new();
+            m_onlineFramework.OnGameStarted += onGameStart;
+            m_onlineFramework.OnGameEnd     += onGameEnd;
         }
 
-        private void playOnlineCommandExecute(object parameter)
+        private async void playOnlineCommandExecute(object parameter)
         {
+            isOnlineCommandExecuting = true;
             s_log.Info("Play online command invoked");
-            OnlineFramework onlineFramework = new();
-            onlineFramework.OnGameStarted += onGameStart;
-            onlineFramework.OnGameEnd     += onGameEnd;
-            onlineFramework.ConnectToHubAsync("Yotam");
-            onlineFramework.AsyncRequestGameFromServer();
+            await m_onlineFramework.ConnectToHubAsync("Yotam");
+            bool isRequestApproved = await m_onlineFramework.AsyncRequestGameFromServer();
+            if (isRequestApproved)
+            {
+                s_log.Info($"Request game approved by the server, waiting for the server to start the game");
+                return;
+            }
+
+            s_log.WarnFormat($"Request game is not approved by the server");
+            resetViewModel();
+            isOnlineCommandExecuting = false;
+        }
+
+        private void resetViewModel()
+        {
+            s_log.Info("Resetting View model");
+            CurrentViewModel = null;
         }
 
         private bool playOnlineCommandCanExecute(object parameter)
         {
-            return CurrentViewModel == null;
+            return false == isOnlineCommandExecuting && CurrentViewModel == null;
         }
 
         private void playOfflineCommandExecute(object parameter)
@@ -62,7 +80,7 @@ namespace Host
         
         private void onGameEnd(object? sender, EventArgs e)
         {
-            m_dispatcher.Invoke(()=>CurrentViewModel = null);
+            m_dispatcher.Invoke(resetViewModel);
         }
 
         private void onGameStart(object sender, BaseGameViewModel gameViewModel)
@@ -70,9 +88,5 @@ namespace Host
             m_dispatcher.Invoke(()=>CurrentViewModel = gameViewModel);
         }
 
-        private void onMessageShow(Window win)
-        {
-            win.ShowDialog();
-        }
     }
 }

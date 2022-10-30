@@ -17,9 +17,9 @@ namespace Board
 
         private  Dictionary<Color, GameDirection> m_colorToDirection;
 
-        private Board.ChessBoard m_chessBoard;
+        private global::Board.ChessBoard m_chessBoard;
 
-        public GameMoveHelper(Board.ChessBoard chessBoard)
+        public GameMoveHelper(global::Board.ChessBoard chessBoard)
         {
             m_chessBoard = chessBoard;
             initMoveLegalDelegates();

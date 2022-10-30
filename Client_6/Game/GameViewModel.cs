@@ -19,9 +19,7 @@ namespace Client.Game
 
     public abstract class BaseGameViewModel : DependencyObject, IGameViewModel
     {
-        protected BaseGameManager      m_gameManager;
-        private   Dispatcher           m_dispatcher;
-        protected AvailableMovesHelper m_availableMovesHelper;
+        protected   Dispatcher           m_dispatcher;
 
         public BoardViewModel  Board { get; }
         public object Message
@@ -32,27 +30,73 @@ namespace Client.Game
 
         private static readonly DependencyProperty messageProperty = DependencyProperty.Register("Message", typeof(object), typeof(BaseGameViewModel));
 
-        protected BaseGameViewModel(BaseGameManager gameManager)
+        protected BaseGameViewModel()
         {
-            m_dispatcher                 =  Dispatcher.CurrentDispatcher;
-            m_gameManager                =  gameManager;
-            m_availableMovesHelper       =  new AvailableMovesHelper(gameManager);
-            m_gameManager.CheckmateEvent += onCheckmateEventHandler;
-            m_gameManager.PromotionEvent += onPromotionAsyncEvent;
-            Board                        =  new BoardViewModel(SquareClickHandler, SquareClickHandlerCanExecute);
-
-            registerEvents();
+            m_dispatcher = Dispatcher.CurrentDispatcher;
+            Board        = new BoardViewModel(SquareClickHandler, SquareClickHandlerCanExecute);
         }
         
+        protected void MoveTool(BoardPosition start, BoardPosition end, ITool tool)
+        {
+            Board.ClearSelectedAndHintedBoardPositions();
+            Board.RemoveTool(start, out ITool toolAtStart);
+            Board.AddTool(tool, end);
+        }
+
+        protected abstract void SquareClickHandler(BoardPosition position
+                                                , ITool?        tool);
+
+        protected abstract bool SquareClickHandlerCanExecute(BoardPosition position
+                                                           , ITool?        tool);
+    }
+
+    public class OfflineGameViewModel : BaseGameViewModel
+    {
+        protected IGameManager         m_gameManager;
+        public    TeamStatusViewModel NorthTeamStatus { get; }
+        public    TeamStatusViewModel SouthTeamStatus { get; }
+
+        protected AvailableMovesHelper m_availableMovesHelper;
+
+        public OfflineGameViewModel(IGameManager gameManager, Team northTeam, Team southTeam)
+        {
+            m_gameManager                =  gameManager;
+            m_availableMovesHelper       =  new AvailableMovesHelper(gameManager);
+            NorthTeamStatus              =  new TeamStatusViewModel(northTeam);
+            SouthTeamStatus              =  new TeamStatusViewModel(southTeam);
+            registerEvents();
+        }
+
+        private void registerEvents()
+        {
+            m_gameManager.ToolKilledEvent += moveHandler;
+            m_gameManager.ToolMovedEvent  += moveHandler;
+            m_gameManager.CheckmateEvent  += onCheckmateEventHandler;
+            m_gameManager.PromotionEvent  += onPromotionAsyncEvent;
+            m_gameManager.ToolPromotedEvent += onToolPromotedEvent;
+        }
+
+        private void onToolPromotedEvent(object?               sender
+                                                  , ToolPromotedEventArgs e)
+        {
+            Board.RemoveTool(e.ToolPosition, out _);
+            Board.AddTool(e.ToolAfterPromotion, e.ToolPosition);
+        }
+
+        private void moveHandler(object sender, ToolMovedEventArgs e)
+        {
+            Action<BoardPosition, BoardPosition, ITool> act = MoveTool;
+            m_dispatcher.BeginInvoke(act, e.InitialPosition, e.EndPosition, e.MovedTool);
+        }
+
+
         private async Task<ITool> onPromotionAsyncEvent(object             sender
-                                                 , PromotionEventArgs e)
+                                                      , PromotionEventArgs e)
         {
             PromotionMessageViewModel promotionViewModel = new(e.ToolToPromote.Color, e.ToolPosition);
             Message = promotionViewModel;
             ITool tool =  await promotionViewModel.ToolAwaiter;
             Message = null;
-            Board.RemoveTool(e.ToolPosition, out _);
-            Board.AddTool(tool, e.ToolPosition);
             return tool;
         }
 
@@ -62,33 +106,7 @@ namespace Client.Game
             Message = new UserMessageViewModel("Checkmate", "OK", () => Message = null);
         }
 
-        private void registerEvents()
-        {
-            m_gameManager.ToolKilledEvent += moveHandler;
-            m_gameManager.ToolMovedEvent  += moveHandler;
-            m_gameManager.CheckmateEvent  += onCheckmateEvent;
-        }
-
-        private void moveHandler(object sender, ToolMovedEventArgs e)
-        {
-            Action<BoardPosition, BoardPosition, ITool> act = MoveTool;
-            m_dispatcher.BeginInvoke(act, e.InitialPosition, e.EndPosition, e.MovedTool);
-        }
-
-        protected void MoveTool(BoardPosition start, BoardPosition end, ITool tool)
-        {
-            Board.ClearSelectedAndHintedBoardPositions();
-            Board.RemoveTool(start, out ITool toolAtStart);
-            Board.AddTool(tool, end);
-        }
-
-        private void onCheckmateEvent(object?            sender
-                                    , CheckmateEventArgs e)
-        {
-            m_dispatcher.Invoke(m_gameManager.EndGame);
-        }
-
-        protected virtual void SquareClickHandler(BoardPosition position
+        protected override void SquareClickHandler(BoardPosition position
                                                 , ITool?        tool)
         {
             Color currTeamColor          = m_gameManager.CurrentColorTurn;
@@ -110,51 +128,10 @@ namespace Client.Game
             Board.ClearSelectedAndHintedBoardPositions();
         }
 
-        protected virtual bool SquareClickHandlerCanExecute(BoardPosition poistion
-                                                          , ITool?        tool)
-        {
-            return m_gameManager.IsGameRunning;
-        }
-
-    }
-
-    public class OfflineGameViewModel : BaseGameViewModel
-    {
-        public  TeamStatusViewModel NorthTeamStatus { get; }
-        public  TeamStatusViewModel SouthTeamStatus { get; }
-
-        protected AvailableMovesHelper m_availableMovesHelper;
-        public OfflineGameViewModel(BaseGameManager gameManager, Team northTeam, Team southTeam) : base(gameManager)
-        {
-            m_availableMovesHelper = new AvailableMovesHelper(gameManager);
-            NorthTeamStatus        = new TeamStatusViewModel(northTeam);
-            SouthTeamStatus        = new TeamStatusViewModel(southTeam);
-        }
-    }
-
-    public class OnlineGameViewModel : BaseGameViewModel
-    {
-        public TeamStatusViewModel NorthTeamStatus { get; }
-        public TeamStatusViewModel SouthTeamStatus { get; }
-
-        private Team                 m_localTeam;
-
-        public OnlineGameViewModel(BaseGameManager gameManager, Team northTeam, Team southTeam, Team localTeam) : base(gameManager)
-        {
-            m_localTeam            = localTeam;
-            NorthTeamStatus        = new TeamStatusViewModel(northTeam);
-            SouthTeamStatus        = new TeamStatusViewModel(southTeam);
-        }
-
         protected override bool SquareClickHandlerCanExecute(BoardPosition poistion
                                                            , ITool?        tool)
         {
-            if (m_gameManager.CurrentColorTurn != m_localTeam.Color)
-            {
-                return false;
-            }
-
-            return base.SquareClickHandlerCanExecute(poistion, tool);
+            return m_gameManager.IsGameRunning;
         }
     }
 }

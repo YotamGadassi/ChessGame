@@ -4,7 +4,6 @@ using Common;
 using Common.ChessBoardEventArgs;
 using Common_6;
 using Microsoft.AspNetCore.SignalR;
-using static System.Windows.Media.Colors;
 
 namespace ChessServer3._0;
 
@@ -24,7 +23,8 @@ public class GameUnit : IDisposable
         m_gameManager.TeamSwitchEvent += onTeamSwitch;
     }
 
-    private BaseGameManager       m_gameManager;
+    private OfflineGameManager       m_gameManager;
+
     private IHubContext<ChessHub> m_hubContext;
     public  string                GroupName          { get; }
     public  Guid                  CurrentGameVersion { get; private set; }
@@ -46,18 +46,16 @@ public class GameUnit : IDisposable
         CurrentGameVersion = Guid.NewGuid();
 
         m_gameManager.StartGame();
-        WhitePlayer1.PlayersTeam = new Team(WhitePlayer1.Name, White, GameDirection.North);
+        WhitePlayer1.PlayersTeam = new Team(WhitePlayer1.Name, Colors.White, GameDirection.North);
         WhitePlayer1.GameUnit    = this;
-        BlackPlayer2.PlayersTeam = new Team(BlackPlayer2.Name, Black, GameDirection.South);
+        BlackPlayer2.PlayersTeam = new Team(BlackPlayer2.Name, Colors.Black, GameDirection.South);
         BlackPlayer2.GameUnit    = this;
 
-        await Task.WhenAll(m_hubContext.Groups.AddToGroupAsync(WhitePlayer1.ConnectionId, GroupName),
-                           m_hubContext.Groups.AddToGroupAsync(BlackPlayer2.ConnectionId, GroupName));
         WhitePlayer1.StartTimer();
         return true;
     }
 
-    public async void EndGame(Hub hub)
+    public async void EndGame()
     {
         if (false == IsStarted)
         {
@@ -68,8 +66,8 @@ public class GameUnit : IDisposable
 
         m_gameManager.EndGame();
 
-        await Task.WhenAll(hub.Groups.RemoveFromGroupAsync(WhitePlayer1.ConnectionId, GroupName),
-                           hub.Groups.RemoveFromGroupAsync(BlackPlayer2.ConnectionId, GroupName)
+        await Task.WhenAll(m_hubContext.Groups.RemoveFromGroupAsync(WhitePlayer1.ConnectionId, GroupName),
+                           m_hubContext.Groups.RemoveFromGroupAsync(BlackPlayer2.ConnectionId, GroupName)
                           );
     }
 
@@ -128,5 +126,10 @@ public class GameUnit : IDisposable
         BlackPlayer2.StopTimer();
         WhitePlayer1.StartTimer();
 
+    }
+
+    public IDictionary<BoardPosition, ITool> GetBoardState()
+    {
+        return m_gameManager.GetBoardState();
     }
 }

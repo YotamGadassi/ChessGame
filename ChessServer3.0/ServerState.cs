@@ -49,6 +49,11 @@ namespace ChessServer3._0
                 m_groups[newGame.GroupName]    =  newGame;
                 newGame.PlayerTimeChangedEvent += onPlayerOneSecElapsed;
                 bool isGameStarted = await newGame.StartGame();
+                if (isGameStarted)
+                {
+                    await Task.WhenAll(m_hubContext.Groups.AddToGroupAsync(newGame.WhitePlayer1.ConnectionId, newGame.GroupName),
+                                       m_hubContext.Groups.AddToGroupAsync(newGame.BlackPlayer2.ConnectionId, newGame.GroupName));
+                }
                 return isGameStarted ? GameRequestResult.GameStarted : GameRequestResult.CannotStartGame;
             }
 

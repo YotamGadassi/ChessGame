@@ -3,7 +3,7 @@ using Common;
 
 namespace Board
 {
-    public class BoardState
+    public class BasicBoard : IBoard
     {
         private Dictionary<BoardPosition, ITool> m_positionToTool = new Dictionary<BoardPosition, ITool>();
         private Dictionary<ITool, BoardPosition> m_toolToPosition = new Dictionary<ITool, BoardPosition>();

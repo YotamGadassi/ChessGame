@@ -5,16 +5,16 @@ using log4net;
 
 namespace Board
 {
-    public class ChessBoard
+    public class ChessBoard : IBoard
     {
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private BoardState     m_board;
+        private IBoard          m_board;
         private GameMoveHelper m_gameMoveHelper;
 
         public ChessBoard()
         {
-            m_board          = new BoardState();
+            m_board          = new BasicBoard();
             m_gameMoveHelper = new GameMoveHelper(this);
         }
 
@@ -82,8 +82,6 @@ namespace Board
 
                 s_log.Info($"Killing event has occurred: tool at start: {toolToMove}, start: {start}, end: {end}, tool at end: {toolOnEndPosition}");
 
-                // KillingEventArgs eventArgs = new KillingEventArgs(toolToMove, start, end, toolOnEndPosition);
-                // KillingEvent?.Invoke(this, eventArgs);
                 return new MoveResult(MoveResultEnum.ToolKilled, start, end, toolToMove, toolOnEndPosition);
             }
 
@@ -112,9 +110,28 @@ namespace Board
             return m_board.TryGetPosition(tool, out position);
         }
 
-        public void ClearBoard()
+        public void Clear()
         {
             m_board.Clear();
+        }
+
+        public IDictionary<BoardPosition, ITool> GetState()
+        {
+            IDictionary<BoardPosition, ITool> dict = new Dictionary<BoardPosition, ITool>();
+            for (int row = 1; row <= 8; ++row)
+            {
+                for (int col = 1; col <= 8; ++col)
+                {
+                    BoardPosition position = new BoardPosition(col, row);
+                    bool          isExists = m_board.TryGetTool(position, out ITool tool);
+                    if (isExists)
+                    {
+                        dict.Add(position, tool);
+                    }
+                }
+            }
+
+            return dict;
         }
     }
 }

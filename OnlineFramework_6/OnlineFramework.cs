@@ -13,16 +13,16 @@ namespace Frameworks;
 
 public class OnlineFramework
 {
-    private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+    private static readonly ILog   s_log        = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+    private static readonly string s_hubAddress = @"https://localhost:7034/ChessHub";
+    private                 Guid   lastGameVersion;
 
-    private                 HubConnection       m_connection;
-    private                 BaseGameManager     m_gameManager;
-    private                 Team                m_localMachineTeam;
-    private readonly        Dispatcher          m_dispatcher;
-    public                  OnlineGameViewModel ViewModel;
-    private static readonly string              s_hubAddress = @"https://localhost:7034/ChessHub";
+    private          HubConnection m_connection;
+    private          OnlineGameManager  m_gameManager;
+    private          Team          m_localMachineTeam;
+    private readonly Dispatcher    m_dispatcher;
 
-    private static Guid                            lastGameVersion;
+    public OnlineGameViewModel                     ViewModel;
     public event EventHandler<OnlineGameViewModel> OnGameStarted;
     public event EventHandler                      OnGameEnd;
 
@@ -33,9 +33,9 @@ public class OnlineFramework
         m_dispatcher = Dispatcher.CurrentDispatcher;
     }
 
-    public async Task AsyncRequestGameFromServer()
+    public async Task<bool> AsyncRequestGameFromServer()
     {
-        await m_connection.InvokeAsync("RequestGame");
+        return await m_connection.InvokeAsync<bool>("RequestGame");
     }
 
     private async void onToolMovedEvent(object sender, ToolMovedEventArgs e)
@@ -50,7 +50,7 @@ public class OnlineFramework
         try
         {
             s_log.Info($"Local move event has been invoked. start:{e.InitialPosition}, end:{e.EndPosition}");
-            await m_connection.InvokeAsync("Move", e.InitialPosition, e.EndPosition, lastGameVersion);
+            await m_connection.InvokeAsync("MoveRequest", e.InitialPosition, e.EndPosition, lastGameVersion);
             s_log.Info($"Move invocation has been sent to server: [start:{e.InitialPosition}] [end:{e.EndPosition}] [game version:{lastGameVersion}]");
         }
         catch (Exception exception)
@@ -106,6 +106,7 @@ public class OnlineFramework
         m_connection.On<Team, Team, Guid>("StartGame", handleStartGameRequest);
         m_connection.On("EndGame", handleEndGameRequest);
         m_connection.On<Team, TimeSpan>("UpdateTime", handleTimeUpdate);
+        m_connection.On<PositionAndToolBundle[]>("ForceAddToBoard", handleForceAdd);
     }
 
     private void handleMoveRequest(BoardPosition start, BoardPosition end, Guid newGameVersion)
@@ -132,6 +133,21 @@ public class OnlineFramework
     private void handlePromotionEvent()
     {
 
+    }
+
+    private void handleForceAdd(PositionAndToolBundle[] toolArr)
+    {
+        s_log.Info($"Force Add Invoked: {toolArr}");
+        m_dispatcher.InvokeAsync(
+                                 () =>
+                                 {
+                                     foreach (PositionAndToolBundle bundle in toolArr)
+                                     {
+                                         Type  toolType = Type.GetType(bundle.ToolName);
+                                         ITool tool     = (ITool)Activator.CreateInstance(toolType, 0, null, bundle.ToolColor);
+                                         m_gameManager.ForceAddTool(bundle.Position, tool);
+                                     }
+                                 });
     }
 
     private void handleTimeUpdate(Team     team
@@ -165,11 +181,11 @@ public class OnlineFramework
         m_gameManager.ToolKilledEvent += onToolMovedEvent;
         if (localTeam.MoveDirection.Equals(GameDirection.South))
         {
-            ViewModel = new OnlineGameViewModel(m_gameManager, localTeam, remoteTeam, m_localMachineTeam);
+            ViewModel = new OnlineGameViewModel(m_gameManager, localTeam, remoteTeam, m_localMachineTeam, sendMoveRequest);
         }
         else
         {
-            ViewModel = new OnlineGameViewModel(m_gameManager, remoteTeam ,localTeam, m_localMachineTeam);
+            ViewModel = new OnlineGameViewModel(m_gameManager, remoteTeam ,localTeam, m_localMachineTeam, sendMoveRequest);
         }
         OnGameStarted?.Invoke(this, ViewModel);
         m_gameManager.StartGame();
@@ -183,6 +199,14 @@ public class OnlineFramework
         m_gameManager.EndGame();
         m_gameManager = null;
         OnGameEnd?.Invoke(this, null);
+    }
+
+    private bool sendMoveRequest(BoardPosition initial
+                                     , BoardPosition end)
+    {
+        Task<MoveResult> task = m_connection.InvokeAsync<MoveResult>("MoveRequest", initial, end, lastGameVersion);
+        task.Wait();
+        return task.Result.Result != MoveResultEnum.NoChangeOccurred;
     }
 
 }

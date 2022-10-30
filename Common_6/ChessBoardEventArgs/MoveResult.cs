@@ -10,7 +10,7 @@
     public class MoveResult
     {
         public static readonly MoveResult NoChangeOccurredResult =
-            new MoveResult(MoveResultEnum.NoChangeOccurred, BoardPosition.Empty, BoardPosition.Empty, null, null); 
+            new(MoveResultEnum.NoChangeOccurred, BoardPosition.Empty, BoardPosition.Empty, null, null); 
         
         public MoveResultEnum Result          { get; }
         public BoardPosition  InitialPosition { get; }

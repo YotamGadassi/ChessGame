@@ -1,107 +1,168 @@
 ﻿using System.Diagnostics;
+using System.Windows.Media;
 using Common;
 using Common.ChessBoardEventArgs;
 using Microsoft.AspNetCore.SignalR;
 
-namespace ChessServer3._0
+namespace ChessServer3._0;
+
+public class ChessHub : Hub
 {
-    public class ChessHub : Hub
+    private readonly IServerState      m_serverState;
+    private readonly ILogger<ChessHub> m_log;
+
+    public ChessHub(IServerState      serverState
+                  , ILogger<ChessHub> logger)
     {
-        private readonly IServerState      m_serverState;
-        private readonly ILogger<ChessHub> m_log;
-        public ChessHub(IServerState serverState, ILogger<ChessHub> logger)
+        m_serverState = serverState;
+        m_log         = logger;
+    }
+
+    public async Task<MoveResult> MoveRequest(BoardPosition start
+                                            , BoardPosition end
+                                            , Guid          gameVersion)
+    {
+        string connectionId = Context.ConnectionId;
+        if (false == m_serverState.TryGetGame(connectionId, out GameUnit game))
         {
-            m_serverState = serverState;
-            m_log         = logger;
+            m_log.LogError($"Connection Id [{connectionId}] is not subscribed to any game");
+            throw new InvalidOperationException("Move request is not authorized");
         }
 
-        [HubMethodName("Move")]
-        public async Task<bool> Move(BoardPosition start, BoardPosition end, Guid gameVersion)
+        MoveResult moveResult = game.Move(gameVersion, start, end);
+        switch (moveResult.Result)
         {
-            if (false == m_serverState.TryGetGame(Context.ConnectionId, out GameUnit game))
+            case MoveResultEnum.ToolMoved:
+            case MoveResultEnum.ToolKilled:
             {
-                // TODO: handle error
+                if (false == m_serverState.TryGetPlayer(connectionId, out PlayerObject player))
+                {
+                    m_log.LogError($"Connection Id [{connectionId}] is not attached to a player object");
+                    throw new InvalidOperationException("Move request is not authorized");
+                }
+
+                PlayerObject otherPlayer = game.GetOtherPlayer(player);
+                await Clients.Client(otherPlayer.ConnectionId).SendAsync("Move", start, end, game.CurrentGameVersion);
+                return moveResult;
+            }
+            case MoveResultEnum.NoChangeOccurred:
+            {
+                m_log.LogInformation($"Move request [{moveResult.InitialPosition} -> {moveResult.EndPosition}] is illegal");
+                return moveResult;
+            }
+            default:
+            {
+                m_log.LogError($"Move result enum {moveResult.Result} is not supported");
+                throw new ArgumentOutOfRangeException();
+            }
+        }
+    }
+
+    // public async Task<bool> PromoteRequest(BoardPosition position
+    //                                      , ITool         tool
+    //                                      , Guid          gameVersion)
+    // {
+    //
+    // }
+
+    public async Task QuitGame()
+    {
+        m_log.LogInformation($"Player quit: {Context.ConnectionId}");
+        await m_serverState.OnPlayerQuit(Context.ConnectionId);
+    }
+
+    public async Task<bool> RequestGame()
+    {
+        GameRequestResult result = await m_serverState.OnGameRequest(Context.ConnectionId);
+        m_log.LogInformation($"Request Game From ConnectionId [{Context.ConnectionId}] Result: [{result}]");
+        switch (result)
+        {
+            case GameRequestResult.GameStarted:
+            {
+                await sendStartGameToGroup();
+                return true;
+            }
+            case GameRequestResult.PlayerAddedToPendingList:
+            {
+                return true;
+            }
+            case GameRequestResult.CannotStartGame:
+            case GameRequestResult.CannotAddPlayerToPendingList:
+            default:
+            {
                 return false;
             }
-            MoveResult moveResult = game.Move( gameVersion,start,end);
-            switch (moveResult.Result)
-            {
-                case MoveResultEnum.ToolMoved:
-                case MoveResultEnum.ToolKilled:
-                {
-                    if (false == m_serverState.TryGetPlayer(Context.ConnectionId, out PlayerObject player))
-                    {
-                        // TODO: Handle error
-                        return false;
-                    }
-
-                    PlayerObject otherPlayer = game.GetOtherPlayer(player);
-                    await Clients.Client(otherPlayer.ConnectionId).SendAsync("Move", start, end, game.CurrentGameVersion);
-                    return true;
-                }
-            }
-
-            return false;
         }
+    }
 
-        public async Task QuitGame()
+    private async Task sendStartGameToGroup()
+    {
+        string connectionId = Context.ConnectionId;
+        bool   isGameExists        = m_serverState.TryGetGame(connectionId, out GameUnit game);
+        if (false == isGameExists)
         {
-            Debug.WriteLine($"Player quit: {Context.ConnectionId}");
-            await m_serverState.OnPlayerQuit(Context.ConnectionId);
+            m_log.LogError($"Connection Id [{connectionId}] is not subscribed to any game");
+            return;
         }
 
-        public async Task RequestGame()
+        m_log.LogInformation($"Sending start game to: [{game.WhitePlayer1}] & [{game.BlackPlayer2}]");
+        IDictionary<BoardPosition, ITool> gameBoard = game.GetBoardState();
+        PositionAndToolBundle[]           toolsArr     = createToolBundle(gameBoard);
+        await
+            Task.WhenAll(Clients.Client(game.WhitePlayer1.ConnectionId)
+                                .SendAsync("StartGame",
+                                           game.WhitePlayer1.PlayersTeam,
+                                           game.BlackPlayer2.PlayersTeam,
+                                           game.CurrentGameVersion)
+                        ,
+                         Clients.Client(game.BlackPlayer2.ConnectionId)
+                                .SendAsync("StartGame",
+                                           game.BlackPlayer2.PlayersTeam,
+                                           game.WhitePlayer1.PlayersTeam,
+                                           Guid.Empty));
+        await Clients.Clients(game.BlackPlayer2.ConnectionId).SendAsync("ForceAddToBoard", toolsArr);
+        await Clients.Clients(game.WhitePlayer1.ConnectionId).SendAsync("ForceAddToBoard", toolsArr);
+    }
+
+    private PositionAndToolBundle[] createToolBundle(IDictionary<BoardPosition, ITool> gameBoard)
+    {
+        int                     len      = gameBoard.Count;
+        PositionAndToolBundle[] toolsArr = new PositionAndToolBundle[len];
+        int                     i        = 0;
+        foreach (KeyValuePair<BoardPosition, ITool> pair in gameBoard)
         {
-            GameRequestResult result =  await m_serverState.OnGameRequest(Context.ConnectionId);
-            switch (result)
-            {
-                case GameRequestResult.GameStarted:
-                {
-                    await sendStartGameToGroup();
-                    break;
-                }
-                default:
-                {
-                        break;
-                }
-            }
+            BoardPosition         position  = pair.Key;
+            ITool                 tool      = pair.Value;
+            string                toolType  = tool.Type;
+            Color                toolColor = tool.Color;
+            PositionAndToolBundle bundle    = new PositionAndToolBundle(position, toolType, toolColor);
+            toolsArr[i++] = bundle;
         }
 
-        private async Task sendStartGameToGroup()
-        {
-            bool isGameExists = m_serverState.TryGetGame(Context.ConnectionId, out GameUnit game);
-            if (false == isGameExists)
-            {
-                return;
-            }
+        return toolsArr;
+    }
 
-            await
-                Task.WhenAll(Clients.Client(game.WhitePlayer1.ConnectionId).SendAsync("StartGame", game.WhitePlayer1.PlayersTeam, game.BlackPlayer2.PlayersTeam, game.CurrentGameVersion)
-                            ,
-                             Clients.Client(game.BlackPlayer2.ConnectionId)
-                                    .SendAsync("StartGame", game.BlackPlayer2.PlayersTeam, game.WhitePlayer1.PlayersTeam, Guid.Empty));
-        }
+    public override async Task OnConnectedAsync()
+    {
+        string connectionId = Context.ConnectionId;
 
-        public override async Task OnConnectedAsync()
-        {
-            Debug.WriteLine($"Connected established: {Context.ConnectionId}");
-            string name = getNameForConnection();
-            m_serverState.OnConnection(name, Context.ConnectionId);
-            await base.OnConnectedAsync();
-        }
+        m_log.LogInformation($"Connected established: {connectionId}");
+        string name = getNameForConnection();
+        m_serverState.OnConnection(name, connectionId);
+        await base.OnConnectedAsync();
+    }
 
-        private string getNameForConnection()
-        {
-            return Context.GetHttpContext().Request.Query["Name"];
-        }
+    private string getNameForConnection()
+    {
+        return Context.GetHttpContext()?.Request.Query["Name"] ?? string.Empty;
+    }
 
-        public override async Task OnDisconnectedAsync(Exception? exception)
-        {
-            Debug.WriteLine($"Disconnected established {Context.ConnectionId}");
-            await m_serverState.OnPlayerQuit(Context.ConnectionId);
-            await base.OnDisconnectedAsync(exception);  
-        }
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        string connectionId = Context.ConnectionId;
 
+        m_log.LogInformation( $"Disconnected established {connectionId}");
+        await m_serverState.OnPlayerQuit(connectionId);
+        await base.OnDisconnectedAsync(exception);
     }
 }
-    

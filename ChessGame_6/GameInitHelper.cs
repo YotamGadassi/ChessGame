@@ -7,6 +7,38 @@ namespace ChessGame
 {
     public static class GameInitHelper
     {
+        public static KeyValuePair<BoardPosition, ITool>[] GenerateInitialArrangement(GameDirection direction
+          , Color                                                                             color)
+        {
+            IList<KeyValuePair<BoardPosition, ITool>> pawnList      = new List<KeyValuePair<BoardPosition, ITool>>();
+            IList<KeyValuePair<BoardPosition, ITool>> rookList      = new List<KeyValuePair<BoardPosition, ITool>>();
+            IList<KeyValuePair<BoardPosition, ITool>> bishopList    = new List<KeyValuePair<BoardPosition, ITool>>();
+            IList<KeyValuePair<BoardPosition, ITool>> knightList    = new List<KeyValuePair<BoardPosition, ITool>>();
+            IList<KeyValuePair<BoardPosition, ITool>> queenKingList = new List<KeyValuePair<BoardPosition, ITool>>();
+
+            pawnList      = GameInitHelper.GeneratePawns(direction, color);
+            rookList      = GameInitHelper.GenerateRooks(direction, color);
+            bishopList    = GameInitHelper.GenerateBishops(direction, color);
+            knightList    = GameInitHelper.GenerateKnights(direction, color);
+            queenKingList = GameInitHelper.GenerateQueenKing(direction, color);
+
+            IList<KeyValuePair<BoardPosition, ITool>> toolsList = concatanateLists(pawnList, rookList, bishopList, knightList, queenKingList);
+
+            return toolsList.ToArray();
+        }
+        
+        private static IList<KeyValuePair<BoardPosition, ITool>> concatanateLists(params IList<KeyValuePair<BoardPosition, ITool>>[] lists)
+        {
+            IList<KeyValuePair<BoardPosition, ITool>> toolsList = new List<KeyValuePair<BoardPosition, ITool>>();
+
+            foreach (IList<KeyValuePair<BoardPosition,ITool>> list in lists)
+            {
+                toolsList = toolsList.Concat(list).ToList();
+            }
+
+            return toolsList;
+        }
+
         public static IList<KeyValuePair<BoardPosition, ITool>> GeneratePawns(GameDirection direction, Color color)
         {
             int pawnsAmount = 8;
