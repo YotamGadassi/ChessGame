@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -11,6 +12,7 @@ namespace Common;
 
 public interface ITool
 {
+    [JsonConverter(typeof(ColorConverter))]
     Color Color { get; }
 
     string Type { get; }
@@ -34,9 +36,8 @@ public class IToolConverter : JsonConverter<ITool>
         string? typeName = reader.GetString();
         reader.Read(); // end
         reader.Read(); // start
-        Type type = Type.GetType(typeName);
-        JsonNode d    = JsonNode.Parse(ref reader);
-        ITool tool = (ITool)d.Deserialize(type, options);
+        Type  type = Type.GetType(typeName);
+        ITool tool = (ITool)JsonSerializer.Deserialize(ref reader, type, options);
         reader.Read(); // array end
         reader.Read(); // end
         return tool;
@@ -73,25 +74,5 @@ public class IToolConverter : JsonConverter<ITool>
             writer.Flush();
             break;
         }
-    }
-}
-
-public class ColorConverter : JsonConverter<Color>
-{
-    public override Color Read(ref Utf8JsonReader    reader
-                             , Type                  typeToConvert
-                             , JsonSerializerOptions options)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override void Write(Utf8JsonWriter        writer
-                             , Color                 value
-                             , JsonSerializerOptions options)
-    {
-        writer.WriteStartObject();
-        writer.WriteStartArray("Color");
-        writer.WritePropertyName("A");
-        value.
     }
 }

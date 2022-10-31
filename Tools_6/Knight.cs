@@ -1,8 +1,11 @@
-﻿using System.Windows.Media;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Windows.Media;
 using Common;
 
 namespace Tools
 {
+    [JsonConverter(typeof(KnightConverter))]
     public class Knight : ITool
     {
         public string Type => "Knight";
@@ -21,5 +24,48 @@ namespace Tools
             return newKnight;
         }
 
+    }
+
+    public class KnightConverter : JsonConverter<Knight>
+    {
+        public override Knight? Read(ref Utf8JsonReader    reader
+                                   , Type                  typeToConvert
+                                   , JsonSerializerOptions options)
+        {
+            reader.Read();
+            reader.Read();
+            reader.Read();
+            reader.Read();
+            reader.Read();
+
+            byte A = (byte)reader.GetInt32();
+            reader.Read();
+            byte B = reader.GetByte();
+            reader.Read();
+            byte G = reader.GetByte();
+            reader.Read();
+            byte R = reader.GetByte();
+            reader.Read();
+            reader.Read();
+            reader.Read();
+
+            reader.Read();
+
+            return new Knight(Color.FromArgb(A, R, G, B));
+        }
+
+        public override void Write(Utf8JsonWriter        writer
+                                 , Knight                value
+                                 , JsonSerializerOptions options)
+        {
+            writer.WriteStartObject();
+            writer.WriteStartArray("Color");
+            writer.WriteNumberValue(value.Color.A);
+            writer.WriteNumberValue(value.Color.B);
+            writer.WriteNumberValue(value.Color.G);
+            writer.WriteNumberValue(value.Color.R);
+            writer.WriteEndArray();
+            writer.WriteEndObject();
+        }
     }
 }

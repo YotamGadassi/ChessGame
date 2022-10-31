@@ -1,8 +1,11 @@
-﻿using System.Windows.Media;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Windows.Media;
 using Common;
 
 namespace Tools
 {
+    [JsonConverter(typeof(BishopConverter))]
     public class Bishop : ITool
     {
         public Color Color { get; }
@@ -19,4 +22,48 @@ namespace Tools
             return new Bishop(Color);
         }
     }
+
+    public class BishopConverter : JsonConverter<Bishop>
+    {
+        public override Bishop? Read(ref Utf8JsonReader    reader
+                                   , Type                  typeToConvert
+                                   , JsonSerializerOptions options)
+        {
+            reader.Read();
+            reader.Read();
+            reader.Read();
+            reader.Read();
+            reader.Read();
+
+            byte A = (byte)reader.GetInt32();
+            reader.Read();
+            byte B = reader.GetByte();
+            reader.Read();
+            byte G = reader.GetByte();
+            reader.Read();
+            byte R = reader.GetByte();
+            reader.Read();
+            reader.Read();
+            reader.Read();
+
+            reader.Read();
+
+            return new Bishop(Color.FromArgb(A, R, G, B));
+        }
+
+        public override void Write(Utf8JsonWriter        writer
+                                 , Bishop                value
+                                 , JsonSerializerOptions options)
+        {
+            writer.WriteStartObject();
+            writer.WriteStartArray("Color");
+            writer.WriteNumberValue(value.Color.A);
+            writer.WriteNumberValue(value.Color.B);
+            writer.WriteNumberValue(value.Color.G);
+            writer.WriteNumberValue(value.Color.R);
+            writer.WriteEndArray();
+            writer.WriteEndObject();
+        }
+    }
+
 }
