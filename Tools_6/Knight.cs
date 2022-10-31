@@ -9,9 +9,9 @@ namespace Tools
 
         public Color Color { get; }
 
-        public Knight(Color Color_)
+        public Knight(Color color)
         {
-            Color = Color_;
+            Color = color;
         }
 
         public ITool GetCopy()

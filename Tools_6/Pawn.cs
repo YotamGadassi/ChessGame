@@ -9,9 +9,9 @@ namespace Tools
 
         public Color Color { get; }
 
-        public Pawn(Color Color_)
+        public Pawn(Color color)
         {
-            Color = Color_;
+            Color = color;
         }
 
         public ITool GetCopy()

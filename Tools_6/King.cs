@@ -9,9 +9,9 @@ namespace Tools
 
         public string Type => "King";
 
-        public King(Color Color_)
+        public King(Color color)
         {
-            Color = Color_;
+            Color = color;
         }
 
         public ITool GetCopy()

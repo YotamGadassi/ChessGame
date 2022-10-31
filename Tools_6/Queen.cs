@@ -9,9 +9,9 @@ namespace Tools
 
         public Color Color { get; }
 
-        public Queen(Color Color_)
+        public Queen(Color color)
         {
-            Color = Color_;
+            Color = color;
         }
 
         public ITool GetCopy()

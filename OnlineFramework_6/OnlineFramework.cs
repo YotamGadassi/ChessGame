@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Text.Json;
 using System.Windows.Media;
 using System.Windows.Threading;
 using ChessGame;
@@ -8,6 +9,7 @@ using Common.ChessBoardEventArgs;
 using Common_6;
 using log4net;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Frameworks;
@@ -32,6 +34,35 @@ public class OnlineFramework
     public OnlineFramework()
     {
         m_dispatcher = Dispatcher.CurrentDispatcher;
+    }
+    public async Task<bool> ConnectToHubAsync(string name)
+    {
+        if (m_connection != null && m_connection.State != HubConnectionState.Disconnected)
+        {
+            s_log.Info($"Connection state is {m_connection.State}. Cannot connect again.");
+            return true;
+        }
+
+        m_connection = new HubConnectionBuilder().WithUrl(s_hubAddress + $"?name={name}")
+                                                 .ConfigureLogging(builder => builder.AddLog4Net("LogConfiguration.xml"))
+                                                 .AddJsonProtocol(options => options.PayloadSerializerOptions.Converters.Add(new IToolConverter()))
+                                                 .Build();
+        m_connection.Closed += onConnectionClosed;
+        registerClientMethods();
+        s_log.Info($"Starting connection to client. server state:{m_connection.State}");
+        try
+        {
+            await m_connection.StartAsync(); // The await returns to the same dispatcher
+        }
+        catch (Exception e)
+        {
+            s_log.Error(e.Message);
+            return false;
+        }
+
+        s_log.Info($"connection to client completed. server state:{m_connection.State}");
+
+        return true;
     }
 
     public async Task<bool> AsyncRequestGameFromServer()
@@ -68,34 +99,6 @@ public class OnlineFramework
             return new Team("Black_B", Colors.Black, GameDirection.South);
     }
 
-    public async Task<bool> ConnectToHubAsync(string name)
-    {
-        if (m_connection != null && m_connection.State != HubConnectionState.Disconnected)
-        {
-            s_log.Info($"Connection state is {m_connection.State}. Cannot connect again.");
-            return true;
-        }
-
-        m_connection = new HubConnectionBuilder().WithUrl(s_hubAddress + $"?name={name}")
-                                                 .ConfigureLogging(builder => builder.AddLog4Net("LogConfiguration.xml"))
-                                                 .Build();
-        m_connection.Closed += onConnectionClosed;
-        registerClientMethods();
-        s_log.Info($"Starting connection to client. server state:{m_connection.State}");
-        try
-        {
-            await m_connection.StartAsync(); // The await returns to the same dispatcher
-        }
-        catch (Exception e)
-        {
-            s_log.Error(e.Message);
-            return false;
-        }
-
-        s_log.Info($"connection to client completed. server state:{m_connection.State}");
-
-        return true;
-    }
 
     private Task onConnectionClosed(Exception? arg)
     {

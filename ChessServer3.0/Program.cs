@@ -1,7 +1,12 @@
 using ChessServer3._0;
+using Common;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.Services.AddSignalR();
+builder.Services.AddSignalR()
+       .AddJsonProtocol(option =>
+                        {
+                            option.PayloadSerializerOptions.Converters.Add(new IToolConverter());
+                        });
 
 builder.Logging.AddLog4Net("loggingConfiguration.xml");
 

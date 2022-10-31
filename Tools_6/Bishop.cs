@@ -9,9 +9,9 @@ namespace Tools
 
         public string Type => "Bishop";
 
-        public Bishop(Color Color_)
+        public Bishop(Color color)
         {
-            Color = Color_;
+            Color = color;
         }
 
         public ITool GetCopy()

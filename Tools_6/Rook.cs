@@ -9,9 +9,9 @@ namespace Tools
 
         public string Type => "Rook";
 
-        public Rook(Color Color_)
+        public Rook(Color color)
         {
-            Color = Color_;
+            Color = color;
         }
 
         public ITool GetCopy()

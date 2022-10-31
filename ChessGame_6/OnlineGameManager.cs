@@ -91,20 +91,22 @@ namespace ChessGame
                 }
             }
 
-            m_gameBoard.Remove(start);
-            m_gameBoard.Add(end, toolToMove);
-
             switch (resultEnum)
             {
                 case MoveResultEnum.ToolMoved:
                 {
                     s_log.Info($@"Move from {start} to {end} successfully, tool [{toolToMove}]");
-                    toolMovedHandler(new ToolMovedEventArgs(toolToMove, start, end));
+                    m_gameBoard.Remove(start);
+                    m_gameBoard.Add(end, toolToMove);
+                        toolMovedHandler(new ToolMovedEventArgs(toolToMove, start, end));
                     break;
                 }
                 case MoveResultEnum.ToolKilled:
                 {
                     s_log.Info($@"Move and kill from {start} to {end} successfully, tool moved: [{toolToMove}], tool killed: [{toolAtEnd}]");
+                    m_gameBoard.Remove(start);
+                    m_gameBoard.Remove(end);
+                    m_gameBoard.Add(end, toolToMove);
                     toolKilledHandler(new KillingEventArgs(toolToMove, start, end, toolAtEnd));
                     break;
                 }
