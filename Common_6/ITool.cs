@@ -26,8 +26,6 @@ public class IToolConverter : JsonConverter<ITool>
                               , Type                  typeToConvert
                               , JsonSerializerOptions options)
     {
-        StringBuilder str = new StringBuilder();
-
         reader.Read(); // start
         reader.Read(); // array start
         reader.Read(); // start
@@ -36,7 +34,7 @@ public class IToolConverter : JsonConverter<ITool>
         string? typeName = reader.GetString();
         reader.Read(); // end
         reader.Read(); // start
-        Type     type = Type.GetType(typeName);
+        Type type = Type.GetType(typeName);
         JsonNode d    = JsonNode.Parse(ref reader);
         ITool tool = (ITool)d.Deserialize(type, options);
         reader.Read(); // array end
@@ -65,7 +63,7 @@ public class IToolConverter : JsonConverter<ITool>
             writer.WriteEndObject();
             
             writer.WriteStartObject();
-            writer.WritePropertyName("ActualType");
+            writer.WritePropertyName("ConcreteType");
             JsonSerializer.Serialize(writer, value, type, options);
             writer.WriteEndObject();
 
@@ -75,5 +73,25 @@ public class IToolConverter : JsonConverter<ITool>
             writer.Flush();
             break;
         }
+    }
+}
+
+public class ColorConverter : JsonConverter<Color>
+{
+    public override Color Read(ref Utf8JsonReader    reader
+                             , Type                  typeToConvert
+                             , JsonSerializerOptions options)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void Write(Utf8JsonWriter        writer
+                             , Color                 value
+                             , JsonSerializerOptions options)
+    {
+        writer.WriteStartObject();
+        writer.WriteStartArray("Color");
+        writer.WritePropertyName("A");
+        value.
     }
 }

@@ -4,17 +4,13 @@ namespace Common
 {
     public class PositionAndToolBundle
     {
-        public BoardPosition Position  { get; }
-        public string        ToolName  { get; }
-        public Color        ToolColor { get; }
+        public  BoardPosition Position { get; }
+        public ITool         Tool     { get; }
 
-        public PositionAndToolBundle(BoardPosition position
-                                    , string       toolName
-                                    , Color        toolColor)
+        public PositionAndToolBundle(BoardPosition position, ITool tool)
         {
-            Position  = position;
-            ToolName  = toolName;
-            ToolColor = toolColor;
+            Position = position;
+            Tool     = tool;
         }
     }
 }

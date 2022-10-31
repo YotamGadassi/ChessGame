@@ -149,9 +149,7 @@ public class OnlineFramework
                                  {
                                      foreach (PositionAndToolBundle bundle in toolArr)
                                      {
-                                         Type  toolType = Type.GetType(bundle.ToolName);
-                                         ITool tool     = (ITool)Activator.CreateInstance(toolType, bundle.ToolColor);
-                                         m_gameManager.ForceAddTool(bundle.Position, tool);
+                                         m_gameManager.ForceAddTool(bundle.Position, bundle.Tool);
                                      }
                                  });
     }
@@ -165,6 +163,11 @@ public class OnlineFramework
     private void updateTime(Team     team
                           , TimeSpan timeLeft)
     {
+        if (null == ViewModel)
+        {
+            return;
+        }
+
         if (team.MoveDirection == GameDirection.North)
         {
             ViewModel.SouthTeamStatus.TimeLeft = timeLeft;

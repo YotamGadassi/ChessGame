@@ -118,9 +118,8 @@ public class ChessHub : Hub
                                 .SendAsync("StartGame",
                                            game.BlackPlayer2.PlayersTeam,
                                            game.WhitePlayer1.PlayersTeam,
-                                           Guid.Empty));
-        await Clients.Clients(game.BlackPlayer2.ConnectionId).SendAsync("ForceAddToBoard", toolsArr);
-        await Clients.Clients(game.WhitePlayer1.ConnectionId).SendAsync("ForceAddToBoard", toolsArr);
+                                           Guid.Empty),
+                         Clients.Groups(game.GroupName).SendAsync("ForceAddToBoard", toolsArr));
     }
 
     private PositionAndToolBundle[] createToolBundle(IDictionary<BoardPosition, ITool> gameBoard)
@@ -130,11 +129,9 @@ public class ChessHub : Hub
         int                     i        = 0;
         foreach (KeyValuePair<BoardPosition, ITool> pair in gameBoard)
         {
-            BoardPosition         position  = pair.Key;
-            ITool                 tool      = pair.Value;
-            string                toolType  = tool.GetType().AssemblyQualifiedName;
-            Color                toolColor = tool.Color;
-            PositionAndToolBundle bundle    = new PositionAndToolBundle(position, toolType, toolColor);
+            BoardPosition         position = pair.Key;
+            ITool                 tool     = pair.Value;
+            PositionAndToolBundle bundle   = new(position, tool);
             toolsArr[i++] = bundle;
         }
 
