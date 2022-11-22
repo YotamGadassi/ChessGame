@@ -5,12 +5,12 @@ namespace Board
 {
     public class BasicBoard : IBoard
     {
-        private Dictionary<BoardPosition, ITool> m_positionToTool = new Dictionary<BoardPosition, ITool>();
-        private Dictionary<ITool, BoardPosition> m_toolToPosition = new Dictionary<ITool, BoardPosition>();
+        private BoardState m_boardState = new();
+        private Dictionary<ITool, BoardPosition> m_toolToPosition = new();
 
         public void Add(BoardPosition position, ITool tool)
         {
-            if (m_positionToTool.ContainsKey(position))
+            if (m_boardState.ContainsKey(position))
             {
                 throw new ArgumentException($"Board already contains position {position}!");
             }
@@ -20,16 +20,16 @@ namespace Board
                 throw new ArgumentException($"Board already contains tool {tool}!");
             }
 
-            m_positionToTool[position] = tool;
+            m_boardState[position] = tool;
             m_toolToPosition[tool] = position;
         }
 
         public bool Remove(BoardPosition position)
         {
-            bool isPositionContainsTool = m_positionToTool.TryGetValue(position, out ITool tool);
+            bool isPositionContainsTool = m_boardState.TryGetValue(position, out ITool tool);
             if (isPositionContainsTool)
             {
-                m_positionToTool.Remove(position);
+                m_boardState.Remove(position);
                 m_toolToPosition.Remove(tool);
             }
 
@@ -38,7 +38,7 @@ namespace Board
 
         public bool TryGetTool(BoardPosition position, out ITool tool)
         {
-            return m_positionToTool.TryGetValue(position, out tool);
+            return m_boardState.TryGetValue(position, out tool);
         }
 
         public bool TryGetPosition(ITool tool, out BoardPosition position)
@@ -49,8 +49,9 @@ namespace Board
         public void Clear()
         {
             m_toolToPosition.Clear();
-            m_positionToTool.Clear();
+            m_boardState.Clear();
         }
 
+        public BoardState GetBoard => new BoardState(m_boardState);
     }
 }

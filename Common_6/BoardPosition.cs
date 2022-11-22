@@ -23,6 +23,16 @@ namespace Common
             return Equals(Empty);
         }
 
+        public bool Equals(BoardPosition other)
+        {
+            return other.Column == Column && other.Row == Row;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is BoardPosition && Equals((BoardPosition)obj);
+        }
+
         public override string ToString()
         {
             return $"[Column:{Column}], [Row:{Row}]";

@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Runtime.Serialization;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
 using Common;
@@ -31,12 +32,16 @@ namespace Tools
                                   , Type                  typeToConvert
                                   , JsonSerializerOptions options)
         {
-            reader.Read();
-            reader.Read();
-            reader.Read();
-            reader.Read();
-            reader.Read();
+            while (reader.Read() && reader.TokenType != JsonTokenType.PropertyName) { }
 
+            string propertyName = reader.GetString();
+            if (propertyName != "Color")
+            {
+                throw new SerializationException("Color property did not serialized");
+            }
+
+            reader.Read();
+            reader.Read();
             byte A = (byte)reader.GetInt32();
             reader.Read();
             byte B = reader.GetByte();
@@ -44,11 +49,9 @@ namespace Tools
             byte G = reader.GetByte();
             reader.Read();
             byte R = reader.GetByte();
-            reader.Read();
-            reader.Read();
-            reader.Read();
 
-            reader.Read();
+            reader.Read(); // End array
+            reader.Read(); // End object
 
             return new Queen(Color.FromArgb(A, R, G, B));
         }

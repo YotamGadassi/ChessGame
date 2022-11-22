@@ -38,22 +38,22 @@ namespace ChessGame
 
         public void StartGame()
         {
-            KeyValuePair<BoardPosition, ITool>[] whiteGroupBoardArrangement =
-                GameInitHelper.GenerateInitialArrangement(GameDirection.North, Colors.White);
-            KeyValuePair<BoardPosition, ITool>[] blackGroupBoardArrangement =
-                GameInitHelper.GenerateInitialArrangement(GameDirection.South, Colors.Black);
-
-            foreach (KeyValuePair<BoardPosition, ITool> pair in whiteGroupBoardArrangement)
-            {
-                m_gameBoard.Add(pair.Key, pair.Value);
-                toolMovedHandler(new ToolMovedEventArgs(pair.Value, BoardPosition.Empty, pair.Key));
-            }
-
-            foreach (KeyValuePair<BoardPosition, ITool> pair in blackGroupBoardArrangement)
-            {
-                m_gameBoard.Add(pair.Key, pair.Value);
-                toolMovedHandler(new ToolMovedEventArgs(pair.Value, BoardPosition.Empty, pair.Key));
-            }
+            // KeyValuePair<BoardPosition, ITool>[] whiteGroupBoardArrangement =
+            //     GameInitHelper.GenerateInitialArrangement(GameDirection.North, Colors.White);
+            // KeyValuePair<BoardPosition, ITool>[] blackGroupBoardArrangement =
+            //     GameInitHelper.GenerateInitialArrangement(GameDirection.South, Colors.Black);
+            //
+            // foreach (KeyValuePair<BoardPosition, ITool> pair in whiteGroupBoardArrangement)
+            // {
+            //     m_gameBoard.Add(pair.Key, pair.Value);
+            //     toolMovedHandler(new ToolMovedEventArgs(pair.Value, BoardPosition.Empty, pair.Key));
+            // }
+            //
+            // foreach (KeyValuePair<BoardPosition, ITool> pair in blackGroupBoardArrangement)
+            // {
+            //     m_gameBoard.Add(pair.Key, pair.Value);
+            //     toolMovedHandler(new ToolMovedEventArgs(pair.Value, BoardPosition.Empty, pair.Key));
+            // }
 
             m_currentTeamIndex = 0;
             IsGameRunning      = true;
@@ -120,10 +120,17 @@ namespace ChessGame
         public void ForceAddTool(BoardPosition position
                           , ITool         newTool)
         {
-            m_gameBoard.TryGetTool(position, out ITool toolToPromote);
-            m_gameBoard.Remove(position);
+            if (true == m_gameBoard.TryGetTool(position, out ITool toolToPromote))
+            {
+                m_gameBoard.Remove(position);
+                s_log.Info($"Tool [{toolToPromote}] in position [{position}] has been promoted to [{newTool}]");
+            }
+            else
+            {
+                s_log.Info($"Tool [{newTool}] is forced add to position [{position}]");
+            }
+
             m_gameBoard.Add(position, newTool);
-            s_log.Info($"Tool [{toolToPromote}] in position [{position}] has been promoted to [{newTool}]");
             ToolPromotedEvent?.Invoke(this, new ToolPromotedEventArgs(toolToPromote, newTool, position));
         }
 

@@ -177,9 +177,9 @@ namespace ChessGame
             ToolPromotedEvent?.Invoke(this, e);
         }
 
-        public IDictionary<BoardPosition, ITool> GetBoardState()
+        public BoardState GetBoardState()
         {
-            return m_gameBoard.GetState();
+            return m_gameBoard.GetBoard;
         }
     }
 

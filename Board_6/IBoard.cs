@@ -9,4 +9,6 @@ public interface IBoard
     bool TryGetTool(BoardPosition position, out ITool         tool);
     bool TryGetPosition(ITool     tool,     out BoardPosition position);
     void Clear();
+
+    BoardState GetBoard { get; }
 }

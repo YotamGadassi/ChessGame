@@ -105,8 +105,7 @@ public class ChessHub : Hub
         }
 
         m_log.LogInformation($"Sending start game to: [{game.WhitePlayer1}] & [{game.BlackPlayer2}]");
-        IDictionary<BoardPosition, ITool> gameBoard = game.GetBoardState();
-        PositionAndToolBundle[]           toolsArr     = createToolBundle(gameBoard);
+        BoardState gameBoard = game.GetBoardState();
         await
             Task.WhenAll(Clients.Client(game.WhitePlayer1.ConnectionId)
                                 .SendAsync("StartGame",
@@ -119,7 +118,7 @@ public class ChessHub : Hub
                                            game.BlackPlayer2.PlayersTeam,
                                            game.WhitePlayer1.PlayersTeam,
                                            Guid.Empty),
-                         Clients.Groups(game.GroupName).SendAsync("ForceAddToBoard", toolsArr));
+                         Clients.Groups(game.GroupName).SendAsync("ForceAddToBoard", gameBoard));
     }
 
     private PositionAndToolBundle[] createToolBundle(IDictionary<BoardPosition, ITool> gameBoard)

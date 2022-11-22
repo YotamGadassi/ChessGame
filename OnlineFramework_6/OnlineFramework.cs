@@ -112,7 +112,7 @@ public class OnlineFramework
         m_connection.On<Team, Team, Guid>("StartGame", handleStartGameRequest);
         m_connection.On("EndGame", handleEndGameRequest);
         m_connection.On<Team, TimeSpan>("UpdateTime", handleTimeUpdate);
-        m_connection.On<PositionAndToolBundle[]>("ForceAddToBoard", handleForceAdd);
+        m_connection.On<BoardState>("ForceAddToBoard", handleForceAdd);
     }
 
     private void handleMoveRequest(BoardPosition start, BoardPosition end, Guid newGameVersion)
@@ -141,15 +141,15 @@ public class OnlineFramework
 
     }
 
-    private void handleForceAdd(PositionAndToolBundle[] toolArr)
+    private void handleForceAdd(BoardState boardState)
     {
-        s_log.Info($"Force Add Invoked: {toolArr}");
+        s_log.Info($"Force Add Invoked: {boardState}");
         m_dispatcher.InvokeAsync(
                                  () =>
                                  {
-                                     foreach (PositionAndToolBundle bundle in toolArr)
+                                     foreach (KeyValuePair<BoardPosition, ITool> pair in boardState)
                                      {
-                                         m_gameManager.ForceAddTool(bundle.Position, bundle.Tool);
+                                         m_gameManager.ForceAddTool(pair.Key, pair.Value);
                                      }
                                  });
     }

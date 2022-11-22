@@ -114,23 +114,6 @@ namespace Board
             m_board.Clear();
         }
 
-        public IDictionary<BoardPosition, ITool> GetState()
-        {
-            IDictionary<BoardPosition, ITool> dict = new Dictionary<BoardPosition, ITool>();
-            for (int row = 1; row <= 8; ++row)
-            {
-                for (int col = 1; col <= 8; ++col)
-                {
-                    BoardPosition position = new BoardPosition(col, row);
-                    bool          isExists = m_board.TryGetTool(position, out ITool tool);
-                    if (isExists)
-                    {
-                        dict.Add(position, tool);
-                    }
-                }
-            }
-
-            return dict;
-        }
+        public BoardState GetBoard => m_board.GetBoard;
     }
 }

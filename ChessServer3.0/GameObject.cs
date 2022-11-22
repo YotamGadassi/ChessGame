@@ -127,7 +127,7 @@ public class GameUnit : IDisposable
 
     }
 
-    public IDictionary<BoardPosition, ITool> GetBoardState()
+    public BoardState GetBoardState()
     {
         return m_gameManager.GetBoardState();
     }
