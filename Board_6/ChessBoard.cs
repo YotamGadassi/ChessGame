@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
+using System.Windows.Media;
 using Common;
 using log4net;
+using Tools;
 
 namespace Board
 {
@@ -58,7 +60,7 @@ namespace Board
                 s_log.Info($"Move from {start} to {end} is not legal!");
                 return MoveResult.NoChangeOccurredResult;
             }
-
+            
             bool isThereToolToMove = m_board.TryGetTool(start, out ITool toolToMove);
             if (false == isThereToolToMove)
             {
@@ -66,6 +68,12 @@ namespace Board
                 return MoveResult.NoChangeOccurredResult;
             }
 
+            MoveResultEnum moveResultEnum = MoveResultEnum.ToolMoved;
+            if (isPromotion(toolToMove, end))
+            {
+                moveResultEnum |= MoveResultEnum.NeedPromotion;
+            }
+            
             bool isThereToolToKill = m_board.TryGetTool(end, out ITool toolOnEndPosition);
             if (isThereToolToKill)
             {
@@ -75,13 +83,18 @@ namespace Board
                     return MoveResult.NoChangeOccurredResult;
                 }
 
+                if (toolOnEndPosition is King)
+                {
+                    moveResultEnum |= MoveResultEnum.CheckMate;
+                }
+
                 m_board.Remove(end);
                 m_board.Remove(start);
                 m_board.Add(end, toolToMove);
 
                 s_log.Info($"Killing event has occurred: tool at start: {toolToMove}, start: {start}, end: {end}, tool at end: {toolOnEndPosition}");
 
-                return new MoveResult(MoveResultEnum.ToolKilled, start, end, toolToMove, toolOnEndPosition);
+                return new MoveResult(moveResultEnum, start, end, toolToMove, toolOnEndPosition);
             }
 
             m_board.Remove(start);
@@ -115,5 +128,17 @@ namespace Board
         }
 
         public BoardState GetBoard => m_board.GetBoard;
+
+        private bool isPromotion(ITool toolMoved, BoardPosition endPosition)
+        {
+            return toolMoved is Pawn && isLastRow(toolMoved, endPosition);
+        }
+
+        private bool isLastRow(ITool         movedTool
+                             , BoardPosition endPosition)
+        {
+            return movedTool.Color == Colors.White && endPosition.Row == 8
+                || movedTool.Color == Colors.Black && endPosition.Row == 1;
+        }
     }
 }

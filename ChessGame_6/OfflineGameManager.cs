@@ -1,16 +1,18 @@
-﻿using System.Collections;
-using System.ComponentModel;
+﻿using System.Reflection;
 using System.Windows.Media;
 using Board;
 using Common;
 using Common.ChessBoardEventArgs;
 using Common_6;
+using log4net;
 using Tools;
 
 namespace ChessGame
 {
     public class OfflineGameManager : IGameManager
     {
+        private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        
         protected ChessBoard m_gameBoard;
 
         // public event EventHandler<ChessBoardEventArgs> CheckEvent;
@@ -39,62 +41,21 @@ namespace ChessGame
         
         public MoveResult Move(BoardPosition start, BoardPosition end)
         {
-            MoveResult result = m_gameBoard.Move(start, end);
-            switch (result.Result)
-            {
-                case MoveResultEnum.NoChangeOccurred:
-                {
-                    break;
-                }
-                case MoveResultEnum.ToolKilled:
-                {
-                    ITool toolKilled  = result.ToolAtEnd;
-                    bool  isCheckmate = toolKilled is King;
-                    if (isCheckmate)
-                    {
-                        OnCheckmateEvent(new CheckmateEventArgs(toolKilled.Color, result.EndPosition, result.InitialPosition));
-                        break;
-                    }
+            MoveResult     result     = m_gameBoard.Move(start, end);
+            MoveResultEnum resultEnum = result.Result;
 
-                    toolKilledHandler(new KillingEventArgs(result.ToolAtInitial, start, end, result.ToolAtEnd));
-                    if (isPromotion(result))
-                    {
-                        OnPromotionEvent(new PromotionEventArgs(result.ToolAtInitial, result.EndPosition));
-                    }
-                    switchCurrentTeam();
-                    break;
-                }
-                case MoveResultEnum.ToolMoved:
-                {
-                    toolMovedHandler(new ToolMovedEventArgs(result.ToolAtInitial, start, end));
-                    if (isPromotion(result))
-                    {
-                        OnPromotionEvent(new PromotionEventArgs(result.ToolAtInitial, result.EndPosition));
-                    }
-                    switchCurrentTeam();
-                    break;
-                }
-                default:
-                {
-                    throw new InvalidEnumArgumentException($"The enum value {result.Result} is not known.");
-                }
+            if ((resultEnum & (MoveResultEnum.CheckMate | MoveResultEnum.NeedPromotion)) != 0)
+            {
+                //s_log.Info($"{resultEnum} occurred after move from {start} to {end}");
+                return result;
+            }
+
+            if (false == resultEnum.HasFlag(MoveResultEnum.ToolMoved))
+            {
+                switchCurrentTeam();
             }
 
             return result;
-        }
-
-        private bool isPromotion(MoveResult result)
-        {
-            ITool         toolMoved   = result.ToolAtInitial;
-            BoardPosition endPosition = result.EndPosition;
-            return toolMoved is Pawn && isLastRow(toolMoved, endPosition);
-        }
-
-        private bool isLastRow(ITool         movedTool
-                             , BoardPosition endPosition)
-        {
-            return movedTool.Color == Colors.White && endPosition.Row == 8
-                || movedTool.Color == Colors.Black && endPosition.Row == 1;
         }
 
         public void EndGame()

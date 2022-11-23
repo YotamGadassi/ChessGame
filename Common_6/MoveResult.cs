@@ -1,10 +1,15 @@
-﻿namespace Common
+﻿using System;
+
+namespace Common
 {
+    [Flags]
     public enum MoveResultEnum
     {
-        ToolMoved = 1,
-        ToolKilled = 2,
-        NoChangeOccurred = 3
+        NoChangeOccurred = 0x1,
+        ToolMoved = 0x2,
+        ToolKilled = 0x4,
+        NeedPromotion = 0x8,
+        CheckMate = 0x10,
     }
 
     public class MoveResult
