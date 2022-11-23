@@ -99,6 +99,13 @@ namespace ChessServer3._0
             bool   isConnected  = m_connectionIdToPlayer.Remove(connectionId, out PlayerObject? player);
             if (false == isConnected)
             {
+                m_log.LogError($"Error - Player quit although is not listed to server");
+                return;
+            }
+
+            if (true == m_pendingPlayers.TryRemove(player))
+            {
+                m_log.LogInformation($"Player quit and removed from pending list");
                 return;
             }
 

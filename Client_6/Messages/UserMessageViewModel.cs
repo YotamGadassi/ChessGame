@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Client.Annotations;
@@ -14,7 +15,7 @@ namespace Client.Messages
       , Right     = 2
     }
     
-    public class UserMessageViewModel : INotifyPropertyChanged
+    public class UserMessageViewModel : DependencyObject, INotifyPropertyChanged
     {
         private Dispatcher m_dispatcher;
         private string     m_leftButtonStr;

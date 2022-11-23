@@ -38,23 +38,6 @@ namespace ChessGame
 
         public void StartGame()
         {
-            // KeyValuePair<BoardPosition, ITool>[] whiteGroupBoardArrangement =
-            //     GameInitHelper.GenerateInitialArrangement(GameDirection.North, Colors.White);
-            // KeyValuePair<BoardPosition, ITool>[] blackGroupBoardArrangement =
-            //     GameInitHelper.GenerateInitialArrangement(GameDirection.South, Colors.Black);
-            //
-            // foreach (KeyValuePair<BoardPosition, ITool> pair in whiteGroupBoardArrangement)
-            // {
-            //     m_gameBoard.Add(pair.Key, pair.Value);
-            //     toolMovedHandler(new ToolMovedEventArgs(pair.Value, BoardPosition.Empty, pair.Key));
-            // }
-            //
-            // foreach (KeyValuePair<BoardPosition, ITool> pair in blackGroupBoardArrangement)
-            // {
-            //     m_gameBoard.Add(pair.Key, pair.Value);
-            //     toolMovedHandler(new ToolMovedEventArgs(pair.Value, BoardPosition.Empty, pair.Key));
-            // }
-
             m_currentTeamIndex = 0;
             IsGameRunning      = true;
             s_log.Info("Game started");

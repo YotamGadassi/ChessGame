@@ -4,6 +4,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using ChessGame;
 using Client.Game;
+using Client.Messages;
 using Common;
 using Common.ChessBoardEventArgs;
 using Common_6;
@@ -20,10 +21,10 @@ public class OnlineFramework
     private static readonly string s_hubAddress = @"https://localhost:7034/ChessHub";
     private                 Guid   lastGameVersion;
 
-    private          HubConnection m_connection;
-    private          OnlineGameManager  m_gameManager;
-    private          Team          m_localMachineTeam;
-    private readonly Dispatcher    m_dispatcher;
+    private          HubConnection     m_connection;
+    private          OnlineGameManager m_gameManager;
+    private          Team              m_localMachineTeam;
+    private readonly Dispatcher        m_dispatcher;
 
     public OnlineGameViewModel                     ViewModel;
     public event EventHandler<OnlineGameViewModel> OnGameStarted;
@@ -33,20 +34,29 @@ public class OnlineFramework
 
     public OnlineFramework()
     {
-        m_dispatcher = Dispatcher.CurrentDispatcher;
+        m_dispatcher  = Dispatcher.CurrentDispatcher;
+        
+        ViewModel = new OnlineGameViewModel();
     }
-    public async Task<bool> ConnectToHubAsync(string name)
+    public async Task<bool> ConnectToServerAsync(string name)
     {
-        if (m_connection != null && m_connection.State != HubConnectionState.Disconnected)
+        bool isConnected = m_connection != null && m_connection.State != HubConnectionState.Disconnected;
+        if (isConnected)
         {
             s_log.Info($"Connection state is {m_connection.State}. Cannot connect again.");
             return true;
         }
 
+        UserMessageViewModel msgViewModel =
+            new UserMessageViewModel("Waiting for connection with server", "Cancel", (() => endGame()));
+
+        ViewModel.Message = msgViewModel;
+
         m_connection = new HubConnectionBuilder().WithUrl(s_hubAddress + $"?name={name}")
                                                  .ConfigureLogging(builder => builder.AddLog4Net("LogConfiguration.xml"))
                                                  .AddJsonProtocol(options => options.PayloadSerializerOptions.Converters.Add(new IToolConverter()))
                                                  .Build();
+
         m_connection.Closed += onConnectionClosed;
         registerClientMethods();
         s_log.Info($"Starting connection to client. server state:{m_connection.State}");
@@ -68,6 +78,13 @@ public class OnlineFramework
     public async Task<bool> AsyncRequestGameFromServer()
     {
         return await m_connection.InvokeAsync<bool>("RequestGame");
+    }
+
+    public async Task DisconnectFromServerAsync()
+    {
+        s_log.Info("Disconnected from server request started");
+        await m_connection.StopAsync();
+        s_log.Info("Disconnected from server succeeded");
     }
 
     private async void onToolMovedEvent(object sender, ToolMovedEventArgs e)
@@ -98,7 +115,6 @@ public class OnlineFramework
         else
             return new Team("Black_B", Colors.Black, GameDirection.South);
     }
-
 
     private Task onConnectionClosed(Exception? arg)
     {
@@ -188,13 +204,15 @@ public class OnlineFramework
 
         m_gameManager.ToolMovedEvent  += onToolMovedEvent;
         m_gameManager.ToolKilledEvent += onToolMovedEvent;
+
+
         if (localTeam.MoveDirection.Equals(GameDirection.South))
         {
-            ViewModel = new OnlineGameViewModel(m_gameManager, localTeam, remoteTeam, m_localMachineTeam, sendMoveRequest);
+            ViewModel.StartGame(m_gameManager, localTeam, remoteTeam, m_localMachineTeam, sendMoveRequest);
         }
         else
         {
-            ViewModel = new OnlineGameViewModel(m_gameManager, remoteTeam ,localTeam, m_localMachineTeam, sendMoveRequest);
+            ViewModel.StartGame(m_gameManager, remoteTeam ,localTeam, m_localMachineTeam, sendMoveRequest);
         }
         OnGameStarted?.Invoke(this, ViewModel);
         m_gameManager.StartGame();
@@ -205,9 +223,15 @@ public class OnlineFramework
     {
         s_log.Info("Game ended");
         await m_connection.StopAsync();
-        m_gameManager.EndGame();
-        m_gameManager = null;
-        OnGameEnd?.Invoke(this, null);
+        UserMessageViewModel endGameMessage = new UserMessageViewModel("Game has ended", 
+                                                                       "OK", 
+                                                                       () =>
+                                                                       {
+                                                                           m_gameManager = null;
+                                                                           ViewModel.EndGame();
+                                                                           OnGameEnd?.Invoke(this, null);
+                                                                       });
+        ViewModel.Message = endGameMessage;
     }
 
     private async Task<bool> sendMoveRequest(BoardPosition initial

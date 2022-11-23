@@ -6,7 +6,8 @@
              xmlns:helpers="clr-namespace:Client.Helpers"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
-             Background="Gray">
+             Background="LightCoral"
+             Opacity="0.5">
     <Grid>
         <Grid.Resources>
             <ResourceDictionary>
@@ -18,20 +19,22 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         
-        <Label Grid.Row="0" Content="{Binding MessageStr}" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+        <Label Grid.Row="0" 
+               Content="{Binding MessageStr}" 
+               HorizontalAlignment="Center" 
+               HorizontalContentAlignment="Center" 
+               VerticalAlignment="Center" 
+               VerticalContentAlignment="Center"/>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
 
-            <Button Content="{Binding LeftButtonStr}" Padding="5" Visibility="{Binding LeftButtonStr, Converter={StaticResource StringToVisibilityConverter}}">
-                <Button.InputBindings>
-                    <MouseBinding MouseAction="LeftClick" Command="{Binding LeftButtonCommand}"/>
-                </Button.InputBindings>
-            </Button>
-
-            <Button Content="{Binding RightButtonStr}" Padding="5" Visibility="{Binding RightButtonStr, Converter={StaticResource StringToVisibilityConverter}}">
-                <Button.InputBindings>
-                    <MouseBinding MouseAction="LeftClick" Command="{Binding RightButtonCommand}"/>
-                </Button.InputBindings>
-            </Button>
+            <Button Content="{Binding LeftButtonStr}" 
+                    Padding="5" 
+                    Visibility="{Binding LeftButtonStr, Converter={StaticResource StringToVisibilityConverter}}" 
+                    Command="{Binding LeftButtonCommand}"/>
+            <Button Content="{Binding RightButtonStr}" 
+                    Padding="5" 
+                    Visibility="{Binding RightButtonStr, Converter={StaticResource StringToVisibilityConverter}}" 
+                    Command="{Binding RightButtonCommand}"/>
         </StackPanel>
     </Grid>
 </UserControl>

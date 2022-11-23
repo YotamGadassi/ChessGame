@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:game="clr-namespace:Client.Game;assembly=Client"
+        xmlns:messages="clr-namespace:Client.Messages;assembly=Client"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
@@ -15,6 +16,9 @@
                 <DataTemplate DataType="{x:Type game:OnlineGameViewModel}">
                     <game:GameControl/>
                 </DataTemplate>
+                <DataTemplate DataType="{x:Type messages:UserMessageViewModel}">
+                    <messages:UserMessage/>
+                </DataTemplate>
             </ResourceDictionary>
         </Grid.Resources>
 
@@ -23,16 +27,8 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0">
-            <Button Content="Play Online">
-                <Button.InputBindings>
-                    <MouseBinding MouseAction="LeftClick" Command="{Binding PlayOnlineCommand}"/>
-                </Button.InputBindings>
-            </Button>
-            <Button Content="Play Offline">
-                <Button.InputBindings>
-                    <MouseBinding MouseAction="LeftClick" Command="{Binding PlayOfflineCommand}"/>
-                </Button.InputBindings>
-            </Button>
+            <Button Content="Play Online" Command="{Binding PlayOnlineCommand}"/>
+            <Button Content="Play Offline" Command="{Binding PlayOfflineCommand}"/>
         </StackPanel>
         <ContentControl Grid.Column="1" Content="{Binding CurrentViewModel}"/>
     </Grid>
