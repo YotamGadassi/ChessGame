@@ -83,28 +83,26 @@ namespace Board
                     return MoveResult.NoChangeOccurredResult;
                 }
 
+                moveResultEnum |= MoveResultEnum.ToolKilled;
+
                 if (toolOnEndPosition is King)
                 {
                     moveResultEnum |= MoveResultEnum.CheckMate;
+                    return new MoveResult(moveResultEnum, start, end, toolToMove, toolOnEndPosition);
                 }
 
                 m_board.Remove(end);
-                m_board.Remove(start);
-                m_board.Add(end, toolToMove);
-
                 s_log.Info($"Killing event has occurred: tool at start: {toolToMove}, start: {start}, end: {end}, tool at end: {toolOnEndPosition}");
-
-                return new MoveResult(moveResultEnum, start, end, toolToMove, toolOnEndPosition);
+            }
+            else
+            {
+                s_log.Info($"Tool Moved Event: tool:{toolToMove}, start:{start}, end:{end}");
             }
 
             m_board.Remove(start);
             m_board.Add(end, toolToMove);
 
-            s_log.Info($"Tool Moved Event: tool:{toolToMove}, start:{start}, end:{end}");
-            // ToolMovedEventArgs evengArgs = new ToolMovedEventArgs(toolToMove, start, end);
-            // ToolMovedEvent?.Invoke(this, evengArgs);
-
-            return new MoveResult(MoveResultEnum.ToolMoved, start, end, toolToMove, toolOnEndPosition);
+            return new MoveResult(moveResultEnum, start, end, toolToMove, toolOnEndPosition);
         }
 
         private bool isOnSameTeam(ITool toolA, ITool toolB)

@@ -26,33 +26,32 @@ public class ChessHub : Hub
             throw new InvalidOperationException("Move request is not authorized");
         }
 
-        MoveResult moveResult = game.Move(gameVersion, start, end);
-        switch (moveResult.Result)
-        {
-            case MoveResultEnum.ToolMoved:
-            case MoveResultEnum.ToolKilled:
-            {
-                if (false == m_serverState.TryGetPlayer(connectionId, out PlayerObject player))
-                {
-                    m_log.LogError($"Connection Id [{connectionId}] is not attached to a player object");
-                    throw new InvalidOperationException("Move request is not authorized");
-                }
+        MoveResult     moveResult = game.Move(gameVersion, start, end);
+        MoveResultEnum resultEnum = moveResult.Result;
 
-                PlayerObject otherPlayer = game.GetOtherPlayer(player);
-                await Clients.Client(otherPlayer.ConnectionId).SendAsync("Move", start, end, game.CurrentGameVersion);
-                return moveResult;
-            }
-            case MoveResultEnum.NoChangeOccurred:
+        if (resultEnum.HasFlag(MoveResultEnum.ToolMoved))
+        {
+            if (false == m_serverState.TryGetPlayer(connectionId, out PlayerObject player))
             {
-                m_log.LogInformation($"Move request [{moveResult.InitialPosition} -> {moveResult.EndPosition}] is illegal");
-                return moveResult;
+                m_log.LogError($"Connection Id [{connectionId}] is not attached to a player object");
+                throw new InvalidOperationException("Move request is not authorized");
             }
-            default:
-            {
-                m_log.LogError($"Move result enum {moveResult.Result} is not supported");
-                throw new ArgumentOutOfRangeException();
-            }
+
+            // TODO: check if promotion or checkMate
+
+            PlayerObject otherPlayer = game.GetOtherPlayer(player);
+            await Clients.Client(otherPlayer.ConnectionId).SendAsync("Move", start, end, game.CurrentGameVersion);
         }
+        else if(resultEnum.HasFlag(MoveResultEnum.NoChangeOccurred))
+        {
+            m_log.LogInformation($"Move request [{moveResult.InitialPosition} -> {moveResult.EndPosition}] is illegal");
+        }
+        else
+        {
+            m_log.LogError($"Move result flag not identified");
+        }
+
+        return moveResult;
     }
 
     // public async Task<bool> PromoteRequest(BoardPosition position
