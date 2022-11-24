@@ -1,8 +1,10 @@
-﻿using System.Windows;
+﻿using System.Reflection;
+using System.Windows;
 using System.Windows.Threading;
-using ChessGame;
 using Client.Board;
 using Common;
+using log4net;
+using static Client.Board.SquareViewModel;
 
 namespace Client.Game
 {
@@ -11,9 +13,26 @@ namespace Client.Game
         public BoardViewModel Board { get; }
     }
 
-    public abstract class BaseGameViewModel : DependencyObject, IGameViewModel
+    public class GameViewModel : DependencyObject, IGameViewModel
     {
         protected   Dispatcher           m_dispatcher;
+
+        private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        private static readonly DependencyProperty NorthTeamStatusProperty = DependencyProperty.Register("NorthTeamStatus", typeof(TeamStatusViewModel), typeof(OnlineGameViewModel));
+        private static readonly DependencyProperty SouthTeamStatusProperty = DependencyProperty.Register("SouthTeamStatus", typeof(TeamStatusViewModel), typeof(OnlineGameViewModel));
+
+        public TeamStatusViewModel NorthTeamStatus
+        {
+            get => (TeamStatusViewModel)GetValue(NorthTeamStatusProperty);
+            set => SetValue(NorthTeamStatusProperty, value);
+        }
+
+        public TeamStatusViewModel SouthTeamStatus
+        {
+            get => (TeamStatusViewModel)GetValue(SouthTeamStatusProperty);
+            set => SetValue(SouthTeamStatusProperty, value);
+        }
 
         public BoardViewModel  Board { get; }
         public object Message
@@ -22,25 +41,19 @@ namespace Client.Game
             set => SetValue(messageProperty, value);
         }
 
-        private static readonly DependencyProperty messageProperty = DependencyProperty.Register("Message", typeof(object), typeof(BaseGameViewModel));
+        private static readonly DependencyProperty messageProperty = DependencyProperty.Register("Message", typeof(object), typeof(GameViewModel));
 
-        protected BaseGameViewModel()
+        public GameViewModel(SquareClickCommandExecute squareClickHandler, SquareClickCommandCanExecute squareClickCanExecute)
         {
             m_dispatcher = Dispatcher.CurrentDispatcher;
-            Board        = new BoardViewModel(SquareClickHandler, SquareClickHandlerCanExecute);
+            Board        = new BoardViewModel(squareClickHandler, squareClickCanExecute);
         }
         
-        protected void MoveTool(BoardPosition start, BoardPosition end, ITool tool)
+        public void MoveTool(BoardPosition start, BoardPosition end, ITool tool)
         {
             Board.ClearSelectedAndHintedBoardPositions();
             Board.RemoveTool(start, out ITool toolAtStart);
             Board.AddTool(tool, end);
         }
-
-        protected abstract void SquareClickHandler(BoardPosition position
-                                                , ITool?        tool);
-
-        protected abstract bool SquareClickHandlerCanExecute(BoardPosition position
-                                                           , ITool?        tool);
     }
 }

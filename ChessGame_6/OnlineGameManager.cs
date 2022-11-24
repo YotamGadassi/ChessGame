@@ -14,7 +14,7 @@ namespace ChessGame
         public                  Team       CurrentMachineTeam { get; }
         private                 BasicBoard m_gameBoard;
 
-        private                 Color[]? m_teams = { Colors.White, Colors.Black };
+        private readonly        Color[]? m_teams = { Colors.White, Colors.Black };
         private                 int      m_currentTeamIndex;
         private static readonly int      s_teamsAmount = 2;
 
@@ -65,35 +65,19 @@ namespace ChessGame
             }
 
             MoveResultEnum resultEnum = MoveResultEnum.ToolMoved;
+
             if (true == m_gameBoard.TryGetTool(end, out ITool toolAtEnd))
             {
                 //s_log.Warn($"Cannot move from {start} to {end}. There is a tool [{toolAtEnd}] at the end position");
                 if (false == toolAtEnd.Color.Equals(toolToMove.Color))
                 {
-                    resultEnum = MoveResultEnum.ToolKilled;
+                    resultEnum |= MoveResultEnum.ToolKilled;
+                    m_gameBoard.Remove(end);
                 }
             }
 
-            switch (resultEnum)
-            {
-                case MoveResultEnum.ToolMoved:
-                {
-                    s_log.Info($@"Move from {start} to {end} successfully, tool [{toolToMove}]");
-                    m_gameBoard.Remove(start);
-                    m_gameBoard.Add(end, toolToMove);
-                        toolMovedHandler(new ToolMovedEventArgs(toolToMove, start, end));
-                    break;
-                }
-                case MoveResultEnum.ToolKilled:
-                {
-                    s_log.Info($@"Move and kill from {start} to {end} successfully, tool moved: [{toolToMove}], tool killed: [{toolAtEnd}]");
-                    m_gameBoard.Remove(start);
-                    m_gameBoard.Remove(end);
-                    m_gameBoard.Add(end, toolToMove);
-                    toolKilledHandler(new KillingEventArgs(toolToMove, start, end, toolAtEnd));
-                    break;
-                }
-            }
+            m_gameBoard.Remove(start);
+            m_gameBoard.Add(end, toolToMove);
 
             switchCurrentTeam();
             return new MoveResult(resultEnum, start, end,
@@ -115,26 +99,6 @@ namespace ChessGame
 
             m_gameBoard.Add(position, newTool);
             ToolPromotedEvent?.Invoke(this, new ToolPromotedEventArgs(toolToPromote, newTool, position));
-        }
-
-        private void toolMovedHandler(ToolMovedEventArgs e)
-        {
-            OnToolMovedEvent(e);
-        }
-
-        protected virtual void OnToolMovedEvent(ToolMovedEventArgs e)
-        {
-            ToolMovedEvent?.Invoke(this, e);
-        }
-
-        private void toolKilledHandler(KillingEventArgs e)
-        {
-            OnToolKilledEvent(e);
-        }
-
-        protected virtual void OnToolKilledEvent(KillingEventArgs e)
-        {
-            ToolKilledEvent?.Invoke(this, e);
         }
 
         protected void switchCurrentTeam()

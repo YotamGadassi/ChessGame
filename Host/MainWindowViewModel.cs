@@ -32,7 +32,6 @@ namespace Host
             PlayOnlineCommand               =  new WpfCommand(playOnlineCommandExecute,  playOnlineCommandCanExecute);
             PlayOfflineCommand              =  new WpfCommand(playOfflineCommandExecute, playOfflineCommandCanExecute);
             m_onlineFramework               =  new();
-            m_onlineFramework.OnGameStarted += onGameStart;
             m_onlineFramework.OnGameEnd     += onGameEnd;
         }
 
@@ -87,11 +86,5 @@ namespace Host
         {
             m_dispatcher.Invoke(resetViewModel);
         }
-
-        private void onGameStart(object sender, BaseGameViewModel gameViewModel)
-        {
-            m_dispatcher.Invoke(()=>CurrentViewModel = gameViewModel);
-        }
-
     }
 }

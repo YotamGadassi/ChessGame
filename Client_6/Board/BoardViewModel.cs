@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
-using System.Windows.Threading;
-using ChessGame;
 using Common;
-using Common.ChessBoardEventArgs;
 
 namespace Client.Board
 {
@@ -51,12 +48,10 @@ namespace Client.Board
 
         public void RemoveAllTools()
         {
-            for (int row = 1; row <= 8; ++row)
+            BoardPosition[] filledPositions = SquaresDictionary.Keys.ToArray();
+            foreach (BoardPosition filledPosition in filledPositions)
             {
-                for (int col = 1; col <= 8; ++col)
-                {
-                    RemoveTool(new BoardPosition(col, row), out _);
-                }
+                RemoveTool(filledPosition, out _);
             }
         }
 

@@ -5,7 +5,6 @@ using Common;
 using Common.ChessBoardEventArgs;
 using Common_6;
 using log4net;
-using Tools;
 
 namespace ChessGame
 {
