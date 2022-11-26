@@ -11,6 +11,7 @@ using log4net;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Tools;
 
 namespace Frameworks;
 
@@ -18,7 +19,7 @@ public class OnlineFramework
 {
     private static readonly ILog   s_log        = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     private static readonly string s_hubAddress = @"https://localhost:7034/ChessHub";
-    private                 Guid   lastGameVersion;
+    private                 Guid   m_lastGameVersion;
 
     private          HubConnection        m_connection;
     private          OnlineGameManager    m_gameManager;
@@ -88,36 +89,39 @@ public class OnlineFramework
 
     private Task onConnectionClosed(Exception? arg)
     {
+        m_dispatcher.Invoke(endGame);
         return new Task(() => s_log.Warn($"Connection closed: [exception: {arg}]"));
     }
 
     private void registerClientMethods()
     {
-        m_connection.On<BoardPosition, BoardPosition,Guid>("Move", handleMoveRequest);
+        m_connection.On<BoardPosition, BoardPosition>("Move", handleMoveRequest);
         m_connection.On<Team, Team, Guid>("StartGame", handleStartGameRequest);
         m_connection.On("EndGame", handleEndGameRequest);
         m_connection.On<Team, TimeSpan>("UpdateTime", handleTimeUpdate);
-        m_connection.On<BoardState>("ForceAddToBoard", handleForceAdd);
+        m_connection.On<BoardState>("ForceAddToBoard", handleBoardReceived);
+        m_connection.On<BoardPosition, BoardPosition>("CheckMate", handleCheckMateEvent);
+        m_connection.On<BoardPosition, IToolWrapperForServer>("PromoteTool", handlePromotion);
+
     }
 
     #region serverExecutionsHandlers
 
-    private void handleMoveRequest(BoardPosition start, BoardPosition end, Guid newGameVersion)
+    private void handleMoveRequest(BoardPosition start, BoardPosition end)
     {
         m_dispatcher.BeginInvoke(() =>
                                  {
-                                     s_log.Info($"Move request arrived from server [start:{start}, end:{end}, version:{newGameVersion}]");
+                                     s_log.Info($"Move request arrived from server [start:{start}, end:{end}]");
 
-                                     lastGameVersion = newGameVersion;
                                      s_log.Info($"A move request received from server: " +
-                                                $"[start:{start}], [end:{end}], [game version:{newGameVersion}]");
+                                                $"[start:{start}], [end:{end}]");
                                      moveTool(start, end);
                                  });
     }
 
-    private void handleStartGameRequest(Team localTeam, Team remoteTeam, Guid gameVersion)
+    private void handleStartGameRequest(Team localTeam, Team remoteTeam, Guid gameToken)
     {
-        m_dispatcher.InvokeAsync(() => startGame(localTeam, remoteTeam, gameVersion));
+        m_dispatcher.InvokeAsync(() => startGame(localTeam, remoteTeam, gameToken));
     }
 
     private void handleEndGameRequest()
@@ -125,12 +129,44 @@ public class OnlineFramework
         m_dispatcher.InvokeAsync(endGame);
     }
 
-    private void handlePromotionEvent()
+    private void handleCheckMateEvent(BoardPosition start, BoardPosition end)
     {
+        UserMessageViewModel checkMateMessage =
+            new UserMessageViewModel($"CheckMate [move from {start} to {end}]", "OK", () => endGame());
+
+        ViewModel.Message = checkMateMessage;
+    }
+
+    private void handlePromotion(BoardPosition positionToPromote, IToolWrapperForServer toolWrapper)
+    {
+        m_gameManager.Promote(positionToPromote,toolWrapper.Tool);
+        ViewModel.Board.RemoveTool(positionToPromote, out _);
+        ViewModel.Board.AddTool(toolWrapper.Tool, positionToPromote);
+    }
+
+    private async void handleNeedPromotionEvent(BoardPosition positionToPromote, ITool toolToPromote)
+    {
+        PromotionMessageViewModel promotionMessage = new(toolToPromote.Color, positionToPromote);
+        ViewModel.Message = promotionMessage;
+
+        ITool chosenTool = await promotionMessage.ToolAwaiter;
+        ViewModel.Message = null;
+        bool promoteResult =
+            await m_connection.InvokeAsync<bool>("PromoteRequest", positionToPromote, new IToolWrapperForServer(chosenTool)
+                                               , m_lastGameVersion);
+
+        if (false == promoteResult)
+        {
+            s_log.Warn($"Promote result is false [position:{positionToPromote}, tool:{chosenTool}]");
+            //TODO: show message
+            return;
+        }
+
+        handlePromotion(positionToPromote, new IToolWrapperForServer(chosenTool));
 
     }
 
-    private void handleForceAdd(BoardState boardState)
+    private void handleBoardReceived(BoardState boardState)
     {
         s_log.Info($"Force Add Invoked: {boardState}");
         m_dispatcher.InvokeAsync(
@@ -169,10 +205,10 @@ public class OnlineFramework
         }
     }
 
-    private void startGame(Team localTeam, Team remoteTeam, Guid gameVersion)
+    private void startGame(Team localTeam, Team remoteTeam, Guid gameToken)
     {
-        s_log.Info($"Stating Game. local team: {localTeam}, remote team: {remoteTeam}, game version: {gameVersion}");
-        lastGameVersion    = gameVersion;
+        s_log.Info($"Stating Game. local team: {localTeam}, remote team: {remoteTeam}, game version: {gameToken}");
+        m_lastGameVersion    = gameToken;
         m_localMachineTeam = localTeam;
 
         m_gameManager                 =  new OnlineGameManager(m_localMachineTeam);
@@ -205,17 +241,22 @@ public class OnlineFramework
         ViewModel.Message = endGameMessage;
     }
 
-    private async Task<bool> sendMoveRequest(BoardPosition initial
+    private async Task<MoveResult> sendMoveRequest(BoardPosition initial
                                            , BoardPosition end)
     {
-        MoveResult moveResult = await m_connection.InvokeAsync<MoveResult>("MoveRequest", initial, end, lastGameVersion);
-        return moveResult.Result != MoveResultEnum.NoChangeOccurred;
+        return await m_connection.InvokeAsync<MoveResult>("MoveRequest", initial, end, m_lastGameVersion);
     }
 
     private bool m_isWaitingForServerResponse = false;
     protected async void SquareClickHandler(BoardPosition position
                                                    , ITool?        tool)
     {
+        bool isLocalTeamTurn = await m_connection.InvokeAsync<bool>("IsMyTurn");
+        if (false == isLocalTeamTurn)
+        {
+            return;
+        }
+        
         BoardViewModel  board                  = ViewModel.Board;
         bool isPositionToolSameTeam = null != tool && tool.Color.Equals(m_localMachineTeam.Color);
         if (isPositionToolSameTeam)
@@ -230,30 +271,51 @@ public class OnlineFramework
         if (false == board.SelectedBoardPosition.IsEmpty())
         {
             m_isWaitingForServerResponse = true;
-            bool isMoveApproved = await sendMoveRequest(board.SelectedBoardPosition, position);
+            MoveResult moveResult = await sendMoveRequest(board.SelectedBoardPosition, position);
             m_isWaitingForServerResponse = false;
-            if (isMoveApproved)
-            {
-                s_log.Info($"Move from {board.SelectedBoardPosition} to {position} approved by server");
-                moveTool(board.SelectedBoardPosition, position);
-            }
-            else
-            {
-                s_log.Info($"Move from {board.SelectedBoardPosition} to {position} was not approved by server");
-            }
+            handleMoveResult(moveResult);
         }
         board.ClearSelectedAndHintedBoardPositions();
     }
 
+    private void handleMoveResult(MoveResult moveResult)
+    {
+        MoveResultEnum resultEnum            = moveResult.Result;
+        BoardPosition  initialPosition       = moveResult.InitialPosition;
+        BoardPosition  endPosition = moveResult.EndPosition;
+        if (resultEnum.HasFlag(MoveResultEnum.CheckMate))
+        {
+            s_log.Info($"Move result is CheckMate [from {initialPosition} to {endPosition}]");
+            handleCheckMateEvent(initialPosition, endPosition);
+            return;
+        }
+
+        if (resultEnum.HasFlag(MoveResultEnum.NeedPromotion))
+        {
+            s_log.Info($"Move result is NeedPromotion [from {initialPosition} to {endPosition}]");
+            handleNeedPromotionEvent(endPosition, moveResult.ToolAtInitial);
+        }
+
+        if(resultEnum.HasFlag(MoveResultEnum.ToolMoved))
+        {
+            s_log.Info($"Move from {initialPosition} to {endPosition} approved by server");
+            moveTool(initialPosition, endPosition);
+        }
+        else
+        {
+            s_log.Info($"Move from {initialPosition} to {endPosition} was not approved by server");
+        }
+    }
+
     protected bool SquareClickHandlerCanExecute(BoardPosition poistion
-                                                       , ITool?        tool)
+                                              , ITool?        tool)
     {
         if (m_isWaitingForServerResponse || ConnectionState != HubConnectionState.Connected || null == m_gameManager)
         {
             return false;
         }
-        bool isLocalTeamTurn = m_gameManager.CurrentColorTurn.Equals(m_localMachineTeam.Color);
-        return isLocalTeamTurn;
+
+        return true;
     }
 
     private void forceAddTool(BoardPosition position

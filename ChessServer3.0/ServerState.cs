@@ -17,7 +17,7 @@ namespace ChessServer3._0
         Task<GameRequestResult> OnGameRequest(string connectionId);
         bool                    OnConnection(string  name,         string       connectionId);
         bool                    TryGetGame(string    connectionId, out GameUnit game);
-
+        void                    EndGame(GameUnit     game);
         bool TryGetPlayer(string           connectionId
                         , out PlayerObject player);
 
@@ -120,6 +120,30 @@ namespace ChessServer3._0
             m_groups.Remove(game.GroupName, out _);
             PlayerObject otherPlayer = game.GetOtherPlayer(player);
             await sendEndGame(otherPlayer);
+        }
+
+        public void EndGame(GameUnit game)
+        {
+            PlayerObject player1 = game.WhitePlayer1;
+            PlayerObject player2 = game.BlackPlayer2;
+
+            
+            bool isConnected = m_connectionIdToPlayer.Remove(player1.ConnectionId, out _);
+            if (false == isConnected)
+            {
+                m_log.LogError($"Error - Player [{player1}] quit although is not listed to server");
+            }
+            
+            isConnected = m_connectionIdToPlayer.Remove(player2.ConnectionId, out _);
+            if (false == isConnected)
+            {
+                m_log.LogError($"Error - Player [{player2}] quit although is not listed to server");
+            }
+
+            if(false == m_groups.Remove(game.GroupName, out _))
+            {
+                m_log.LogError($"Error - Trying to end game [{game}] that does not exist");
+            }
         }
 
         private async Task sendEndGame(PlayerObject otherPlayer)

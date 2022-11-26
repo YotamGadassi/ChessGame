@@ -49,7 +49,7 @@ namespace ChessGame
                 return result;
             }
 
-            if (false == resultEnum.HasFlag(MoveResultEnum.ToolMoved))
+            if (resultEnum.HasFlag(MoveResultEnum.ToolMoved))
             {
                 switchCurrentTeam();
             }
@@ -124,12 +124,11 @@ namespace ChessGame
             CheckmateEvent?.Invoke(this, args);
         }
         
-        protected async void OnPromotionEvent(PromotionEventArgs e)
+        public void Promote(BoardPosition position, ITool promotedTool)
         {
-            ITool newTool = await PromotionEvent?.Invoke(this, e);
-            m_gameBoard.Remove(e.ToolPosition);
-            m_gameBoard.Add(e.ToolPosition, newTool);
-            OnToolPromotedEvent(new ToolPromotedEventArgs(e.ToolToPromote, newTool, e.ToolPosition));
+            m_gameBoard.Remove(position);
+            m_gameBoard.Add(position, promotedTool);
+            switchCurrentTeam();
         }
 
         protected void OnToolPromotedEvent(ToolPromotedEventArgs e)

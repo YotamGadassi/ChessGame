@@ -13,7 +13,7 @@ public class GameUnit : IDisposable
     public GameUnit(PlayerObject player1, PlayerObject player2)
     {
         GroupName                     =  Guid.NewGuid().ToString();
-        CurrentGameVersion            =  Guid.Empty;
+        GameToken            =  Guid.Empty;
         m_gameManager                 =  new OfflineGameManager();
         WhitePlayer1                  =  player1;
         WhitePlayer1.OneSecPassEvent  += onPlayerOneSecElapsed;
@@ -26,14 +26,14 @@ public class GameUnit : IDisposable
 
     private IHubContext<ChessHub> m_hubContext;
     public  string                GroupName          { get; }
-    public  Guid                  CurrentGameVersion { get; private set; }
+    public  Guid                  GameToken { get; private set; }
 
     public  PlayerObject    WhitePlayer1 { get; }
     public  PlayerObject    BlackPlayer2 { get; }
 
     public event PlayerTimeChanged PlayerTimeChangedEvent;
 
-    public bool IsStarted => !CurrentGameVersion.Equals(Guid.Empty);
+    public bool IsStarted => !GameToken.Equals(Guid.Empty);
 
     public async Task<bool> StartGame()
     {
@@ -42,7 +42,7 @@ public class GameUnit : IDisposable
             return false;
         }
 
-        CurrentGameVersion = Guid.NewGuid();
+        GameToken = Guid.NewGuid();
 
         m_gameManager.StartGame();
         WhitePlayer1.PlayersTeam = new Team(WhitePlayer1.Name, Colors.White, GameDirection.North);
@@ -61,7 +61,7 @@ public class GameUnit : IDisposable
             return;
         }
 
-        CurrentGameVersion = Guid.Empty;
+        GameToken = Guid.Empty;
 
         m_gameManager.EndGame();
 
@@ -70,22 +70,29 @@ public class GameUnit : IDisposable
                           );
     }
 
-    public MoveResult Move(Guid          gameVersion
+    public MoveResult Move(Guid          gameToken
                          , BoardPosition start
                          , BoardPosition end)
     {
-        if (false == gameVersion.Equals(CurrentGameVersion))
+        if (false == gameToken.Equals(GameToken))
         {
             return MoveResult.NoChangeOccurredResult;
         }
 
-        MoveResult result = m_gameManager.Move(start, end);
-        if (result.Result != MoveResultEnum.NoChangeOccurred)
+        return m_gameManager.Move(start, end);;
+    }
+
+    public bool Promote(Guid          gameToken
+                      , BoardPosition position
+                      , ITool         promotedTool)
+    {
+        if (false == gameToken.Equals(GameToken))
         {
-            CurrentGameVersion = Guid.NewGuid();
+           return false;
         }
 
-        return result;
+        m_gameManager.Promote(position, promotedTool);
+        return true;
     }
 
     public PlayerObject GetOtherPlayer(PlayerObject player)
@@ -125,6 +132,11 @@ public class GameUnit : IDisposable
         BlackPlayer2.StopTimer();
         WhitePlayer1.StartTimer();
 
+    }
+
+    public bool IsPlayerTurn(PlayerObject player)
+    {
+        return m_gameManager.CurrentColorTurn.Equals(player.PlayersTeam.Color);
     }
 
     public BoardState GetBoardState()

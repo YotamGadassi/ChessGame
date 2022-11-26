@@ -56,25 +56,24 @@ public class IToolConverter : JsonConverter<ITool>
                              , ITool                 value
                              , JsonSerializerOptions options)
     {
-        switch (value)
+        if (null == value)
         {
-            case null:
-                JsonSerializer.Serialize(writer, (ITool)null, options);
-                break;
-            default:
-            Type type = value.GetType();
-            writer.WriteStartObject();
-
-            writer.WritePropertyName("Type");
-            writer.WriteStringValue(type.AssemblyQualifiedName);
-
-            writer.WritePropertyName("ConcreteType");
-            JsonSerializer.Serialize(writer, value, type, options);
-
-            writer.WriteEndObject();
-            
-            writer.Flush();
-            break;
+            s_log.Warn("Writing a null value!");
+            JsonSerializer.Serialize(writer, (ITool)null, options);
+            return;
         }
+
+        Type type = value.GetType();
+        writer.WriteStartObject();
+
+        writer.WritePropertyName("Type");
+        writer.WriteStringValue(type.AssemblyQualifiedName);
+
+        writer.WritePropertyName("ConcreteType");
+        JsonSerializer.Serialize(writer, value, type, options);
+
+        writer.WriteEndObject();
+
+        writer.Flush();
     }
 }

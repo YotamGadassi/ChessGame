@@ -1,5 +1,6 @@
 ﻿using Common;
 using Microsoft.AspNetCore.SignalR;
+using Tools;
 
 namespace ChessServer3._0;
 
@@ -13,6 +14,24 @@ public class ChessHub : Hub
     {
         m_serverState = serverState;
         m_log         = logger;
+    }
+
+    public bool IsMyTurn()
+    {
+        string connectionId = Context.ConnectionId;
+        if (false == m_serverState.TryGetGame(connectionId, out GameUnit game))
+        {
+            m_log.LogError($"Connection Id [{connectionId}] is not subscribed to any game");
+            throw new InvalidOperationException("Move request is not authorized");
+        }
+
+        if (false == m_serverState.TryGetPlayer(connectionId, out PlayerObject player))
+        {
+            m_log.LogError($"Connection Id [{connectionId}] is not attached to a player object");
+            throw new InvalidOperationException("Move request is not authorized");
+        }
+
+        return game.IsPlayerTurn(player);
     }
 
     public async Task<MoveResult> MoveRequest(BoardPosition start
@@ -37,10 +56,26 @@ public class ChessHub : Hub
                 throw new InvalidOperationException("Move request is not authorized");
             }
 
-            // TODO: check if promotion or checkMate
-
             PlayerObject otherPlayer = game.GetOtherPlayer(player);
-            await Clients.Client(otherPlayer.ConnectionId).SendAsync("Move", start, end, game.CurrentGameVersion);
+            if (resultEnum.HasFlag(MoveResultEnum.CheckMate))
+            {
+                
+                await Clients.Client(otherPlayer.ConnectionId)
+                             .SendAsync("CheckMate",
+                                        start,
+                                        end);
+                m_log.LogInformation($"CheckMate has occurred from {start} to {end}");
+                m_serverState.EndGame(game);
+                return moveResult;
+            }
+
+            if (resultEnum.HasFlag(MoveResultEnum.NeedPromotion))
+            {
+                m_log.LogInformation($"NeedPromotion has occurred from {start} to {end}");
+                return moveResult;
+            }
+
+            await Clients.Client(otherPlayer.ConnectionId).SendAsync("Move", start, end);
         }
         else if(resultEnum.HasFlag(MoveResultEnum.NoChangeOccurred))
         {
@@ -54,12 +89,36 @@ public class ChessHub : Hub
         return moveResult;
     }
 
-    // public async Task<bool> PromoteRequest(BoardPosition position
-    //                                      , ITool         tool
-    //                                      , Guid          gameVersion)
-    // {
-    //
-    // }
+    public async Task<bool> PromoteRequest(BoardPosition position
+                                         , IToolWrapperForServer         toolWrapper
+                                         , Guid          gameVersion)
+    {
+        ITool  tool         = toolWrapper.Tool;
+        string connectionId = Context.ConnectionId;
+        if (false == m_serverState.TryGetGame(connectionId, out GameUnit game))
+        {
+            m_log.LogError($"Connection Id [{connectionId}] is not subscribed to any game");
+            throw new InvalidOperationException("Move request is not authorized");
+        }
+
+        if (false == m_serverState.TryGetPlayer(connectionId, out PlayerObject player))
+        {
+            m_log.LogError($"Connection Id [{connectionId}] is not attached to a player object");
+            throw new InvalidOperationException("Move request is not authorized");
+        }
+
+        PlayerObject otherPlayer = game.GetOtherPlayer(player);
+
+        bool isPromoted = game.Promote(gameVersion, position, tool);
+        if (false == isPromoted)
+        {
+            return false;
+        }
+
+        await Clients.Client(otherPlayer.ConnectionId).SendAsync("PromoteTool", position, new IToolWrapperForServer(tool));
+
+        return true;
+    }
 
     public async Task QuitGame()
     {
@@ -108,30 +167,14 @@ public class ChessHub : Hub
                                 .SendAsync("StartGame",
                                            game.WhitePlayer1.PlayersTeam,
                                            game.BlackPlayer2.PlayersTeam,
-                                           game.CurrentGameVersion)
+                                           game.GameToken)
                         ,
                          Clients.Client(game.BlackPlayer2.ConnectionId)
                                 .SendAsync("StartGame",
                                            game.BlackPlayer2.PlayersTeam,
                                            game.WhitePlayer1.PlayersTeam,
-                                           Guid.Empty),
+                                           game.GameToken),
                          Clients.Groups(game.GroupName).SendAsync("ForceAddToBoard", gameBoard));
-    }
-
-    private PositionAndToolBundle[] createToolBundle(IDictionary<BoardPosition, ITool> gameBoard)
-    {
-        int                     len      = gameBoard.Count;
-        PositionAndToolBundle[] toolsArr = new PositionAndToolBundle[len];
-        int                     i        = 0;
-        foreach (KeyValuePair<BoardPosition, ITool> pair in gameBoard)
-        {
-            BoardPosition         position = pair.Key;
-            ITool                 tool     = pair.Value;
-            PositionAndToolBundle bundle   = new(position, tool);
-            toolsArr[i++] = bundle;
-        }
-
-        return toolsArr;
     }
 
     public override async Task OnConnectedAsync()

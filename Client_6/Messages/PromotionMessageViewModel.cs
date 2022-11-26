@@ -56,7 +56,7 @@ namespace Client.Messages
             Tools.Add(new Knight(toolsColor));
         }
 
-        public void ChooseToolExecute(object param)
+        private void ChooseToolExecute(object param)
         {
             m_toolChosenEvent.Set();
         }

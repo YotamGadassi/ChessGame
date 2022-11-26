@@ -3,7 +3,6 @@ using System.Windows.Media;
 using Board;
 using Common;
 using Common.ChessBoardEventArgs;
-using Common_6;
 using log4net;
 
 namespace ChessGame
@@ -84,21 +83,21 @@ namespace ChessGame
                                   toolToMove, toolAtEnd);
         }
 
+        public void Promote(BoardPosition position
+                          , ITool         newTool)
+        {
+            m_gameBoard.Remove(position);
+            m_gameBoard.Add(position, newTool);
+            switchCurrentTeam();
+            s_log.Info($"Tool in position [{position}] has been promoted to [{newTool}]");
+        }
+
         public void ForceAddTool(BoardPosition position
                           , ITool         newTool)
         {
-            if (true == m_gameBoard.TryGetTool(position, out ITool toolToPromote))
-            {
-                m_gameBoard.Remove(position);
-                s_log.Info($"Tool [{toolToPromote}] in position [{position}] has been promoted to [{newTool}]");
-            }
-            else
-            {
-                s_log.Info($"Tool [{newTool}] is forced add to position [{position}]");
-            }
-
+            m_gameBoard.Remove(position);
             m_gameBoard.Add(position, newTool);
-            ToolPromotedEvent?.Invoke(this, new ToolPromotedEventArgs(toolToPromote, newTool, position));
+            s_log.Info($"Tool [{newTool}] is forced add to position [{position}]");
         }
 
         protected void switchCurrentTeam()

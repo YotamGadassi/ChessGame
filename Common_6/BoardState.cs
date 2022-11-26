@@ -102,7 +102,7 @@ namespace Common
                                        , JsonSerializerOptions options)
         {
             int        arrayLength;
-            BoardState boardState = new BoardState();
+            BoardState boardState = new();
             // reader.Read();
             reader.Read();
             if (reader.TokenType != JsonTokenType.PropertyName || reader.GetString() != "ArrayLength")
@@ -144,7 +144,7 @@ namespace Common
                                  , JsonSerializerOptions options)
         {
             writer.WriteStartObject();
-            writer.WriteNumber(JsonEncodedText.Encode("ArrayLength"), value.Count);
+            writer.WriteNumber("ArrayLength", value.Count);
 
             writer.WriteStartArray("PositionAndToolArray");
             foreach (KeyValuePair<BoardPosition, ITool> keyValuePair in value)
@@ -158,6 +158,8 @@ namespace Common
             }
             writer.WriteEndArray();
             writer.WriteEndObject();
+
+            writer.Flush();
         }
     }
 }

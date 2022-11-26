@@ -46,8 +46,10 @@ namespace Common
             int column = -1;
             int row = -1;
 
-            reader.Read();
-            reader.Read();
+            // reader.Read(); // Start Object
+            reader.Read(); // Property 
+            reader.Read(); // StartArray
+            
             for (int i = 0; i < 2; ++i)
             {
                 reader.Read();
