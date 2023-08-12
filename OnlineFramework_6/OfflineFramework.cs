@@ -26,10 +26,10 @@ namespace Frameworks
         public void SquareClickHandler(BoardPosition position
                                      , ITool?        tool)
         {
-            BoardViewModel           board                  = ViewModel.Board;
-            Color         currTeamColor          = m_gameManager.CurrentColorTurn;
-            bool          isPositionToolSameTeam = null != tool && tool.Color.Equals(currTeamColor);
-            BoardPosition selectedBoardPosition  = board.SelectedBoardPosition;
+            BoardViewModel board                  = ViewModel.Board;
+            Color          currTeamColor          = m_gameManager.CurrentColorTurn;
+            bool           isPositionToolSameTeam = null != tool && tool.Color.Equals(currTeamColor);
+            BoardPosition  selectedBoardPosition  = board.SelectedBoardPosition;
             board.ClearSelectedAndHintedBoardPositions();
 
             if (isPositionToolSameTeam)

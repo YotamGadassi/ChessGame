@@ -19,7 +19,7 @@ namespace Board
 
         private global::Board.ChessBoard m_chessBoard;
 
-        public GameMoveHelper(global::Board.ChessBoard chessBoard)
+        public GameMoveHelper(ChessBoard chessBoard)
         {
             m_chessBoard = chessBoard;
             initMoveLegalDelegates();
