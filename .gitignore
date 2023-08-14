@@ -362,3 +362,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /shortcuts/Host.exe - Shortcut.lnk
+/shortcuts/ChessServer.exe - Shortcut.lnk

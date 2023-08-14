@@ -74,6 +74,7 @@ public class ChessHub : Hub
             if (resultEnum.HasFlag(MoveResultEnum.NeedPromotion))
             {
                 m_log.LogInformation($"NeedPromotion has occurred from {start} to {end}");
+                await Clients.Client(otherPlayer.ConnectionId).SendAsync("Move", start, end);
                 return moveResult;
             }
 

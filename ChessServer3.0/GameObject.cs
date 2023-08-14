@@ -10,12 +10,14 @@ namespace ChessServer3._0;
 
 public delegate void PlayerTimeChanged(PlayerObject player
                                      , TimeSpan     timeLeft);
+
 public class GameUnit : IDisposable
 {
-    public GameUnit(PlayerObject player1, PlayerObject player2)
+    public GameUnit(PlayerObject player1
+                  , PlayerObject player2)
     {
         GroupName                     =  Guid.NewGuid().ToString();
-        GameToken            =  Guid.Empty;
+        GameToken                     =  Guid.Empty;
         m_gameManager                 =  new OfflineGameManager();
         WhitePlayer1                  =  player1;
         WhitePlayer1.OneSecPassEvent  += onPlayerOneSecElapsed;
@@ -24,14 +26,14 @@ public class GameUnit : IDisposable
         m_gameManager.TeamSwitchEvent += onTeamSwitch;
     }
 
-    private OfflineGameManager       m_gameManager;
+    private OfflineGameManager m_gameManager;
 
     private IHubContext<ChessHub> m_hubContext;
-    public  string                GroupName          { get; }
+    public  string                GroupName { get; }
     public  Guid                  GameToken { get; private set; }
 
-    public  PlayerObject    WhitePlayer1 { get; }
-    public  PlayerObject    BlackPlayer2 { get; }
+    public PlayerObject WhitePlayer1 { get; }
+    public PlayerObject BlackPlayer2 { get; }
 
     public event PlayerTimeChanged PlayerTimeChangedEvent;
 
@@ -81,7 +83,8 @@ public class GameUnit : IDisposable
             return MoveResult.NoChangeOccurredResult;
         }
 
-        return m_gameManager.Move(start, end);;
+        return m_gameManager.Move(start, end);
+        ;
     }
 
     public bool Promote(Guid          gameToken
@@ -90,7 +93,7 @@ public class GameUnit : IDisposable
     {
         if (false == gameToken.Equals(GameToken))
         {
-           return false;
+            return false;
         }
 
         m_gameManager.Promote(position, promotedTool);
@@ -107,12 +110,10 @@ public class GameUnit : IDisposable
         return WhitePlayer1;
     }
 
-    public void Dispose()
-    {
+    public void Dispose() { }
 
-    }
-
-    private void onPlayerOneSecElapsed(object? sender, TimeSpan timeLeft)
+    private void onPlayerOneSecElapsed(object?  sender
+                                     , TimeSpan timeLeft)
     {
         if (false == sender is PlayerObject player)
         {
@@ -122,7 +123,8 @@ public class GameUnit : IDisposable
         PlayerTimeChangedEvent?.Invoke(player, timeLeft);
     }
 
-    private void onTeamSwitch(object? sender, Color teamColor)
+    private void onTeamSwitch(object? sender
+                            , Color   teamColor)
     {
         if (teamColor == Colors.Black)
         {
@@ -133,7 +135,6 @@ public class GameUnit : IDisposable
 
         BlackPlayer2.StopTimer();
         WhitePlayer1.StartTimer();
-
     }
 
     public bool IsPlayerTurn(PlayerObject player)
