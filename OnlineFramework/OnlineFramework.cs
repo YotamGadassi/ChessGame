@@ -20,7 +20,6 @@ namespace Frameworks;
 public class OnlineFramework
 {
     private static readonly ILog   s_log        = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-    private static readonly string s_hubAddress = @"https://localhost:7034/ChessHub";
     private                 Guid   m_lastGameVersion;
 
     private          IConnectionManager<IGameServerAgent> m_connectionManager;
@@ -42,7 +41,7 @@ public class OnlineFramework
 
     public void Init()
     {
-        registerClientMethods();
+        registerServerMethods();
         registerEvents();
     }
 
@@ -74,7 +73,7 @@ public class OnlineFramework
         return new Task(() => s_log.Warn($"Connection closed: [exception: {arg}]"));
     }
 
-    private void registerClientMethods()
+    private void registerServerMethods()
     {
         IGameServerAgent agent = m_connectionManager.ServerAgent;
 
