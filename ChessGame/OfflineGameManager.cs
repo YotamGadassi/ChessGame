@@ -10,7 +10,7 @@ using Color = System.Windows.Media.Color;
 
 namespace ChessGame
 {
-    public class OfflineGameManager : IGameManager
+    public class OfflineGameManager : IChessGameManager
     {
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         

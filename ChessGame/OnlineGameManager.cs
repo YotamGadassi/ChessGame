@@ -9,7 +9,7 @@ using Tools;
 
 namespace ChessGame
 {
-    public class OnlineGameManager : IGameManager
+    public class OnlineGameManager : IChessGameManager
     {
         private static readonly ILog       s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         public                  Team       CurrentMachineTeam { get; }

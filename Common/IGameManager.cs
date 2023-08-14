@@ -10,7 +10,7 @@ namespace Common
 {
     public delegate Task<ITool> PromotionEventHandler(object sender, PromotionEventArgs e);
 
-    public interface IGameManager
+    public interface IChessGameManager
     {
         public event EventHandler<CheckmateEventArgs>    CheckmateEvent;
         public event EventHandler<EventArgs>             EndGameEvent;

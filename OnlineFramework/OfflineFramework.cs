@@ -15,7 +15,7 @@ namespace Frameworks
     public class OfflineFramework
     {
         public  OfflineGameViewModel ViewModel { get; }
-        private IGameManager         m_gameManager;
+        private IChessGameManager    m_gameManager;
         private AvailableMovesHelper m_availableMovesHelper;
         public OfflineFramework(Team northTeam
                               , Team southTeam)

@@ -16,9 +16,9 @@ namespace Client.Helpers
 
         private Dictionary<Color, GameDirection> m_colorToDirection;
 
-        private IGameManager m_gameManager;
+        private IChessGameManager m_gameManager;
 
-        public AvailableMovesHelper(IGameManager gameManager)
+        public AvailableMovesHelper(IChessGameManager gameManager)
         {
             m_gameManager = gameManager;
             initColorToDirection();

@@ -8,6 +8,7 @@ using Client.Helpers;
 using Client.Messages;
 using Common;
 using Common.Chess;
+using FrontCommon;
 using log4net;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +23,7 @@ public class OnlineFramework
     private static readonly string s_hubAddress = @"https://localhost:7034/ChessHub";
     private                 Guid   m_lastGameVersion;
 
-    private          HubConnection        m_connection;
+    private          IConnectionManager<IGameServerAgent> m_connectionManager;
     private          OnlineGameManager    m_gameManager;
     private          Team                 m_localMachineTeam;
     private          AvailableMovesHelper m_availableMovesHelper;
@@ -31,60 +32,39 @@ public class OnlineFramework
     public OnlineGameViewModel                     ViewModel;
     public event EventHandler                      OnGameEnd;
 
-    public HubConnectionState ConnectionState => m_connection.State;
-
-    public OnlineFramework()
+    public OnlineFramework(IConnectionManager<IGameServerAgent> connectionManager)
     {
+        m_connectionManager = connectionManager;
         m_dispatcher  = Dispatcher.CurrentDispatcher;
         
         ViewModel = new OnlineGameViewModel(SquareClickHandler, SquareClickHandlerCanExecute);
     }
 
-    public async Task<bool> ConnectToServerAsync(string name)
+    public void Init()
     {
-        bool isConnected = m_connection != null && m_connection.State != HubConnectionState.Disconnected;
-        if (isConnected)
-        {
-            s_log.Info($"Connection state is {m_connection.State}. Cannot connect again.");
-            return true;
-        }
-
-        UserMessageViewModel msgViewModel = new("Waiting for connection with server", "Cancel", (() => endGame()));
-        ViewModel.Message = msgViewModel;
-
-        m_connection = new HubConnectionBuilder().WithUrl(s_hubAddress + $"?name={name}")
-                                                 .ConfigureLogging(builder => builder.AddLog4Net("LogConfiguration.xml"))
-                                                 .AddJsonProtocol(options => options.PayloadSerializerOptions.Converters.Add(new IToolConverter()))
-                                                 .Build();
-
-        m_connection.Closed += onConnectionClosed;
         registerClientMethods();
-        s_log.Info($"Starting connection to client. server state:{m_connection.State}");
-        
-        try
-        {
-            await m_connection.StartAsync();
-        }
-        catch (Exception e)
-        {
-            s_log.Error(e.Message);
-            return false;
-        }
-
-        s_log.Info($"connection to client completed. server state:{m_connection.State}");
-
-        return true;
+        registerEvents();
     }
 
-    public async Task<bool> AsyncRequestGameFromServer()
+    private void registerEvents()
     {
-        return await m_connection.InvokeAsync<bool>("RequestGame");
+        m_connectionManager.ConnectionClosed += onConnectionClosed;
+    }
+
+    public Task<bool> ConnectToServerAsync()
+    {
+        return m_connectionManager.Connect();
+    }
+
+    public Task<bool> AsyncRequestGameFromServer()
+    {
+        return m_connectionManager.ServerAgent.RequestGame();
     }
 
     public async Task DisconnectFromServerAsync()
     {
         s_log.Info("Disconnected from server request started");
-        await m_connection.StopAsync();
+        await m_connectionManager.Disconnect();
         s_log.Info("Disconnected from server succeeded");
     }
 
@@ -96,14 +76,15 @@ public class OnlineFramework
 
     private void registerClientMethods()
     {
-        m_connection.On<BoardPosition, BoardPosition>("Move", handleMoveRequest);
-        m_connection.On<Team, Team, Guid>("StartGame", handleStartGameRequest);
-        m_connection.On("EndGame", handleEndGameRequest);
-        m_connection.On<Team, TimeSpan>("UpdateTime", handleTimeUpdate);
-        m_connection.On<BoardState>("ForceAddToBoard", handleBoardReceived);
-        m_connection.On<BoardPosition, BoardPosition>("CheckMate", handleCheckMateEvent);
-        m_connection.On<BoardPosition, IToolWrapperForServer>("PromoteTool", handlePromotion);
+        IGameServerAgent agent = m_connectionManager.ServerAgent;
 
+        agent.MoveRequestEvent      += handleMoveRequest;
+        agent.StartGameRequestEvent += handleStartGameRequest;
+        agent.EndtGameRequestEvent  += handleEndGameRequest;
+        agent.TimeReceivedEvent     += handleTimeUpdate;
+        agent.BoardReceivedEvent    += handleBoardReceived;
+        agent.CheckmateEvent        += handleCheckMateEvent;
+        agent.PromotionEvent        += handlePromotion;
     }
 
     #region serverExecutionsHandlers
@@ -144,27 +125,27 @@ public class OnlineFramework
         ViewModel.Board.RemoveTool(positionToPromote, out _);
         ViewModel.Board.AddTool(toolWrapper.Tool, positionToPromote);
     }
-
+    
     private async void handleNeedPromotionEvent(BoardPosition positionToPromote, ITool toolToPromote)
     {
         PromotionMessageViewModel promotionMessage = new(toolToPromote.Color, positionToPromote);
         ViewModel.Message = promotionMessage;
-
+    
         ITool chosenTool = await promotionMessage.ToolAwaiter;
         ViewModel.Message = null;
-        bool promoteResult =
-            await m_connection.InvokeAsync<bool>("PromoteRequest", positionToPromote, new IToolWrapperForServer(chosenTool)
-                                               , m_lastGameVersion);
-
+        bool promoteResult = await m_connectionManager.ServerAgent.PromoteRequest(positionToPromote
+                                                                                , new IToolWrapperForServer(chosenTool)
+                                                                                , m_lastGameVersion);
+    
         if (false == promoteResult)
         {
             s_log.Warn($"Promote result is false [position:{positionToPromote}, tool:{chosenTool}]");
             //TODO: show message
             return;
         }
-
+    
         handlePromotion(positionToPromote, new IToolWrapperForServer(chosenTool));
-
+    
     }
 
     private void handleBoardReceived(BoardState boardState)
@@ -230,7 +211,7 @@ public class OnlineFramework
     private async void endGame()
     {
         s_log.Info("Game ended");
-        await m_connection.StopAsync();
+        await m_connectionManager.Disconnect();
         UserMessageViewModel endGameMessage = new UserMessageViewModel("Game has ended", 
                                                                        "OK", 
                                                                        () =>
@@ -245,14 +226,14 @@ public class OnlineFramework
     private async Task<MoveResult> sendMoveRequest(BoardPosition initial
                                            , BoardPosition end)
     {
-        return await m_connection.InvokeAsync<MoveResult>("MoveRequest", initial, end, m_lastGameVersion);
+        return await m_connectionManager.ServerAgent.SendMoveRequest(initial, end, m_lastGameVersion);
     }
 
     private bool m_isWaitingForServerResponse = false;
     protected async void SquareClickHandler(BoardPosition position
                                                    , ITool?        tool)
     {
-        bool isLocalTeamTurn = await m_connection.InvokeAsync<bool>("IsMyTurn");
+        bool isLocalTeamTurn = await m_connectionManager.ServerAgent.IsMyTurn();
         if (false == isLocalTeamTurn)
         {
             return;
@@ -311,7 +292,7 @@ public class OnlineFramework
     protected bool SquareClickHandlerCanExecute(BoardPosition poistion
                                               , ITool?        tool)
     {
-        if (m_isWaitingForServerResponse || ConnectionState != HubConnectionState.Connected || null == m_gameManager)
+        if (m_isWaitingForServerResponse || m_connectionManager.ConnectionStatus != ConnectionStatus.Connected || null == m_gameManager)
         {
             return false;
         }

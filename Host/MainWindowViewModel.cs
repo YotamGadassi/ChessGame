@@ -16,31 +16,34 @@ namespace Host
         private static readonly ILog     s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         public                  ICommand PlayOnlineCommand  { get; }
         public                  ICommand PlayOfflineCommand { get; }
-        
+
         private OnlineFramework m_onlineFramework;
 
         private readonly Dispatcher m_dispatcher;
 
         public MainWindowViewModel()
         {
-            m_dispatcher                    =  Dispatcher.CurrentDispatcher;
-            PlayOnlineCommand               =  new WpfCommand(playOnlineCommandExecute,  playOnlineCommandCanExecute);
-            PlayOfflineCommand              =  new WpfCommand(playOfflineCommandExecute, playOfflineCommandCanExecute);
-            m_onlineFramework               =  new();
-            m_onlineFramework.OnGameEnd     += onGameEnd;
+            m_dispatcher       = Dispatcher.CurrentDispatcher;
+            PlayOnlineCommand  = new WpfCommand(playOnlineCommandExecute,  playOnlineCommandCanExecute);
+            PlayOfflineCommand = new WpfCommand(playOfflineCommandExecute, playOfflineCommandCanExecute);
+            AppConnectionManager connectionManager = new AppConnectionManager("Yotam");
+            m_onlineFramework           =  new(connectionManager);
+            m_onlineFramework.Init();
+            m_onlineFramework.OnGameEnd += onGameEnd;
         }
 
         private async void playOnlineCommandExecute(object parameter)
         {
             CurrentViewModel = m_onlineFramework.ViewModel;
             s_log.Info("Play online command invoked");
-            bool isConnected = await m_onlineFramework.ConnectToServerAsync("Yotam");
+            bool isConnected = await m_onlineFramework.ConnectToServerAsync();
             if (false == isConnected)
             {
                 s_log.Warn($"Could not connect to server");
                 resetViewModel();
                 return;
             }
+
             bool isRequestApproved = await m_onlineFramework.AsyncRequestGameFromServer();
             if (false == isRequestApproved)
             {
@@ -76,8 +79,9 @@ namespace Host
         {
             return CurrentViewModel == null;
         }
-        
-        private void onGameEnd(object? sender, EventArgs e)
+
+        private void onGameEnd(object?   sender
+                             , EventArgs e)
         {
             m_dispatcher.Invoke(resetViewModel);
         }
