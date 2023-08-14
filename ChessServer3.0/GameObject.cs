@@ -1,7 +1,10 @@
 ﻿using System.Windows.Media;
+using Board;
 using ChessGame;
 using Common;
+using Common.Chess;
 using Microsoft.AspNetCore.SignalR;
+using Tools;
 
 namespace ChessServer3._0;
 

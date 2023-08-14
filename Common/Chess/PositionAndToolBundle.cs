@@ -1,16 +1,17 @@
-﻿using System.Windows.Media;
+﻿using Board;
+using Tools;
 
-namespace Common
+namespace Common.Chess
 {
     public class PositionAndToolBundle
     {
-        public  BoardPosition Position { get; }
-        public ITool         Tool     { get; }
+        public BoardPosition Position { get; }
+        public ITool Tool { get; }
 
         public PositionAndToolBundle(BoardPosition position, ITool tool)
         {
             Position = position;
-            Tool     = tool;
+            Tool = tool;
         }
     }
 }

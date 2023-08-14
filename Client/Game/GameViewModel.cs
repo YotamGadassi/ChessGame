@@ -1,9 +1,11 @@
 ﻿using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
+using Board;
 using Client.Board;
 using Common;
 using log4net;
+using Tools;
 using static Client.Board.SquareViewModel;
 
 namespace Client.Game

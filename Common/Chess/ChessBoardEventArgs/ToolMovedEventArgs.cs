@@ -1,6 +1,8 @@
 ﻿using System;
+using Board;
+using Tools;
 
-namespace Common.ChessBoardEventArgs
+namespace Common.Chess.ChessBoardEventArgs
 {
     [Serializable]
     public class ToolMovedEventArgs : EventArgs

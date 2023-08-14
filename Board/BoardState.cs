@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Runtime.Serialization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Tools;
 
-namespace Common
+namespace Board
 {
     [JsonConverter(typeof(BoardStateJsonConverter))]
     public class BoardState : IDictionary<BoardPosition, ITool>

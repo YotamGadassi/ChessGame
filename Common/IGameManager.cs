@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using Common.ChessBoardEventArgs;
+using Board;
+using Common.Chess;
+using Common.Chess.ChessBoardEventArgs;
+using Tools;
 
 namespace Common
 {

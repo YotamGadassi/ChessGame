@@ -1,9 +1,12 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using System.Windows.Media;
-using Common;
+using Board;
 using log4net;
+using Tools;
 
-namespace Board
+namespace Common.Chess
 {
     public class GameMoveHelper
     {
@@ -12,11 +15,11 @@ namespace Board
         private delegate bool IsMoveLegalDelegate(BoardPosition start,     BoardPosition end, ITool toolToMove,
                                                   bool          isKilling);
 
-        private  Dictionary<string, IsMoveLegalDelegate>        m_isLegalDelegatesDict;
+        private Dictionary<string, IsMoveLegalDelegate> m_isLegalDelegatesDict;
 
         private  Dictionary<Color, GameDirection> m_colorToDirection;
 
-        private global::Board.ChessBoard m_chessBoard;
+        private global::Common.Chess.ChessBoard m_chessBoard;
 
         public GameMoveHelper(ChessBoard chessBoard)
         {

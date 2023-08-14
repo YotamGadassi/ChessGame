@@ -1,4 +1,6 @@
-﻿using Common;
+﻿using Board;
+using Common;
+using Common.Chess;
 using Microsoft.AspNetCore.SignalR;
 using Tools;
 

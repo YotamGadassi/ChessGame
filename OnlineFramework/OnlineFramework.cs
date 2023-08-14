@@ -1,11 +1,13 @@
 ﻿using System.Reflection;
 using System.Windows.Threading;
+using Board;
 using ChessGame;
 using Client.Board;
 using Client.Game;
 using Client.Helpers;
 using Client.Messages;
 using Common;
+using Common.Chess;
 using log4net;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;

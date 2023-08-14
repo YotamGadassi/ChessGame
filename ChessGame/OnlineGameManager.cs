@@ -2,8 +2,10 @@
 using System.Windows.Media;
 using Board;
 using Common;
-using Common.ChessBoardEventArgs;
+using Common.Chess;
+using Common.Chess.ChessBoardEventArgs;
 using log4net;
+using Tools;
 
 namespace ChessGame
 {

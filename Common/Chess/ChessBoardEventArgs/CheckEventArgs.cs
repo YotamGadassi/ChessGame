@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Windows.Media;
+using Board;
 
-namespace Common.ChessBoardEventArgs
+namespace Common.Chess.ChessBoardEventArgs
 {
     public class CheckmateEventArgs : EventArgs
     {

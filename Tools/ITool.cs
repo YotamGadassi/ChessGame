@@ -1,12 +1,11 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
 using log4net;
 
-namespace Common;
+namespace Tools;
 
 public interface ITool
 {

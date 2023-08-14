@@ -1,4 +1,4 @@
-﻿namespace Global
+﻿namespace Utils
 {
     public static class ResourceLoader
     {

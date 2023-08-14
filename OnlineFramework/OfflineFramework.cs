@@ -1,11 +1,14 @@
 ﻿using System.Windows.Media;
+using Board;
 using ChessGame;
 using Client.Board;
 using Client.Game;
 using Client.Helpers;
 using Client.Messages;
 using Common;
-using Common.ChessBoardEventArgs;
+using Common.Chess;
+using Common.Chess.ChessBoardEventArgs;
+using Tools;
 
 namespace Frameworks
 {

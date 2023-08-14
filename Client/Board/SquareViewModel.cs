@@ -1,6 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Input;
+using Board;
 using Common;
+using Tools;
 
 namespace Client.Board
 {

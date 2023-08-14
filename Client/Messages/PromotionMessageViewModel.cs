@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
+using Board;
 using Client.Annotations;
 using Common;
 using Tools;

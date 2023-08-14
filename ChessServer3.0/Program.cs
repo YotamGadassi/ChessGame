@@ -1,5 +1,6 @@
 using ChessServer3._0;
 using Common;
+using Tools;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSignalR()

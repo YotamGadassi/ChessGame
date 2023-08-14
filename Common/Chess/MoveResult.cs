@@ -1,6 +1,8 @@
 ﻿using System;
+using Board;
+using Tools;
 
-namespace Common
+namespace Common.Chess
 {
     [Flags]
     public enum MoveResultEnum

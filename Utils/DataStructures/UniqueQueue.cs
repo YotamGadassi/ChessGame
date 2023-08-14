@@ -1,4 +1,4 @@
-﻿namespace Global.DataStructures
+﻿namespace Utils.DataStructures
 {
     public class UniqueQueue<T>
     {

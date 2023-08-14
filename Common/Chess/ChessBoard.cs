@@ -1,30 +1,31 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Windows.Media;
-using Common;
+using Board;
 using log4net;
 using Tools;
 
-namespace Board
+namespace Common.Chess
 {
     public class ChessBoard : IBoard
     {
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private IBoard          m_board;
+        private IBoard m_board;
         private GameMoveHelper m_gameMoveHelper;
 
         public ChessBoard()
         {
-            m_board          = new BasicBoard();
+            m_board = new BasicBoard();
             m_gameMoveHelper = new GameMoveHelper(this);
         }
 
         /// <summary>
         /// Adds a tool to the chess board
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">If position is out of board boundaries</exception>
-        /// <exception cref="ArgumentException">board already contains tool, of if position is occupied</exception>
-        /// <param name="position">The position to which the tool should be added</param>
+        /// <exception cref="ArgumentException">If position is out of board boundaries</exception>
+        /// <exception cref="position">board already contains tool, of if position is occupied</exception>
+        /// <param name="tool">The position to which the tool should be added</param>
         /// <param name="tool">The tool to add</param>
         public void Add(BoardPosition position, ITool tool)
         {
@@ -60,7 +61,7 @@ namespace Board
                 s_log.Info($"Move from {start} to {end} is not legal!");
                 return MoveResult.NoChangeOccurredResult;
             }
-            
+
             bool isThereToolToMove = m_board.TryGetTool(start, out ITool toolToMove);
             if (false == isThereToolToMove)
             {
@@ -73,7 +74,7 @@ namespace Board
             {
                 moveResultEnum |= MoveResultEnum.NeedPromotion;
             }
-            
+
             bool isThereToolToKill = m_board.TryGetTool(end, out ITool toolOnEndPosition);
             if (isThereToolToKill)
             {
@@ -132,7 +133,7 @@ namespace Board
             return toolMoved is Pawn && isLastRow(toolMoved, endPosition);
         }
 
-        private bool isLastRow(ITool         movedTool
+        private bool isLastRow(ITool movedTool
                              , BoardPosition endPosition)
         {
             return movedTool.Color == Colors.White && endPosition.Row == 8
