@@ -8,9 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Board_6\Board.csproj" />
-    <ProjectReference Include="..\Common_6\Common.csproj" />
-    <ProjectReference Include="..\Tools_6\Tools.csproj" />
+    <ProjectReference Include="..\Board\Board.csproj" />
+    <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
 
 </Project>

@@ -4,7 +4,6 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Common;
-using Common_6;
 
 namespace Client.Game
 {

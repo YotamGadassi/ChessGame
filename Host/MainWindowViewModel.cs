@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Reflection;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Client;
-using Client.Game;
-using Client.Messages;
 using Common;
 using Common.MainWindow;
-using Common_6;
 using Frameworks;
 using log4net;
 

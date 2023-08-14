@@ -1,10 +1,11 @@
-﻿using System.Reflection;
+﻿using System.Drawing;
+using System.Reflection;
 using System.Windows.Media;
 using Board;
 using Common;
 using Common.ChessBoardEventArgs;
-using Common_6;
 using log4net;
+using Color = System.Windows.Media.Color;
 
 namespace ChessGame
 {

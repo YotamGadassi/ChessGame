@@ -22,8 +22,10 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="6.1.0" />
   </ItemGroup>
 
-	<ItemGroup>
-	  <ProjectReference Include="..\Client_6\Client.csproj" />
-  </ItemGroup>
+ <ItemGroup>
+   <ProjectReference Include="..\ChessGame\ChessGame.csproj" />
+   <ProjectReference Include="..\Client\Client.csproj" />
+   <ProjectReference Include="..\Common\Common.csproj" />
+ </ItemGroup>
 
 </Project>

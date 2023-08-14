@@ -23,9 +23,9 @@
     <PackageReference Include="log4net" Version="2.0.15" />
   </ItemGroup>
 
-	<ItemGroup>
-    <ProjectReference Include="..\Common_6\Common.csproj" />
-    <ProjectReference Include="..\OnlineFramework_6\Frameworks.csproj" />
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\OnlineFramework\Frameworks.csproj" />
   </ItemGroup>
 
 </Project>

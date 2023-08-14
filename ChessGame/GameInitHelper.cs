@@ -1,6 +1,5 @@
 ﻿using System.Windows.Media;
 using Common;
-using Common_6;
 using Tools;
 
 namespace ChessGame

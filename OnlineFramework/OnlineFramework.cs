@@ -6,7 +6,6 @@ using Client.Game;
 using Client.Helpers;
 using Client.Messages;
 using Common;
-using Common_6;
 using log4net;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
