@@ -244,7 +244,7 @@ public class OnlineFramework
         {
             board.ClearSelectedAndHintedBoardPositions();
             board.SelectedBoardPosition = position;
-            BoardPosition[] positionToMove = m_availableMovesHelper.GetAvailablePositionToMove(position);
+            BoardPosition[] positionToMove = await m_availableMovesHelper.GetAvailablePositionToMove(position);
             board.SetHintedBoardPosition(positionToMove);
             return;
         }

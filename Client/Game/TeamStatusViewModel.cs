@@ -18,7 +18,6 @@ namespace Client.Game
         private static readonly DependencyProperty IsTeamTurnProperty = DependencyProperty.Register("IsTeamTurn", typeof(bool), typeof(TeamStatusViewModel), new FrameworkPropertyMetadata(false));
         private static readonly DependencyProperty TimeLeftProperty = DependencyProperty.Register("TimeLeft", typeof(TimeSpan), typeof(TeamStatusViewModel), new PropertyMetadata(TimeSpan.FromMinutes(10)));
 
-
         private readonly Dispatcher m_dispatcher;
 
         public bool IsTeamTurn

@@ -11,12 +11,12 @@ namespace Common.Chess
     {
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private IBoard m_board;
+        private IBoard         m_board;
         private GameMoveHelper m_gameMoveHelper;
 
         public ChessBoard()
         {
-            m_board = new BasicBoard();
+            m_board          = new BasicBoard();
             m_gameMoveHelper = new GameMoveHelper(this);
         }
 
@@ -27,12 +27,14 @@ namespace Common.Chess
         /// <exception cref="position">board already contains tool, of if position is occupied</exception>
         /// <param name="tool">The position to which the tool should be added</param>
         /// <param name="tool">The tool to add</param>
-        public void Add(BoardPosition position, ITool tool)
+        public void Add(BoardPosition position
+                      , ITool         tool)
         {
             if (false == GameMoveHelper.ValidatePositionOnBoard(position))
             {
                 throw new ArgumentOutOfRangeException($"The position {position} is out of range!");
             }
+
             m_board.Add(position, tool);
         }
 
@@ -48,9 +50,11 @@ namespace Common.Chess
         /// <param name="start">The position from which to move a tool</param>
         /// <param name="end">The position to move a tool to it</param>
         /// <returns>true if tool has moved, O.W. false</returns>
-        public MoveResult Move(BoardPosition start, BoardPosition end)
+        public MoveResult Move(BoardPosition start
+                             , BoardPosition end)
         {
-            if (false == (GameMoveHelper.ValidatePositionOnBoard(start) && GameMoveHelper.ValidatePositionOnBoard(end)))
+            if (false == (GameMoveHelper.ValidatePositionOnBoard(start)
+                       && GameMoveHelper.ValidatePositionOnBoard(end)))
             {
                 throw new
                     ArgumentOutOfRangeException($"The start or end position are not valid: Start:{start}, End:{end}");
@@ -106,17 +110,41 @@ namespace Common.Chess
             return new MoveResult(moveResultEnum, start, end, toolToMove, toolOnEndPosition);
         }
 
-        private bool isOnSameTeam(ITool toolA, ITool toolB)
+        public PromotionResult Promote(BoardPosition position
+                                     , ITool         newTool)
         {
-            return toolA.Color.Equals(toolB.Color);
+            if (false == (GameMoveHelper.ValidatePositionOnBoard(position)))
+            {
+                throw new
+                    ArgumentOutOfRangeException($"The position is not valid: Position{position}");
+            }
+
+            bool isToolExist = TryGetTool(position, out ITool toolToPromote);
+            if (false == isToolExist)
+            {
+                return new PromotionResult(null, null, position, PromotionResultEnum.PositionIsEmpty);
+            }
+
+            bool isToolValidForPromotion = isPromotion(toolToPromote, position);
+            if (false == isToolValidForPromotion)
+            {
+                return new PromotionResult(toolToPromote, newTool, position, PromotionResultEnum.ToolIsNotValidForPromotion);
+            }
+
+            Remove(position);
+            Add(position, newTool);
+
+            return new PromotionResult(toolToPromote, newTool, position, PromotionResultEnum.PromotionSucceeded);
         }
 
-        public bool TryGetTool(BoardPosition position, out ITool tool)
+        public bool TryGetTool(BoardPosition position
+                             , out ITool     tool)
         {
             return m_board.TryGetTool(position, out tool);
         }
 
-        public bool TryGetPosition(ITool tool, out BoardPosition position)
+        public bool TryGetPosition(ITool             tool
+                                 , out BoardPosition position)
         {
             return m_board.TryGetPosition(tool, out position);
         }
@@ -128,16 +156,24 @@ namespace Common.Chess
 
         public BoardState GetBoard => m_board.GetBoard;
 
-        private bool isPromotion(ITool toolMoved, BoardPosition endPosition)
+        private bool isOnSameTeam(ITool toolA
+                                , ITool toolB)
         {
-            return toolMoved is Pawn && isLastRow(toolMoved, endPosition);
+            return toolA.Color.Equals(toolB.Color);
         }
 
-        private bool isLastRow(ITool movedTool
-                             , BoardPosition endPosition)
+        private bool isPromotion(ITool         toolMoved
+                               , BoardPosition position)
         {
-            return movedTool.Color == Colors.White && endPosition.Row == 8
-                || movedTool.Color == Colors.Black && endPosition.Row == 1;
+            return toolMoved is Pawn && isLastRow(toolMoved, position);
+        }
+
+        private bool isLastRow(ITool         movedTool
+                             , BoardPosition position)
+        {
+            return movedTool.Color == Colors.White && position.Row == 8
+                || movedTool.Color == Colors.Black && position.Row == 1;
         }
     }
+
 }

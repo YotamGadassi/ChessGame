@@ -13,6 +13,9 @@ namespace ChessGame
     {
         private static readonly ILog       s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         public                  Team       CurrentMachineTeam { get; }
+        public                  Color      CurrentColorTurn   => m_teams[m_currentTeamIndex];
+        public                  bool       IsGameRunning      { get; private set; }
+
         private                 BasicBoard m_gameBoard;
 
         private readonly        Color[]? m_teams = { Colors.White, Colors.Black };
@@ -26,23 +29,11 @@ namespace ChessGame
             CurrentMachineTeam = currentMachineTeam;
         }
 
-        public event EventHandler<CheckmateEventArgs>?    CheckmateEvent;
-        public event EventHandler<EventArgs>?             EndGameEvent;
-        public event EventHandler<EventArgs>?             StartGameEvent;
-        public event EventHandler<ToolMovedEventArgs>?    ToolMovedEvent;
-        public event EventHandler<KillingEventArgs>?      ToolKilledEvent;
-        public event PromotionEventHandler?               PromotionEvent;
-        public event EventHandler<ToolPromotedEventArgs>? ToolPromotedEvent;
-        public event EventHandler<Color>?                 TeamSwitchEvent;
-        public Color                                      CurrentColorTurn => m_teams[m_currentTeamIndex];
-        public bool                                       IsGameRunning    { get; private set; }
-
         public void StartGame()
         {
             m_currentTeamIndex = 0;
             IsGameRunning      = true;
             s_log.Info("Game started");
-            StartGameEvent?.Invoke(this, EventArgs.Empty);
         }
 
         public void EndGame()
@@ -95,7 +86,7 @@ namespace ChessGame
         }
 
         public void ForceAddTool(BoardPosition position
-                          , ITool         newTool)
+                               , ITool         newTool)
         {
             m_gameBoard.Remove(position);
             m_gameBoard.Add(position, newTool);
@@ -105,7 +96,6 @@ namespace ChessGame
         protected void switchCurrentTeam()
         {
             m_currentTeamIndex = (m_currentTeamIndex + 1) % s_teamsAmount;
-            TeamSwitchEvent?.Invoke(this, m_teams[m_currentTeamIndex]);
         }
     }
 }

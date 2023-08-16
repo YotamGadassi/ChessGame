@@ -35,6 +35,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\FrontCommon\FrontCommon.csproj" />
   </ItemGroup>
 
   <ItemGroup>

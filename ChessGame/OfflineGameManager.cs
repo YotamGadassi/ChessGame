@@ -3,51 +3,41 @@ using System.Windows.Media;
 using Board;
 using Common;
 using Common.Chess;
-using Common.Chess.ChessBoardEventArgs;
 using log4net;
 using Tools;
-using Color = System.Windows.Media.Color;
 
 namespace ChessGame
 {
     public class OfflineGameManager : IChessGameManager
     {
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        
+
         protected ChessBoard m_gameBoard;
-
-        // public event EventHandler<ChessBoardEventArgs> CheckEvent;
-        public event EventHandler<CheckmateEventArgs>    CheckmateEvent;
-        public event EventHandler<EventArgs>             EndGameEvent;
-        public event EventHandler<EventArgs>             StartGameEvent;
-        public event EventHandler<ToolMovedEventArgs>    ToolMovedEvent;
-        public event EventHandler<KillingEventArgs>      ToolKilledEvent;
-        public event PromotionEventHandler               PromotionEvent;
-        public event EventHandler<ToolPromotedEventArgs> ToolPromotedEvent;
-        public event EventHandler<Color>                 TeamSwitchEvent;
-
-        public Color                                  CurrentColorTurn => m_teams[m_currentTeamIndex];
+        
+        public Color                      CurrentColorTurn => m_teams[m_currentTeamIndex];
+        public bool                       IsGameRunning    { get; private set; }
 
         protected                 Color[]? m_teams = { Colors.White, Colors.Black };
         protected                 int      m_currentTeamIndex;
         protected static readonly int      s_teamsAmount = 2;
 
-        public bool IsGameRunning { get; private set; }
-
         public OfflineGameManager()
         {
             IsGameRunning = false;
-            m_gameBoard     = new ChessBoard();
+            m_gameBoard   = new ChessBoard();
         }
-        
-        public MoveResult Move(BoardPosition start, BoardPosition end)
+
+        public MoveResult Move(BoardPosition start
+                             , BoardPosition end)
         {
+            s_log.Info($"Move - Start:{start} | End:{end}");
+
             MoveResult     result     = m_gameBoard.Move(start, end);
             MoveResultEnum resultEnum = result.Result;
 
             if ((resultEnum & (MoveResultEnum.CheckMate | MoveResultEnum.NeedPromotion)) != 0)
             {
-                //s_log.Info($"{resultEnum} occurred after move from {start} to {end}");
+                s_log.Info($"{resultEnum} occurred after move from {start} to {end}");
                 return result;
             }
 
@@ -59,89 +49,66 @@ namespace ChessGame
             return result;
         }
 
-        public void EndGame()
+        public PromotionResult Promote(BoardPosition position
+                                     , ITool         promotedTool)
         {
-            IsGameRunning = false;
-            m_gameBoard.Clear();
-            m_teams            = null;
-            m_currentTeamIndex = 0;
-            EndGameEvent?.Invoke(this, EventArgs.Empty);
+            s_log.Info($"Promote: Position:{position} | Promoted Tool:{promotedTool}");
+            PromotionResult promotionResult = m_gameBoard.Promote(position, promotedTool);
+            if (promotionResult.Result == PromotionResultEnum.PromotionSucceeded)
+            {
+                switchCurrentTeam();
+            }
+
+            return promotionResult;
         }
 
         public void StartGame()
         {
-            KeyValuePair<BoardPosition, ITool>[] whiteGroupBoardArrangement = GameInitHelper.GenerateInitialArrangement(GameDirection.North, Colors.White);
-            KeyValuePair<BoardPosition, ITool>[] blackGroupBoardArrangement = GameInitHelper.GenerateInitialArrangement(GameDirection.South, Colors.Black);
+            s_log.Info("Start Game");
+
+            KeyValuePair<BoardPosition, ITool>[] whiteGroupBoardArrangement =
+                GameInitHelper.GenerateInitialArrangement(GameDirection.North, Colors.White);
+            KeyValuePair<BoardPosition, ITool>[] blackGroupBoardArrangement =
+                GameInitHelper.GenerateInitialArrangement(GameDirection.South, Colors.Black);
 
             foreach (KeyValuePair<BoardPosition, ITool> pair in whiteGroupBoardArrangement)
             {
                 m_gameBoard.Add(pair.Key, pair.Value);
-                toolMovedHandler(new ToolMovedEventArgs(pair.Value, BoardPosition.Empty, pair.Key));
             }
 
             foreach (KeyValuePair<BoardPosition, ITool> pair in blackGroupBoardArrangement)
             {
                 m_gameBoard.Add(pair.Key, pair.Value);
-                toolMovedHandler(new ToolMovedEventArgs(pair.Value, BoardPosition.Empty, pair.Key));
             }
 
             m_currentTeamIndex = 0;
-            IsGameRunning    = true;
-            StartGameEvent?.Invoke(this, EventArgs.Empty);
+            IsGameRunning      = true;
         }
-        
-        public bool TryGetTool(BoardPosition position, out ITool tool)
+
+        public void EndGame()
+        {
+            s_log.Info("End Game");
+
+            IsGameRunning = false;
+            m_gameBoard.Clear();
+            m_teams            = null;
+            m_currentTeamIndex = 0;
+        }
+
+        public bool TryGetTool(BoardPosition position
+                             , out ITool     tool)
         {
             return m_gameBoard.TryGetTool(position, out tool);
-        }
-        
-        protected void switchCurrentTeam()
-        {
-            m_currentTeamIndex = (m_currentTeamIndex + 1) % s_teamsAmount;
-            TeamSwitchEvent?.Invoke(this, m_teams[m_currentTeamIndex]);
-        }
-
-        private void toolKilledHandler(KillingEventArgs e)
-        {
-            OnToolKilledEvent(e);
-        }
-
-        private void toolMovedHandler(ToolMovedEventArgs e)
-        {
-            OnToolMovedEvent(e);
-        }
-
-        protected virtual void OnToolMovedEvent(ToolMovedEventArgs e)
-        {
-            ToolMovedEvent?.Invoke(this, e);
-        }
-
-        protected virtual void OnToolKilledEvent(KillingEventArgs e)
-        {
-            ToolKilledEvent?.Invoke(this, e);
-        }
-
-        protected virtual void OnCheckmateEvent(CheckmateEventArgs args)
-        {
-            CheckmateEvent?.Invoke(this, args);
-        }
-        
-        public void Promote(BoardPosition position, ITool promotedTool)
-        {
-            m_gameBoard.Remove(position);
-            m_gameBoard.Add(position, promotedTool);
-            switchCurrentTeam();
-        }
-
-        protected void OnToolPromotedEvent(ToolPromotedEventArgs e)
-        {
-            ToolPromotedEvent?.Invoke(this, e);
         }
 
         public BoardState GetBoardState()
         {
             return m_gameBoard.GetBoard;
         }
-    }
 
+        protected void switchCurrentTeam()
+        {
+            m_currentTeamIndex = (m_currentTeamIndex + 1) % s_teamsAmount;
+        }
+    }
 }

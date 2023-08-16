@@ -1,7 +1,7 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Input;
 using Board;
-using Common;
 using Tools;
 
 namespace Client.Board
@@ -21,21 +21,15 @@ namespace Client.Board
 
     public class SquareViewModel : DependencyObject
     {
-        public delegate void SquareClickCommandExecute(BoardPosition    BoardPosition, ITool? tool);
-        public delegate bool SquareClickCommandCanExecute(BoardPosition BoardPosition, ITool? tool);
-
-        private SquareClickCommandExecute m_clickHandler;
-        private SquareClickCommandCanExecute m_clickkHandlerCanExecute;
+        public event EventHandler<SquareViewModel> ClickEvent;
 
         public static readonly DependencyProperty SquareShadeProperty = DependencyProperty.Register("SquareShade", typeof(SquareShadeEnum), typeof(SquareViewModel));
         public static readonly DependencyProperty ToolProperty = DependencyProperty.Register("Tool", typeof(ITool), typeof(SquareViewModel));
         public static readonly DependencyProperty StateProperty = DependencyProperty.Register("State", typeof(SquareState), typeof(SquareViewModel), new UIPropertyMetadata(SquareState.Regular));
 
-        public SquareViewModel(SquareClickCommandExecute clickHandler, SquareClickCommandCanExecute canExecuteClick,BoardPosition position)
+        public SquareViewModel(BoardPosition position)
         {
             Position                  = position;
-            m_clickHandler            = clickHandler;
-            m_clickkHandlerCanExecute = canExecuteClick;
             ClickCommand              = new WpfCommand(clickCommandExecute, clickCommandCanExecute);
             SquareShade               = ResolveBackgroundShade(position);
         }
@@ -57,9 +51,14 @@ namespace Client.Board
             get => (SquareState)GetValue(StateProperty);
             set => SetValue(StateProperty, value);
         }
+
         public  BoardPosition Position     { get; }
+        
+        //TODO: consider make it volatile
+        public bool IsClickable { get; set; }
 
         public ICommand      ClickCommand { get; }
+
         private SquareShadeEnum ResolveBackgroundShade(BoardPosition position)
         {
             int sumColAndRow = position.Row + position.Column;
@@ -71,14 +70,15 @@ namespace Client.Board
             return SquareShadeEnum.Light;
 
         }
+
         private void clickCommandExecute(object parameter)
         {
-            m_clickHandler.Invoke(Position, Tool);
+            ClickEvent?.Invoke(this, this);
         }
 
         private bool clickCommandCanExecute(object parameter)
         {
-            return m_clickkHandlerCanExecute.Invoke(Position, Tool);
+            return IsClickable;
         }
     }
 }

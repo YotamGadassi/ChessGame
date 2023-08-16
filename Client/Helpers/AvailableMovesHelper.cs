@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using Board;
 using Common;
+using FrontCommon;
 using Tools;
 
 namespace Client.Helpers
 {
-    public class AvailableMovesHelper
+    public class AvailableMovesHelper : IAvailableMovesHelper
     {
         private delegate BoardPosition[] AvailableMovesDelegate(BoardPosition position, ITool tool);
 
@@ -23,6 +25,36 @@ namespace Client.Helpers
             m_gameManager = gameManager;
             initColorToDirection();
             initAvailableMovesDelegates();
+        }
+
+        public bool ValidatePositionOnBoard(BoardPosition position)
+        {
+            int upLeftBoundry    = 1;
+            int downRightBoundry = 8;
+            if (position.Column > downRightBoundry
+             || position.Column < upLeftBoundry
+             || position.Row    < upLeftBoundry
+             || position.Row    > downRightBoundry)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public BoardPosition[] GetAvailablePositionToMove(BoardPosition position)
+        {
+            if (m_gameManager.TryGetTool(position, out ITool toolToMove))
+            {
+                return m_availableMovesDelegatesDict[toolToMove.GetType()](position, toolToMove);
+            }
+
+            return Array.Empty<BoardPosition>();
+        }
+
+        private bool isSameTeam(ITool toolToMove, ITool toolAtEnd)
+        {
+            return toolAtEnd.Color == toolToMove.Color;
         }
 
         private void initColorToDirection()
@@ -43,16 +75,6 @@ namespace Client.Helpers
                                                 {typeof(Queen), queenCalculateAvailablePositionsToMove},
                                                 {typeof(King), kingCalculateAvailablePositionsToMove}
                                             };
-        }
-
-        public BoardPosition[] GetAvailablePositionToMove(BoardPosition position)
-        {
-            if (m_gameManager.TryGetTool(position, out ITool toolToMove))
-            {
-                return m_availableMovesDelegatesDict[toolToMove.GetType()](position, toolToMove);
-            }
-
-            return Array.Empty<BoardPosition>();
         }
 
         private BoardPosition[] pawnCalculateAvailablePositionsToMove(BoardPosition position, ITool pawn)
@@ -186,7 +208,6 @@ namespace Client.Helpers
             return positions.ToArray();
         }
 
-
         private List<BoardPosition> getAllAvailablePositionToBorder(BoardPosition startPosition,ITool tool, int colDiff, int rowDiff)
         {
             List<BoardPosition> positions = new List<BoardPosition>(); 
@@ -236,26 +257,6 @@ namespace Client.Helpers
             }
 
             return false;
-        }
-
-        public  bool ValidatePositionOnBoard(BoardPosition position)
-        {
-            int upLeftBoundry    = 1;
-            int downRightBoundry = 8;
-            if (position.Column > downRightBoundry 
-             || position.Column < upLeftBoundry 
-             || position.Row    < upLeftBoundry 
-             || position.Row    > downRightBoundry)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        private  bool isSameTeam(ITool toolToMove, ITool toolAtEnd)
-        {
-            return toolAtEnd.Color == toolToMove.Color;
         }
 
     }
