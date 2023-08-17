@@ -2,6 +2,7 @@
 using System.Windows.Threading;
 using Board;
 using ChessGame;
+using ChessGame.Helpers;
 using Client.Board;
 using Client.Game;
 using Client.Helpers;

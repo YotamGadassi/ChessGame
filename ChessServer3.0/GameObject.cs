@@ -18,15 +18,15 @@ public class GameUnit : IDisposable
     {
         GroupName                     =  Guid.NewGuid().ToString();
         GameToken                     =  Guid.Empty;
-        m_gameManager                 =  new OfflineGameManager();
+        //m_gameManager                 =  new OfflineChessGameManager();
         WhitePlayer1                  =  player1;
         WhitePlayer1.OneSecPassEvent  += onPlayerOneSecElapsed;
         BlackPlayer2                  =  player2;
         BlackPlayer2.OneSecPassEvent  += onPlayerOneSecElapsed;
-        m_gameManager.TeamSwitchEvent += onTeamSwitch;
+        //m_gameManager.TeamSwitchEvent += onTeamSwitch;
     }
 
-    private OfflineGameManager m_gameManager;
+    private OfflineChessGameManager m_gameManager;
 
     private IHubContext<ChessHub> m_hubContext;
     public  string                GroupName { get; }
@@ -139,7 +139,7 @@ public class GameUnit : IDisposable
 
     public bool IsPlayerTurn(PlayerObject player)
     {
-        return m_gameManager.CurrentColorTurn.Equals(player.PlayersTeam.Color);
+        return m_gameManager.CurrentTeamTurn.Color.Equals(player.PlayersTeam.Color);
     }
 
     public BoardState GetBoardState()

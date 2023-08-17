@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 using Board;
 using Common;
-using FrontCommon;
 using Tools;
 
-namespace Client.Helpers
+namespace ChessGame.Helpers
 {
     public class AvailableMovesHelper : IAvailableMovesHelper
     {

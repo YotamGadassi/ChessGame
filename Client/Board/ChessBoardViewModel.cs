@@ -3,51 +3,57 @@ using Board;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Threading;
+using Common;
 using Tools;
 
 namespace Client.Board;
 
-public class ChessBoardViewModel : DependencyObject
+public class BoardViewModel : DependencyObject
 {
-    public event EventHandler<SquareViewModel> onSquareClick;
+    public event EventHandler<SquareViewModel>? OnSquareClick;
 
-    public  SquareViewModel?          m_selectedBoardPosition;
+    public SquareViewModel?                           m_selectedBoardPosition;
     public Dictionary<BoardPosition, SquareViewModel> SquaresDictionary => m_squaresDictionary;
-    
-    private volatile Dictionary<BoardPosition, SquareViewModel> m_squaresDictionary;
-    private HashSet<SquareViewModel>? m_hintedBoardPositions;
 
-    public ChessBoardViewModel()
+    private volatile Dictionary<BoardPosition, SquareViewModel> m_squaresDictionary;
+    private          HashSet<SquareViewModel>?                  m_hintedBoardPositions;
+    private          IBoardEvents                               m_boardEvents;
+    private          Dispatcher                                 m_dispatcher;
+    public BoardViewModel(IBoardEvents boardEvents)
     {
+        m_dispatcher = Dispatcher.CurrentDispatcher;
         m_hintedBoardPositions = new HashSet<SquareViewModel>();
-        m_squaresDictionary = new Dictionary<BoardPosition, SquareViewModel>();
+        m_squaresDictionary    = new Dictionary<BoardPosition, SquareViewModel>();
+        m_boardEvents = boardEvents;
         initSquares();
+        registerToEvents();
     }
 
-    public bool AddTool(ITool tool, BoardPosition position)
+    public void AddTool(ITool         tool
+                      , BoardPosition position)
     {
         bool isPositionValid = SquaresDictionary.TryGetValue(position, out SquareViewModel squareVM);
         if (false == isPositionValid)
         {
-            return false;
+            return;
         }
 
         squareVM.Tool = tool;
-        return true;
     }
 
-    public bool RemoveTool(BoardPosition position, out ITool? tool)
+    public void RemoveTool(BoardPosition position
+                         , out ITool?    tool)
     {
         bool isPositionValid = SquaresDictionary.TryGetValue(position, out SquareViewModel squareVM);
         if (false == isPositionValid)
         {
             tool = null;
-            return false;
+            return;
         }
 
-        tool = squareVM.Tool;
+        tool          = squareVM.Tool;
         squareVM.Tool = null;
-        return null != tool;
     }
 
     public void RemoveAllTools()
@@ -66,7 +72,7 @@ public class ChessBoardViewModel : DependencyObject
             if (SquaresDictionary.TryGetValue(value, out SquareViewModel squareVM))
             {
                 m_selectedBoardPosition = squareVM;
-                squareVM.State = SquareState.Chosen;
+                squareVM.State          = SquareState.Chosen;
             }
         }
         get => m_selectedBoardPosition?.Position ?? BoardPosition.Empty;
@@ -77,7 +83,7 @@ public class ChessBoardViewModel : DependencyObject
         if (null != m_selectedBoardPosition)
         {
             m_selectedBoardPosition.State = SquareState.Regular;
-            m_selectedBoardPosition = null;
+            m_selectedBoardPosition       = null;
         }
 
         if (null != m_hintedBoardPositions)
@@ -86,6 +92,7 @@ public class ChessBoardViewModel : DependencyObject
             {
                 hintedBoardPosition.State = SquareState.Regular;
             }
+
             m_hintedBoardPositions.Clear();
         }
     }
@@ -102,17 +109,10 @@ public class ChessBoardViewModel : DependencyObject
         }
     }
 
-    public void SetSquareClickableState(BoardPosition position, bool isClickable)
+    private void registerToEvents()
     {
-        SquaresDictionary[position].IsClickable = isClickable;
-    }
-
-    public void SetAllSquaresClickableState(bool isClickable)
-    {
-        foreach (SquareViewModel squareVM in SquaresDictionary.Values)
-        {
-            squareVM.IsClickable = isClickable;
-        }
+        m_boardEvents.ToolAddEvent += AddTool;
+        m_boardEvents.ToolRemoved  += (position) => RemoveTool(position, out _);
     }
 
     private void initSquares()
@@ -121,7 +121,7 @@ public class ChessBoardViewModel : DependencyObject
         {
             for (int colNumber = 1; colNumber <= 8; ++colNumber)
             {
-                BoardPosition pos = new(colNumber, rowNumber);
+                BoardPosition   pos      = new(colNumber, rowNumber);
                 SquareViewModel squareVM = new(pos);
                 SquaresDictionary.Add(pos, squareVM);
                 squareVM.ClickEvent += onSquareClickHandler;
@@ -129,8 +129,9 @@ public class ChessBoardViewModel : DependencyObject
         }
     }
 
-    private void onSquareClickHandler(object? sender, SquareViewModel squareVM)
+    private void onSquareClickHandler(object?         sender
+                                    , SquareViewModel squareVM)
     {
-        onSquareClick(this, squareVM);
+        OnSquareClick?.Invoke(this, squareVM);
     }
 }

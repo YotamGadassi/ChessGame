@@ -1,6 +1,7 @@
-﻿using Board;
+﻿using System.Threading.Tasks;
+using Board;
 
-namespace FrontCommon
+namespace Common
 {
     public interface IAvailableMovesHelper
     {

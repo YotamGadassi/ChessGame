@@ -8,8 +8,12 @@
 
   <ItemGroup>
     <Compile Remove="Board\BaseBoardPanel.cs" />
+    <Compile Remove="Board\BoardViewModel.cs" />
     <Compile Remove="Board\OfflineBoardPanel.cs" />
     <Compile Remove="Board\OnlineBoardPanel.cs" />
+    <Compile Remove="Game\GameViewModel.cs" />
+    <Compile Remove="Game\OfflineGameViewModel.cs" />
+    <Compile Remove="Game\OnlineGameViewModel.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,6 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ChessGame\ChessGame.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\FrontCommon\FrontCommon.csproj" />
   </ItemGroup>

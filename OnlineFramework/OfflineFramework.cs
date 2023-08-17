@@ -1,6 +1,7 @@
 ﻿using System.Windows.Media;
 using Board;
 using ChessGame;
+using ChessGame.Helpers;
 using Client.Board;
 using Client.Game;
 using Client.Helpers;
@@ -20,7 +21,7 @@ namespace Frameworks
         public OfflineFramework(Team northTeam
                               , Team southTeam)
         {
-            m_gameManager = new OfflineGameManager();
+            m_gameManager = new OfflineChessGameManager();
             m_availableMovesHelper = new AvailableMovesHelper(m_gameManager);
             ViewModel     = new OfflineGameViewModel( northTeam, southTeam, SquareClickHandler, SquareClickHandlerCanExecute);
             m_gameManager.StartGame();

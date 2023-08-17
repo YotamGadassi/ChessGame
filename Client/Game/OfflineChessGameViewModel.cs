@@ -1,89 +1,88 @@
-﻿using System.Threading.Tasks;
+﻿using System;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Board;
+using ChessGame;
+using Client.Board;
+using Client.Messages;
 using Common;
 using Common.Chess;
-using FrontCommon;
+using log4net;
 using Tools;
 
 namespace Client.Game
 {
     public class OfflineChessGameViewModel : ChessGameViewModel
     {
-        private IAsyncAvailableMovesHelper m_availableMovesHelper;
-        private IAsyncChessGameManager     m_chessGameManager;
+        private static readonly ILog                  s_log = LogManager.GetLogger(typeof(OfflineChessGameViewModel));
+        
+        private                 IChessGameManager     m_chessGameManager;
+        private                 IAvailableMovesHelper m_availableMovesHelper;
+        private                 Dispatcher            m_dispatcher;
 
-        public OfflineChessGameViewModel(IChessGameManager     gameManager
-                                       , IAvailableMovesHelper availableMovesHelper) :
-            base(gameManager, new AvailableMovesHelperWrapper(availableMovesHelper))
+        public OfflineChessGameViewModel(OfflineChessGameManager gameManager) : base(gameManager)
         {
-            m_availableMovesHelper = availableMovesHelper;
+            m_dispatcher = Dispatcher.CurrentDispatcher;
             m_chessGameManager     = gameManager;
+            m_availableMovesHelper = gameManager.AvailableMovesHelper;
         }
 
-        protected override void onSwitchTeamEvent(Color currentTeamTurn)
+        protected override void onSqualeClickHandler(object?         sender
+                                                   , SquareViewModel squareVM)
         {
-            // Do nothing
-        }
-    }
+            s_log.DebugFormat("Click on square: {0}", squareVM);
 
-    public class AvailableMovesHelperWrapper : IAsyncAvailableMovesHelper
-    {
+            ITool?        tool          = squareVM.Tool;
+            BoardPosition position      = squareVM.Position;
+            Color         currTeamColor = m_chessGameManager.CurrentTeamTurn.Color;
 
-        IAvailableMovesHelper m_availableMovesHelper;
+            bool isToolBelongsToTeam = null != tool && tool.Color.Equals(currTeamColor);
+            if (isToolBelongsToTeam)
+            {
+                BoardViewModel.ClearSelectedAndHintedBoardPositions();
+                BoardViewModel.SelectedBoardPosition = position;
+                BoardPosition[] availablePositionsToMove = m_availableMovesHelper.GetAvailablePositionToMove(position);
+                BoardViewModel.SetHintedBoardPosition(availablePositionsToMove);
+                return;
+            }
 
-        public AvailableMovesHelperWrapper(IAvailableMovesHelper availableMovesHelper)
-        {
-            m_availableMovesHelper = availableMovesHelper;
-        }
+            if (false == BoardViewModel.SelectedBoardPosition.IsEmpty())
+            {
+                BoardPosition start      = BoardViewModel.SelectedBoardPosition;
+                BoardPosition end        = position;
+                MoveResult    moveResult = m_chessGameManager.Move(start, end);
+                handleMoveResult(moveResult);
+            }
 
-        public Task<bool> ValidatePositionOnBoard(BoardPosition position) => Task.FromResult(m_availableMovesHelper.ValidatePositionOnBoard(position));
-
-
-        public Task<BoardPosition[]> GetAvailablePositionToMove(BoardPosition position) =>
-            Task.FromResult(m_availableMovesHelper.GetAvailablePositionToMove(position));
-    }
-
-    public class ChessGameManagerWrapper : IAsyncChessGameManager
-    {
-        private IChessGameManager m_chessGameManager;
-
-        public ChessGameManagerWrapper(IChessGameManager chessGameManager)
-        {
-            m_chessGameManager = chessGameManager;
+            BoardViewModel.ClearSelectedAndHintedBoardPositions();
         }
 
-        public Task<Color> CurrentColorTurn => Task.FromResult(m_chessGameManager.CurrentColorTurn);
-        public Task<bool>  IsGameRunning    => Task.FromResult(m_chessGameManager.IsGameRunning);
-
-        public Task StartGame()
+        protected override async void onPromotionEvent(BoardPosition position
+                                                     , ITool         toolToPromote)
         {
-            m_chessGameManager.StartGame();
-            return Task.CompletedTask;
+            s_log.Info($"Promotion event: position: {position} | tool to promote: {toolToPromote}");
+
+            PromotionMessageViewModel promotionMessage = new(toolToPromote.Color, position);
+            Message = promotionMessage;
+
+            ITool chosenTool = await promotionMessage.ToolAwaiter;
+            Message = null;
+
+            PromotionResult promoteResult = m_chessGameManager.Promote(position, chosenTool);
+            handlePromotionResult(promoteResult);
         }
 
-        public Task EndGame()
+        protected override void onCheckMateEvent(BoardPosition position
+                                               , ITool         tool)
         {
-            m_chessGameManager.EndGame();
-            return Task.CompletedTask;
-        }
+            s_log.Info($"Checkmate Event: Position:{position} | Tool:{tool}");
 
-        public Task<bool> TryGetTool(BoardPosition position
-                                   , out ITool     tool)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<MoveResult> Move(BoardPosition start
-                                   , BoardPosition end)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<PromotionResult> Promote(BoardPosition start
-                                           , ITool         newTool)
-        {
-            throw new System.NotImplementedException();
+            UserMessageViewModel checkMateMessage = new UserMessageViewModel("Checkmate", "OK", () =>
+                                                                                                {
+                                                                                                    Message = null;
+                                                                                                    m_dispatcher.InvokeAsync(() => onGameEnd());
+                                                                                                });
+            Message = checkMateMessage;
         }
     }
 }

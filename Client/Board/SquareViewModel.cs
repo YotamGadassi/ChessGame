@@ -30,7 +30,7 @@ namespace Client.Board
         public SquareViewModel(BoardPosition position)
         {
             Position                  = position;
-            ClickCommand              = new WpfCommand(clickCommandExecute, clickCommandCanExecute);
+            ClickCommand              = new WpfCommand(clickCommandExecute);
             SquareShade               = ResolveBackgroundShade(position);
         }
 
@@ -53,9 +53,6 @@ namespace Client.Board
         }
 
         public  BoardPosition Position     { get; }
-        
-        //TODO: consider make it volatile
-        public bool IsClickable { get; set; }
 
         public ICommand      ClickCommand { get; }
 
@@ -74,11 +71,6 @@ namespace Client.Board
         private void clickCommandExecute(object parameter)
         {
             ClickEvent?.Invoke(this, this);
-        }
-
-        private bool clickCommandCanExecute(object parameter)
-        {
-            return IsClickable;
         }
     }
 }

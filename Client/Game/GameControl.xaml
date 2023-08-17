@@ -16,6 +16,11 @@
                 <DataTemplate DataType="{x:Type board:BoardViewModel}">
                     <board:BoardControl/>
                 </DataTemplate>
+                <!--
+                <DataTemplate DataType="{x:Type board:BoardViewModel}">
+                    <board:BoardControl/>
+                </DataTemplate>
+                -->
                 <DataTemplate DataType="{x:Type game:TeamStatusViewModel}">
                     <game:StatusBarControl/>
                 </DataTemplate>
@@ -34,7 +39,7 @@
         </Grid.RowDefinitions>
         <ContentControl Grid.Row="0" Content="{Binding NorthTeamStatus}"/>
         <Grid Grid.Row="1">
-            <ContentControl x:Name="m_board" Grid.Row="0" Content="{Binding Board}">
+            <ContentControl x:Name="m_board" Grid.Row="0" Content="{Binding BoardViewModel}">
                 <ContentControl.Style>
                     <Style TargetType="ContentControl">
                         <Setter Property="IsEnabled" Value="True"/>

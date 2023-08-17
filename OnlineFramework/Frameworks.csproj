@@ -9,6 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="OfflineFramework.cs" />
+    <Compile Remove="OnlineFramework.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="LogConfiguration.xml" />
   </ItemGroup>
 

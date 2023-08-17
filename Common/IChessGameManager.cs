@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using System.Windows.Media;
+﻿using System;
 using Board;
 using Common.Chess;
 using Tools;
@@ -8,9 +7,17 @@ namespace Common
 {
     public interface IChessGameManager
     {
-        Color CurrentColorTurn { get; }
-        bool  IsGameRunning    { get; }
+        IBoardEvents         BoardEvents     { get; }
+        public TeamWithTimer CurrentTeamTurn { get; }
+
+        public TeamWithTimer[] Teams         { get; }
+
+        bool                   IsGameRunning { get; }
+        
+        IAvailableMovesHelper AvailableMovesHelper { get; }
+        
         void  StartGame();
+
         void  EndGame();
 
         bool TryGetTool(BoardPosition position
@@ -21,22 +28,11 @@ namespace Common
 
         PromotionResult Promote(BoardPosition start
                               , ITool         newTool);
+
     }
 
-    public interface IAsyncChessGameManager
+    public interface IGameEvents
     {
-        Task<Color> CurrentColorTurn { get; }
-        Task<bool>  IsGameRunning    { get; }
-        Task        StartGame();
-        Task        EndGame();
-
-        Task<bool> TryGetTool(BoardPosition position
-                            , out ITool     tool);
-
-        Task<MoveResult> Move(BoardPosition start
-                            , BoardPosition end);
-
-        Task<PromotionResult> Promote(BoardPosition start
-                                    , ITool         newTool);
+        event Action<Team, Team> TeamChanged;
     }
 }

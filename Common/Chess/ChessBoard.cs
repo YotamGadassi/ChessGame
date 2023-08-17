@@ -7,9 +7,12 @@ using Tools;
 
 namespace Common.Chess
 {
-    public class ChessBoard : IBoard
+    public class ChessBoard : IBoard, IBoardEvents
     {
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public event Action<ITool, BoardPosition> ToolAddEvent;
+        public event Action<BoardPosition>        ToolRemoved;
 
         private IBoard         m_board;
         private GameMoveHelper m_gameMoveHelper;
@@ -34,13 +37,16 @@ namespace Common.Chess
             {
                 throw new ArgumentOutOfRangeException($"The position {position} is out of range!");
             }
-
-            m_board.Add(position, tool);
+            addTool(position, tool);
         }
 
         public bool Remove(BoardPosition position)
         {
-            return m_board.Remove(position);
+            if (false == GameMoveHelper.ValidatePositionOnBoard(position))
+            {
+                throw new ArgumentOutOfRangeException($"The position {position} is out of range!");
+            }
+            return removeTool(position);
         }
 
         /// <summary>
@@ -104,8 +110,8 @@ namespace Common.Chess
                 s_log.Info($"Tool Moved Event: tool:{toolToMove}, start:{start}, end:{end}");
             }
 
-            m_board.Remove(start);
-            m_board.Add(end, toolToMove);
+            removeTool(start);
+            addTool(end, toolToMove);
 
             return new MoveResult(moveResultEnum, start, end, toolToMove, toolOnEndPosition);
         }
@@ -131,8 +137,8 @@ namespace Common.Chess
                 return new PromotionResult(toolToPromote, newTool, position, PromotionResultEnum.ToolIsNotValidForPromotion);
             }
 
-            Remove(position);
-            Add(position, newTool);
+            removeTool(position);
+            addTool(position, newTool);
 
             return new PromotionResult(toolToPromote, newTool, position, PromotionResultEnum.PromotionSucceeded);
         }
@@ -155,6 +161,20 @@ namespace Common.Chess
         }
 
         public BoardState GetBoard => m_board.GetBoard;
+
+        private void addTool(BoardPosition position
+                           , ITool         tool)
+        {
+            m_board.Add(position, tool);
+            ToolAddEvent?.Invoke(tool, position);
+        }
+
+        private bool removeTool(BoardPosition position)
+        {
+            bool isRemoved = m_board.Remove(position);
+            ToolRemoved?.Invoke(position);
+            return isRemoved;
+        }
 
         private bool isOnSameTeam(ITool toolA
                                 , ITool toolB)

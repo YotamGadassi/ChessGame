@@ -3,13 +3,12 @@ using System.Windows.Media;
 using Board;
 using Common;
 using Common.Chess;
-using Common.Chess.ChessBoardEventArgs;
 using log4net;
 using Tools;
 
 namespace ChessGame
 {
-    public class OnlineGameManager : IChessGameManager
+    public class OnlineGameManager
     {
         private static readonly ILog       s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         public                  Team       CurrentMachineTeam { get; }
