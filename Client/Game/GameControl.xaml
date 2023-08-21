@@ -16,13 +16,8 @@
                 <DataTemplate DataType="{x:Type board:BoardViewModel}">
                     <board:BoardControl/>
                 </DataTemplate>
-                <!--
-                <DataTemplate DataType="{x:Type board:BoardViewModel}">
-                    <board:BoardControl/>
-                </DataTemplate>
-                -->
                 <DataTemplate DataType="{x:Type game:TeamStatusViewModel}">
-                    <game:StatusBarControl/>
+                    <game:TeamStatusBarControl/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type messages:UserMessageViewModel}">
                     <messages:UserMessage/>

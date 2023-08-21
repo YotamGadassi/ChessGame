@@ -5,12 +5,13 @@ using Board;
 using Client.Board;
 using Common;
 using Common.Chess;
+using FrontCommon;
 using log4net;
 using Tools;
 
 namespace Client.Game;
 
-public abstract class ChessGameViewModel : DependencyObject
+public abstract class ChessGameViewModel : BaseGameViewModel
 {
     private static readonly ILog s_log = LogManager.GetLogger(typeof(ChessGameViewModel));
 
@@ -22,8 +23,6 @@ public abstract class ChessGameViewModel : DependencyObject
 
     private static readonly DependencyProperty MessageProperty =
         DependencyProperty.Register("Message", typeof(object), typeof(ChessGameViewModel));
-
-    public event Action GameEnded;
 
     public TeamStatusViewModel NorthTeamStatus
     {
@@ -45,7 +44,7 @@ public abstract class ChessGameViewModel : DependencyObject
 
     public BoardViewModel BoardViewModel { get; }
 
-    protected ChessGameViewModel(IChessGameManager gameManager)
+    protected ChessGameViewModel(IChessGameManager gameManager) : base(gameManager)
     {
         BoardViewModel               =  new BoardViewModel(gameManager.BoardEvents);
         BoardViewModel.OnSquareClick += onSqualeClickHandler;
@@ -62,7 +61,6 @@ public abstract class ChessGameViewModel : DependencyObject
     protected abstract void onCheckMateEvent(BoardPosition position
                                            , ITool         tool);
 
-    protected void onGameEnd() => GameEnded?.Invoke();
     protected void handleMoveResult(MoveResult moveResult)
     {
         s_log.Info($"Handles move result: {moveResult}");

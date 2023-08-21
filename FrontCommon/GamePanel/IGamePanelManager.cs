@@ -10,7 +10,9 @@ public interface IGamePanelManager
 
     public void Remove(string panelName);
 
-    public bool Show(string panelName);
+    public bool Show(BaseGamePanel gamePanel);
+
+    public void ResetPanel();
 
     public bool TryGetPanel(string panelName, out BaseGamePanel gamePanel);
 

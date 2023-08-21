@@ -5,20 +5,14 @@ using Tools;
 
 namespace Common
 {
-    public interface IChessGameManager
+    public interface IChessGameManager : IGameManager
     {
         IBoardEvents         BoardEvents     { get; }
         public TeamWithTimer CurrentTeamTurn { get; }
 
         public TeamWithTimer[] Teams         { get; }
 
-        bool                   IsGameRunning { get; }
-        
         IAvailableMovesHelper AvailableMovesHelper { get; }
-        
-        void  StartGame();
-
-        void  EndGame();
 
         bool TryGetTool(BoardPosition position
                       , out ITool     tool);

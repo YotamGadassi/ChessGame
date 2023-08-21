@@ -1,7 +1,6 @@
-﻿using System;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
-namespace Client
+namespace FrontCommon
 {
     public class WpfCommand : ICommand
     {
@@ -31,6 +30,5 @@ namespace Client
         {
             m_execute?.Invoke(parameter);
         }
-
     }
 }

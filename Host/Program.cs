@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Windows.Threading;
 using Common.MainWindow;
+using Frameworks.ChessGame;
 using FrontCommon;
 using FrontCommon.Facade;
 using log4net;
@@ -31,6 +33,32 @@ namespace Host
         {
             System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(GameFacade).TypeHandle);
             s_log.Info("Facade Initialized");
+
+            GameFacade gameFacade = (GameFacade)GameFacade.Instance;
+
+            IGamePanelManager panelManager = createGamePanelManager();
+
+            MainWindowViewModel mainWindowViewModel = new();
+            initGameButtons(mainWindowViewModel, panelManager);
+            gameFacade.SetGamePanelManager(panelManager);
+            gameFacade.SetMainWindoesViewModel(mainWindowViewModel);
+        }
+
+        private static void initGameButtons(MainWindowViewModel mainWindowViewModel
+                                          , IGamePanelManager   panelManager)
+        {
+            OfflineGameButton offlineGameButton = new OfflineGameButton(Dispatcher.CurrentDispatcher, panelManager);
+            mainWindowViewModel.AddGameButton(offlineGameButton);
+        }
+
+        private static IGamePanelManager createGamePanelManager()
+        {
+            GamePanelManager      panelManager          = new();
+            string                panelName             = "OfflineChessGame";
+            OfflineChessGamePanel offlineChessGamePanel = new OfflineChessGamePanel(panelName);
+            panelManager.Add(panelName, offlineChessGamePanel);
+
+            return panelManager;
         }
 
         private static void setUpUnhandledExceptions()

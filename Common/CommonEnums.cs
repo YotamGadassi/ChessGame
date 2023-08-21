@@ -12,14 +12,6 @@ public enum GameMode
     Online
 }
 
-public enum GameStatus
-{
-    Active,
-    Paused,
-    NonActive,
-    NonInitialiezed
-}
-
 public enum TeamColor
 {
     White = 1,

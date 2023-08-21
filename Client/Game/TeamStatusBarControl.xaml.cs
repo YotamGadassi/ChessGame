@@ -3,11 +3,11 @@
 namespace Client.Game
 {
     /// <summary>
-    /// Interaction logic for ControlStatusBar.xaml
+    /// Interaction logic for StatusBar.xaml
     /// </summary>
-    public partial class ControlStatusBar : UserControl
+    public partial class TeamStatusBarControl : UserControl
     {
-        public ControlStatusBar()
+        public TeamStatusBarControl()
         {
             InitializeComponent();
         }

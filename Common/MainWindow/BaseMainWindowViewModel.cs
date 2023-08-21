@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows;
+using System.Windows.Controls;
 
 namespace Common.MainWindow
 {
     public class BaseMainWindowViewModel : INotifyPropertyChanged
     {
-        private DependencyObject? m_currentViewModel;
+        private Control? m_currentViewModel;
 
-        public DependencyObject? CurrentViewModel
+        public Control? CurrentViewModel
         {
             get => m_currentViewModel;
             set

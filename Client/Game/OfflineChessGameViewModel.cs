@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 using System.Windows.Threading;
 using Board;
 using ChessGame;
@@ -14,15 +13,15 @@ namespace Client.Game
 {
     public class OfflineChessGameViewModel : ChessGameViewModel
     {
-        private static readonly ILog                  s_log = LogManager.GetLogger(typeof(OfflineChessGameViewModel));
-        
-        private                 IChessGameManager     m_chessGameManager;
-        private                 IAvailableMovesHelper m_availableMovesHelper;
-        private                 Dispatcher            m_dispatcher;
+        private static readonly ILog s_log = LogManager.GetLogger(typeof(OfflineChessGameViewModel));
+
+        private IChessGameManager     m_chessGameManager;
+        private IAvailableMovesHelper m_availableMovesHelper;
+        private Dispatcher            m_dispatcher;
 
         public OfflineChessGameViewModel(OfflineChessGameManager gameManager) : base(gameManager)
         {
-            m_dispatcher = Dispatcher.CurrentDispatcher;
+            m_dispatcher           = Dispatcher.CurrentDispatcher;
             m_chessGameManager     = gameManager;
             m_availableMovesHelper = gameManager.AvailableMovesHelper;
         }
@@ -80,7 +79,8 @@ namespace Client.Game
             UserMessageViewModel checkMateMessage = new UserMessageViewModel("Checkmate", "OK", () =>
                                                                                                 {
                                                                                                     Message = null;
-                                                                                                    m_dispatcher.InvokeAsync(() => onGameEnd());
+                                                                                                    m_dispatcher
+                                                                                                       .InvokeAsync(() => m_chessGameManager.EndGame());
                                                                                                 });
             Message = checkMateMessage;
         }

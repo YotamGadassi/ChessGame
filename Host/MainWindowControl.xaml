@@ -23,11 +23,14 @@
             <ColumnDefinition Width="100"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Column="0">
-            <Button Content="Play Online" Command="{Binding PlayOnlineCommand}"/>
-            <Button Content="Play Offline" Command="{Binding PlayOfflineCommand}"/>
-        </StackPanel>
-        <ContentControl Grid.Column="1" Content="{Binding CurrentViewModel}"/>
+        <ItemsControl ItemsSource="{Binding GameButtons}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button Content="{Binding CommandName}" Command="{Binding ButtonCommand}"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <ContentPresenter Grid.Column="1" Content="{Binding CurrentViewModel}"/>
     </Grid>
 
 

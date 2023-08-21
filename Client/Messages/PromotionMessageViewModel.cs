@@ -7,7 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Board;
 using Client.Annotations;
-using Common;
+using FrontCommon;
 using Tools;
 
 namespace Client.Messages

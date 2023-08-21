@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using Board;
+using FrontCommon;
 using Tools;
 
 namespace Client.Board

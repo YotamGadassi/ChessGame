@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Client.Annotations;
+using FrontCommon;
 
 namespace Client.Messages
 {

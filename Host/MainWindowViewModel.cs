@@ -1,13 +1,6 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Reflection;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Threading;
-using Client;
-using Common;
 using Common.MainWindow;
-using Frameworks;
-using Frameworks.ChessGame;
 using FrontCommon;
 using log4net;
 
@@ -15,44 +8,20 @@ namespace Host
 {
     public class MainWindowViewModel : BaseMainWindowViewModel
     {
-        private static readonly ILog     s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public                  ICommand PlayOfflineCommand { get; }
+        public IGameButton[] GameButtons => m_gameButtons.ToArray();
 
-        private readonly Dispatcher m_dispatcher;
+        private List<IGameButton> m_gameButtons; 
 
         public MainWindowViewModel()
         {
-            m_dispatcher       = Dispatcher.CurrentDispatcher;
-            PlayOfflineCommand = new WpfCommand(playOfflineCommandExecute, playOfflineCommandCanExecute);
+            m_gameButtons = new List<IGameButton>();
         }
 
-        private void resetViewModel()
+        public void AddGameButton(BaseGameButton gameButton)
         {
-            s_log.Info("Resetting View model");
-            CurrentViewModel = null;
-        }
-
-        private void playOfflineCommandExecute(object parameter)
-        {
-            BaseGamePanel offlineGame = getOfflineGame();
-            CurrentViewModel      =  offlineGame.GameViewModel;
-            offlineGame.GameEnded += onGameEnd;
-        }
-
-        private bool playOfflineCommandCanExecute(object parameter)
-        {
-            return CurrentViewModel == null;
-        }
-
-        private void onGameEnd()
-        {
-            m_dispatcher.Invoke(resetViewModel);
-        }
-
-        private BaseGamePanel getOfflineGame()
-        {
-            return new OfflineChessGamePanel("OfflineGame");
+            m_gameButtons.Add(gameButton);
         }
     }
 }

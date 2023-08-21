@@ -6,8 +6,8 @@ namespace FrontCommon;
 
 public class GameFacade : BaseGameFacade, IGameFacade
 {
-    public  IGamePanelManager       GamePanelManager    { get; }
-    public BaseMainWindowViewModel MainWindowViewModel { get; }
+    public IGamePanelManager       GamePanelManager    { get; private set; }
+    public BaseMainWindowViewModel MainWindowViewModel { get; private set; }
 
     static GameFacade()
     {
@@ -16,7 +16,15 @@ public class GameFacade : BaseGameFacade, IGameFacade
 
     private GameFacade()
     {
-        GamePanelManager    = new GamePanelManager();
-        MainWindowViewModel = new MainWindowViewModel();
+    }
+
+    public void SetGamePanelManager(IGamePanelManager gamePanelManager)
+    {
+        GamePanelManager = gamePanelManager;
+    }
+
+    public void SetMainWindoesViewModel(BaseMainWindowViewModel mainWindoesViewModel)
+    {
+        MainWindowViewModel = mainWindoesViewModel;
     }
 }

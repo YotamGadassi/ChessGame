@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Windows.Input;
 using System.Windows.Media;
 using Board;
 using ChessGame.Helpers;
@@ -13,11 +14,12 @@ namespace ChessGame
     {
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public IBoardEvents          BoardEvents          => m_gameBoard;
-        public TeamWithTimer         CurrentTeamTurn      => Teams[m_currentTeamIndex];
-        public TeamWithTimer[]       Teams                { get; private set; }
-        public bool                  IsGameRunning        { get; private set; }
-        public IAvailableMovesHelper AvailableMovesHelper { get; }
+        public event EventHandler<GameState>? StateChanged;
+        public IBoardEvents                   BoardEvents     => m_gameBoard;
+        public TeamWithTimer                  CurrentTeamTurn => Teams[m_currentTeamIndex];
+        public TeamWithTimer[]                Teams           { get; private set; }
+        public GameState                      State                { get; private set; }
+        public IAvailableMovesHelper          AvailableMovesHelper { get; }
 
         private                 ChessBoard m_gameBoard;
         private                 int        m_currentTeamIndex;
@@ -27,14 +29,14 @@ namespace ChessGame
                                      , TeamWithTimer team2)
         {
             Teams                = new[] { team1, team2 };
-            IsGameRunning        = false;
+            State               = GameState.Stop;
             m_gameBoard          = new ChessBoard();
             AvailableMovesHelper = new AvailableMovesHelper(this);
         }
 
-        public void StartGame()
+        public void Init()
         {
-            s_log.Info("Start Game");
+            s_log.Info("Init Game");
 
             TeamWithTimer team1 = Teams[0];
             TeamWithTimer team2 = Teams[1];
@@ -55,18 +57,30 @@ namespace ChessGame
             }
 
             m_currentTeamIndex = 0;
-            IsGameRunning      = true;
+        }
+
+        public void StartGame()
+        {
+            s_log.Info($"Game Started");
             CurrentTeamTurn.StartTimer();
+            setState(GameState.Play);
+        }
+
+        public void PauseGame()
+        {
+            s_log.Info($"Game Paused");
+            CurrentTeamTurn.StopTimer();
+            setState(GameState.Pause);
         }
 
         public void EndGame()
         {
             s_log.Info("End Game");
 
-            IsGameRunning = false;
             m_gameBoard.Clear();
             Teams              = null;
             m_currentTeamIndex = 0;
+            setState(GameState.End);
         }
 
         public MoveResult Move(BoardPosition start
@@ -120,6 +134,16 @@ namespace ChessGame
             CurrentTeamTurn.StopTimer();
             m_currentTeamIndex = (m_currentTeamIndex + 1) % s_teamsAmount;
             CurrentTeamTurn.StartTimer();
+        }
+
+        private void setState(GameState state)
+        {
+            if (state == State)
+                return;
+
+            State = state;
+            StateChanged?.Invoke(this, state);
+            
         }
     }
 }
