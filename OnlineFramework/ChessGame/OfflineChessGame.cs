@@ -17,17 +17,18 @@ namespace Frameworks.ChessGame
 
         private OfflineChessGameViewModel m_gameViewModel;
 
-        public OfflineChessGamePanel()
+        public OfflineChessGamePanel(string panelName)
+            : base(panelName)
         {
             TeamWithTimer team1 =
                 new TeamWithTimer("White", Colors.White, GameDirection.North, TimeSpan.FromMinutes(10));
 
             TeamWithTimer team2 =
                 new TeamWithTimer("Black", Colors.Black, GameDirection.South, TimeSpan.FromMinutes(10));
-            
-            GameManager   = new OfflineChessGameManager(team1, team2);
+
+            GameManager     = new OfflineChessGameManager(team1, team2);
             m_gameViewModel = new OfflineChessGameViewModel(GameManager);
-            GameControl   = new GameControl();
+            GameControl     = new GameControl();
 
             m_gameViewModel.GameEnded += onGameEnd;
 

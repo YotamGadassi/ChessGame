@@ -52,7 +52,7 @@ namespace Host
 
         private BaseGamePanel getOfflineGame()
         {
-            return new OfflineChessGamePanel();
+            return new OfflineChessGamePanel("OfflineGame");
         }
     }
 }
