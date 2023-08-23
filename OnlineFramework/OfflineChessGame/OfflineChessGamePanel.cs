@@ -43,12 +43,7 @@ namespace Frameworks.ChessGame
             GameManager.StateChanged -= onGameStateChanged;
             GameManager              =  null;
             m_gameViewModel          =  null;
-            GameControl.DataContext  =  null;
-        }
-
-        public void Close()
-        {
-            GameManager.StateChanged -= onGameStateChanged;
+            m_gameControl            =  new GameControl();
         }
 
         private void onGameStateChanged(object?   sender
