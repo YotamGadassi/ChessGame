@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Media;
 using Board;
 using Client.Board;
 using Common;
 using Common.Chess;
+using Common.GameInterfaces;
 using FrontCommon;
 using log4net;
 using Tools;

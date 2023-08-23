@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Common
+namespace Common.GameInterfaces
 {
     public enum GameState
     {

@@ -3,6 +3,7 @@ using Board;
 using ChessGame.Helpers;
 using Common;
 using Common.Chess;
+using Common.GameInterfaces;
 using log4net;
 using Tools;
 

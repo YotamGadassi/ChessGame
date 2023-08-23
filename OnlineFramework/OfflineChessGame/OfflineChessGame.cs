@@ -4,6 +4,7 @@ using System.Windows.Media;
 using ChessGame;
 using Client.Game;
 using Common;
+using Common.GameInterfaces;
 using FrontCommon;
 
 namespace Frameworks.ChessGame

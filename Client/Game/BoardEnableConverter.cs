@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
-using Common;
+using Common.GameInterfaces;
 using log4net;
 
 namespace Client.Game;

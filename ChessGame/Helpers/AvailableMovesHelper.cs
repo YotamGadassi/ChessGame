@@ -1,6 +1,7 @@
 ﻿using System.Windows.Media;
 using Board;
 using Common;
+using Common.GameInterfaces;
 using Tools;
 
 namespace ChessGame.Helpers

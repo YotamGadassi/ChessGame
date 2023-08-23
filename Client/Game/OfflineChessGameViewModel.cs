@@ -15,9 +15,9 @@ namespace Client.Game
     {
         private static readonly ILog s_log = LogManager.GetLogger(typeof(OfflineChessGameViewModel));
 
-        private IChessGameManager     m_chessGameManager;
-        private IAvailableMovesHelper m_availableMovesHelper;
-        private Dispatcher            m_dispatcher;
+        private OfflineChessGameManager m_chessGameManager;
+        private IAvailableMovesHelper   m_availableMovesHelper;
+        private Dispatcher              m_dispatcher;
 
         public OfflineChessGameViewModel(OfflineChessGameManager gameManager) : base(gameManager)
         {
