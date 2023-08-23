@@ -4,10 +4,10 @@ namespace Common
 {
     public enum GameState
     {
-        Play,
-        Stop,
-        Pause,
-        End
+        Running,
+        NotStarted,
+        Paused,
+        Ended
     }
 
     public interface IGameManager
@@ -16,7 +16,7 @@ namespace Common
 
         GameState State { get; }
 
-        void StartGame();
+        void StartResumeGame();
 
         void PauseGame();
 

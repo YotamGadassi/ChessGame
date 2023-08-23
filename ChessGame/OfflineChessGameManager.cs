@@ -1,6 +1,4 @@
 ﻿using System.Reflection;
-using System.Windows.Input;
-using System.Windows.Media;
 using Board;
 using ChessGame.Helpers;
 using Common;
@@ -29,7 +27,7 @@ namespace ChessGame
                                      , TeamWithTimer team2)
         {
             Teams                = new[] { team1, team2 };
-            State               = GameState.Stop;
+            State                = GameState.NotStarted;
             m_gameBoard          = new ChessBoard();
             AvailableMovesHelper = new AvailableMovesHelper(this);
         }
@@ -59,18 +57,18 @@ namespace ChessGame
             m_currentTeamIndex = 0;
         }
 
-        public void StartGame()
+        public void StartResumeGame()
         {
             s_log.Info($"Game Started");
             CurrentTeamTurn.StartTimer();
-            setState(GameState.Play);
+            setState(GameState.Running);
         }
 
         public void PauseGame()
         {
             s_log.Info($"Game Paused");
             CurrentTeamTurn.StopTimer();
-            setState(GameState.Pause);
+            setState(GameState.Paused);
         }
 
         public void EndGame()
@@ -78,9 +76,8 @@ namespace ChessGame
             s_log.Info("End Game");
 
             m_gameBoard.Clear();
-            Teams              = null;
             m_currentTeamIndex = 0;
-            setState(GameState.End);
+            setState(GameState.Ended);
         }
 
         public MoveResult Move(BoardPosition start

@@ -6,7 +6,8 @@ namespace FrontCommon
 {
     public abstract class BaseGameViewModel : DependencyObject
     {
-        private static readonly DependencyProperty gameStateProperty = DependencyProperty.Register("GameState", typeof(GameState), typeof(BaseGameViewModel));
+        private static readonly DependencyProperty gameStateProperty =
+            DependencyProperty.Register("GameState", typeof(GameState), typeof(BaseGameViewModel));
 
         public GameState GameState
         {
@@ -14,9 +15,9 @@ namespace FrontCommon
             set => SetValue(gameStateProperty, value);
         }
 
-        public ICommand Play { get; }
+        public ICommand EndGame { get; }
 
-        public ICommand Stop { get; }
+        public ICommand StartResume { get; }
 
         public ICommand Pause { get; }
 
@@ -25,20 +26,22 @@ namespace FrontCommon
         protected BaseGameViewModel(IGameManager gameManager)
         {
             m_gameManager              =  gameManager;
-            Play                       =  new WpfCommand(onPlayExecute,  onPlayCanExecute);
-            Pause                      =  new WpfCommand(onPauseExecute, onPauseCanExecute);
-            Stop                       =  new WpfCommand(onStopExecute,  onStopCanExecute);
+            StartResume                =  new WpfCommand(onStartResumeExecute, onStartResumeCanExecute);
+            Pause                      =  new WpfCommand(onPauseExecute,       onPauseCanExecute);
+            EndGame                    =  new WpfCommand(onEndGameExecute,     onEndGameCanExecute);
+            GameState                  =  gameManager.State;
             m_gameManager.StateChanged += onStateChanged;
         }
 
-        protected virtual void onPlayExecute(object state)
+        protected virtual void onStartResumeExecute(object state)
         {
-            m_gameManager.StartGame();
+            m_gameManager.StartResumeGame();
         }
 
-        protected virtual bool onPlayCanExecute(object state)
+        protected virtual bool onStartResumeCanExecute(object state)
         {
-            return m_gameManager.State != GameState.Play;
+            return isGameNotEnded()
+                && m_gameManager.State != GameState.Running;
         }
 
         protected virtual void onPauseExecute(object state)
@@ -48,23 +51,28 @@ namespace FrontCommon
 
         protected virtual bool onPauseCanExecute(object state)
         {
-            return m_gameManager.State != GameState.Pause && m_gameManager.State != GameState.Stop;
+            return m_gameManager.State == GameState.Running;
         }
 
-        protected virtual void onStopExecute(object state)
+        protected virtual void onEndGameExecute(object state)
         {
             m_gameManager.EndGame();
         }
 
-        protected virtual bool onStopCanExecute(object state)
+        protected virtual bool onEndGameCanExecute(object state)
         {
-            return m_gameManager.State != GameState.Stop;
+            return m_gameManager.State != GameState.Ended;
         }
-        
+
         private void onStateChanged(object?   sender
-                                  , GameState e)
+                                  , GameState newGameState)
         {
-            GameState = e;
+            GameState = newGameState;
+        }
+
+        private bool isGameNotEnded()
+        {
+            return GameState != GameState.Ended;
         }
     }
 }

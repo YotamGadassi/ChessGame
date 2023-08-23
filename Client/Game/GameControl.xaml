@@ -13,6 +13,8 @@
             <ResourceDictionary>
                 <game:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
                 <game:SizeBindConverter x:Key="SizeBindConvertorResource"/>
+                <game:BoardEnableConverter x:Key="BoardEnableConverter"/>
+
                 <DataTemplate DataType="{x:Type board:BoardViewModel}">
                     <board:BoardControl/>
                 </DataTemplate>
@@ -29,24 +31,35 @@
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="5*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <ContentControl Grid.Row="0" Content="{Binding NorthTeamStatus}"/>
-        <Grid Grid.Row="1">
+        <game:ControlBarControl Grid.Row="0"/>
+        <ContentControl Grid.Row="1" Content="{Binding NorthTeamStatus}"/>
+        <Grid Grid.Row="2">
             <ContentControl x:Name="m_board" Grid.Row="0" Content="{Binding BoardViewModel}">
                 <ContentControl.Style>
                     <Style TargetType="ContentControl">
                         <Setter Property="IsEnabled" Value="True"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=m_message, Path=Visibility}" Value="Visible">
+                            <DataTrigger Value="True">
+                                <DataTrigger.Binding>
+                                    <MultiBinding Converter="{StaticResource BoardEnableConverter}">
+                                        <Binding ElementName="m_message" Path="Visibility"/>
+                                        <Binding Path="GameState"/>
+                                    </MultiBinding>
+                                </DataTrigger.Binding>
+                                <Setter Property="IsEnabled" Value="True"/>
+                            </DataTrigger>
+                            <DataTrigger Value="False">
+                                <DataTrigger.Binding>
+                                    <MultiBinding Converter="{StaticResource BoardEnableConverter}">
+                                        <Binding ElementName="m_message" Path="Visibility"/>
+                                        <Binding Path="GameState"/>
+                                    </MultiBinding>
+                                </DataTrigger.Binding>
                                 <Setter Property="IsEnabled" Value="False"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding ElementName=m_message, Path=Visibility}" Value="Hidden">
-                                <Setter Property="IsEnabled" Value="True"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding ElementName=m_message, Path=Visibility}" Value="Collapsed">
-                                <Setter Property="IsEnabled" Value="True"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -61,6 +74,6 @@
                             Content="{Binding Message}" 
                             Visibility="{Binding Path=Message ,Converter={StaticResource NullToVisibilityConverter}}"/>
         </Grid>
-        <ContentControl Grid.Row="2" Content="{Binding SouthTeamStatus}"/>
+        <ContentControl Grid.Row="3" Content="{Binding SouthTeamStatus}"/>
     </Grid>
 </UserControl>
