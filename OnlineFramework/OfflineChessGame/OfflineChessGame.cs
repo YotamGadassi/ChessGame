@@ -46,7 +46,7 @@ namespace Frameworks.ChessGame
             m_gameControl            =  new GameControl();
         }
 
-        public void Close()
+        public override void Dispose()
         {
             GameManager.StateChanged -= onGameStateChanged;
         }

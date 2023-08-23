@@ -24,30 +24,33 @@ public class GamePanelManager : IGamePanelManager
     public void Remove(string panelName)
     {
         bool isPanelExist = m_panels.TryGetValue(panelName, out BaseGamePanel gamePanel);
-        if (isPanelExist && CurrentPanel.Equals(gamePanel))
+        if (isPanelExist)
         {
-            ResetPanel();
+            if (CurrentPanel == gamePanel)
+            {
+                ResetCurrentPanel();
+            }
+            
             gamePanel.GameEnded -= onGameEnd;
+            gamePanel.Dispose();
+            m_panels.Remove(panelName);
         }
-
-        m_panels.Remove(panelName);
-
     }
 
     public bool Show(BaseGamePanel gamePanel)
     {
         BaseGamePanel oldPanel = CurrentPanel;
         CurrentPanel = gamePanel;
-        GamePanelChanged?.Invoke(this, new GamePanelChangedEventArgs(oldPanel, CurrentPanel));
+        GamePanelChanged?.Invoke(this, new GamePanelChangedEventArgs(oldPanel.PanelName, CurrentPanel));
         BaseGameFacade.Instance.MainWindowViewModel.CurrentViewModel = CurrentPanel.GameControl;
         return true;
     }
 
-    public void ResetPanel()
+    public void ResetCurrentPanel()
     {
         BaseGamePanel oldPanel = CurrentPanel;
         CurrentPanel = null;
-        GamePanelChanged?.Invoke(this, new GamePanelChangedEventArgs(oldPanel, CurrentPanel));
+        GamePanelChanged?.Invoke(this, new GamePanelChangedEventArgs(oldPanel.PanelName, CurrentPanel));
         BaseGameFacade.Instance.MainWindowViewModel.CurrentViewModel = null;
     }
 
@@ -65,6 +68,6 @@ public class GamePanelManager : IGamePanelManager
     private void onGameEnd(BaseGamePanel gamePanel)
     {
         if(gamePanel == CurrentPanel)
-            ResetPanel();
+            ResetCurrentPanel();
     }
 }

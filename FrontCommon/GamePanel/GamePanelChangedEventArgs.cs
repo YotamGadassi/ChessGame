@@ -2,13 +2,13 @@
 
 public class GamePanelChangedEventArgs : EventArgs
 {
-    public BaseGamePanel OldPanel { get; }
+    public string OldPanel { get; }
     public BaseGamePanel NewPanel { get; }
 
-    public GamePanelChangedEventArgs(BaseGamePanel oldPanel
+    public GamePanelChangedEventArgs(string oldPanelName
                                    , BaseGamePanel newPanel)
     {
-        OldPanel = oldPanel;
+        OldPanel = oldPanelName;
         NewPanel = newPanel;
     }
 }

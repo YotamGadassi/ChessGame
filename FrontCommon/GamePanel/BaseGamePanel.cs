@@ -3,7 +3,7 @@ using System.Windows.Controls;
 
 namespace FrontCommon;
 
-public abstract class BaseGamePanel
+public abstract class BaseGamePanel : IDisposable
 {
     public event Action<BaseGamePanel>              GameEnded;
     public          string           PanelName     { get; }
@@ -13,6 +13,7 @@ public abstract class BaseGamePanel
     public abstract void Init();
 
     public abstract void Reset();
+    public abstract void Dispose();
 
     protected BaseGamePanel(string panelName)
     {
