@@ -48,7 +48,6 @@ public abstract class ChessGameViewModel : BaseGameViewModel
     {
         BoardViewModel               =  new BoardViewModel(gameManager.BoardEvents);
         BoardViewModel.OnSquareClick += onSqualeClickHandler;
-        initTeams(gameManager.Teams[0], gameManager.Teams[1]);
         s_log.Info("Created");
     }
 
@@ -103,7 +102,7 @@ public abstract class ChessGameViewModel : BaseGameViewModel
         }
     }
 
-    private void initTeams(TeamWithTimer team1
+    protected void initTeams(TeamWithTimer team1
                          , TeamWithTimer team2)
     {
         if (team1.MoveDirection == GameDirection.North)

@@ -14,7 +14,7 @@ public class TeamWithTimer : Team
 
     public event Action<TimeSpan> TimeLeftChange;
     public event Action<bool> TimerStateChanged;
-    
+
     public TeamWithTimer(string        name
                        , Color         color
                        , GameDirection moveDirection
@@ -49,5 +49,15 @@ public class TeamWithTimer : Team
     {
         m_timer.Stop();
         TimerStateChanged?.Invoke(false);
+    }
+
+    public void SetTimeLeft(TimeSpan timeLeft)
+    {
+        lock (m_lock)
+        {
+            TimeLeft = timeLeft;
+            ThreadPool.QueueUserWorkItem((_) => TimeLeftChange?.Invoke(TimeLeft));
+        }
+
     }
 }

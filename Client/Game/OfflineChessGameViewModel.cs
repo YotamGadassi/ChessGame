@@ -24,6 +24,7 @@ namespace Client.Game
             m_dispatcher           = Dispatcher.CurrentDispatcher;
             m_chessGameManager     = gameManager;
             m_availableMovesHelper = gameManager.AvailableMovesHelper;
+            initTeams(gameManager.Teams[0], gameManager.Teams[1]);
         }
 
         protected override void onSqualeClickHandler(object?         sender

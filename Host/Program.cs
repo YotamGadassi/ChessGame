@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Windows.Threading;
 using Common.MainWindow;
 using Frameworks.ChessGame;
+using Frameworks.OnlineChessGame;
 using FrontCommon;
 using FrontCommon.Facade;
 using log4net;
@@ -47,8 +48,10 @@ namespace Host
         private static void initGameButtons(MainWindowViewModel mainWindowViewModel
                                           , IGamePanelManager   panelManager)
         {
-            OfflineGameButton offlineGameButton = new OfflineGameButton(Dispatcher.CurrentDispatcher, panelManager);
+            OfflineGameButton     offlineGameButton     = new(Dispatcher.CurrentDispatcher, panelManager);
+            OnlineChessGameButton onlineChessGameButton = new(Dispatcher.CurrentDispatcher, panelManager); 
             mainWindowViewModel.AddGameButton(offlineGameButton);
+            mainWindowViewModel.AddGameButton(onlineChessGameButton);
         }
 
         private static IGamePanelManager createGamePanelManager()
@@ -57,6 +60,10 @@ namespace Host
             string                panelName             = "OfflineChessGame";
             OfflineChessGamePanel offlineChessGamePanel = new OfflineChessGamePanel(panelName);
             panelManager.Add(panelName, offlineChessGamePanel);
+
+            panelName = "OnlineChessGame";
+            OnlineChessGamePanel onlineChessGamePanel = new OnlineChessGamePanel(panelName);
+            panelManager.Add(panelName, onlineChessGamePanel);
 
             return panelManager;
         }

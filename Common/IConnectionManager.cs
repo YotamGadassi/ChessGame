@@ -1,4 +1,7 @@
-﻿namespace FrontCommon
+﻿using System;
+using System.Threading.Tasks;
+
+namespace FrontCommon
 {
     public enum ConnectionStatus
     {

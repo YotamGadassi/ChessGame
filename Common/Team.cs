@@ -36,7 +36,7 @@ namespace Common
             return Equals(obj as Team);
         }
 
-        public override int    GetHashCode()
+        public override int GetHashCode()
         {
             unchecked
             {

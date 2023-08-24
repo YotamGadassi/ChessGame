@@ -16,9 +16,9 @@ namespace Common.GameInterfaces
 
         GameState State { get; }
 
-        void StartResumeGame();
+        bool StartResumeGame();
 
-        void PauseGame();
+        bool PauseGame();
 
         void EndGame();
     }

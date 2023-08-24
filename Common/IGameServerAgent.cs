@@ -1,4 +1,6 @@
-﻿using Board;
+﻿using System;
+using System.Threading.Tasks;
+using Board;
 using Common;
 using Common.Chess;
 using Tools;

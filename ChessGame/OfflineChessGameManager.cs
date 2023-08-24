@@ -9,28 +9,18 @@ using Tools;
 
 namespace ChessGame
 {
-    public class OfflineChessGameManager : IChessGameManager
+    public class OfflineChessGameManager : BaseChessGameManager
     {
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public event EventHandler<GameState>? StateChanged;
-        public IBoardEvents                   BoardEvents     => m_gameBoard;
-        public TeamWithTimer                  CurrentTeamTurn => Teams[m_currentTeamIndex];
-        public TeamWithTimer[]                Teams           { get; private set; }
-        public GameState                      State                { get; private set; }
         public IAvailableMovesHelper          AvailableMovesHelper { get; }
 
-        private                 ChessBoard m_gameBoard;
-        private                 int        m_currentTeamIndex;
-        private static readonly int        s_teamsAmount = 2;
-
         public OfflineChessGameManager(TeamWithTimer team1
-                                     , TeamWithTimer team2)
+                                     , TeamWithTimer team2) 
+            : base(new ChessBoard(), s_log)
         {
-            Teams                = new[] { team1, team2 };
-            State                = GameState.NotStarted;
-            m_gameBoard          = new ChessBoard();
             AvailableMovesHelper = new AvailableMovesHelper(this);
+            setTeams(new TeamWithTimer[]{team1, team2});
         }
 
         public void Init()
@@ -54,31 +44,20 @@ namespace ChessGame
             {
                 m_gameBoard.Add(pair.Key, pair.Value);
             }
-
-            m_currentTeamIndex = 0;
         }
 
-        public void StartResumeGame()
+        public override bool StartResumeGame()
         {
-            s_log.Info($"Game Started");
+            base.StartResumeGame();
             CurrentTeamTurn.StartTimer();
-            setState(GameState.Running);
+            return false;
         }
 
-        public void PauseGame()
+        public override bool PauseGame()
         {
-            s_log.Info($"Game Paused");
+            base.PauseGame();
             CurrentTeamTurn.StopTimer();
-            setState(GameState.Paused);
-        }
-
-        public void EndGame()
-        {
-            s_log.Info("End Game");
-
-            m_gameBoard.Clear();
-            m_currentTeamIndex = 0;
-            setState(GameState.Ended);
+            return true;
         }
 
         public MoveResult Move(BoardPosition start
@@ -116,32 +95,9 @@ namespace ChessGame
             return promotionResult;
         }
 
-        public bool TryGetTool(BoardPosition position
-                             , out ITool     tool)
-        {
-            return m_gameBoard.TryGetTool(position, out tool);
-        }
-
         public BoardState GetBoardState()
         {
             return m_gameBoard.GetBoard;
-        }
-
-        protected void switchCurrentTeam()
-        {
-            CurrentTeamTurn.StopTimer();
-            m_currentTeamIndex = (m_currentTeamIndex + 1) % s_teamsAmount;
-            CurrentTeamTurn.StartTimer();
-        }
-
-        private void setState(GameState state)
-        {
-            if (state == State)
-                return;
-
-            State = state;
-            StateChanged?.Invoke(this, state);
-            
         }
     }
 }
