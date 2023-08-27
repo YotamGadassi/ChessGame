@@ -21,47 +21,47 @@ namespace FrontCommon
 
         public ICommand Pause { get; }
 
-        private IGameManager m_gameManager;
+        private IGameStateController m_gameController;
 
-        protected BaseGameViewModel(IGameManager gameManager)
+        protected BaseGameViewModel(IGameStateController gameController)
         {
-            m_gameManager              =  gameManager;
+            m_gameController              =  gameController;
             StartResume                =  new WpfCommand(onStartResumeExecute, onStartResumeCanExecute);
             Pause                      =  new WpfCommand(onPauseExecute,       onPauseCanExecute);
             EndGame                    =  new WpfCommand(onEndGameExecute,     onEndGameCanExecute);
-            GameState                  =  gameManager.State;
-            m_gameManager.StateChanged += onStateChanged;
+            GameState                  =  gameController.State;
+            m_gameController.StateChanged += onStateChanged;
         }
 
         protected virtual void onStartResumeExecute(object state)
         {
-            m_gameManager.StartResumeGame();
+            m_gameController.StartResumeGame();
         }
 
         protected virtual bool onStartResumeCanExecute(object state)
         {
             return isGameNotEnded()
-                && m_gameManager.State != GameState.Running;
+                && m_gameController.State != GameState.Running;
         }
 
         protected virtual void onPauseExecute(object state)
         {
-            m_gameManager.PauseGame();
+            m_gameController.PauseGame();
         }
 
         protected virtual bool onPauseCanExecute(object state)
         {
-            return m_gameManager.State == GameState.Running;
+            return m_gameController.State == GameState.Running;
         }
 
         protected virtual void onEndGameExecute(object state)
         {
-            m_gameManager.EndGame();
+            m_gameController.EndGame();
         }
 
         protected virtual bool onEndGameCanExecute(object state)
         {
-            return m_gameManager.State != GameState.Ended;
+            return m_gameController.State != GameState.Ended;
         }
 
         private void onStateChanged(object?   sender

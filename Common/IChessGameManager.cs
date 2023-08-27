@@ -5,8 +5,9 @@ using Tools;
 
 namespace Common
 {
-    public interface IChessGameManager : IGameManager
+    public interface IChessGameManager
     {
+        IGameStateController GameStateController { get; }
         IBoardEvents         BoardEvents     { get; }
         public TeamWithTimer CurrentTeamTurn { get; }
 

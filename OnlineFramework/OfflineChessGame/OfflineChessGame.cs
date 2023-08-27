@@ -31,7 +31,7 @@ namespace Frameworks.ChessGame
             TeamWithTimer team2 = new("Black", Colors.Black, GameDirection.South, TimeSpan.FromMinutes(10));
 
             GameManager              =  new OfflineChessGameManager(team1, team2);
-            GameManager.StateChanged += onGameStateChanged;
+            GameManager.GameStateController.StateChanged += onGameStateChanged;
             m_gameViewModel          =  new OfflineChessGameViewModel(GameManager);
             GameControl.DataContext  =  null;
             GameControl.DataContext  =  m_gameViewModel;
@@ -40,7 +40,7 @@ namespace Frameworks.ChessGame
 
         public override void Reset()
         {
-            GameManager.StateChanged -= onGameStateChanged;
+            GameManager.GameStateController.StateChanged -= onGameStateChanged;
             GameManager              =  null;
             m_gameViewModel          =  null;
             m_gameControl            =  new GameControl();
@@ -48,7 +48,7 @@ namespace Frameworks.ChessGame
 
         public override void Dispose()
         {
-            GameManager.StateChanged -= onGameStateChanged;
+            GameManager.GameStateController.StateChanged -= onGameStateChanged;
         }
 
         private void onGameStateChanged(object?   sender

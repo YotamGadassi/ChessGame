@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using Board;
-using ChessGame.Helpers;
 using Common;
 using Common.Chess;
 using log4net;
@@ -12,11 +11,10 @@ namespace ChessGame
     {
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public event EventHandler<GameState>? StateChanged;
-        public IBoardEvents                   BoardEvents     => m_gameBoard;
-        public TeamWithTimer                  CurrentTeamTurn => Teams[m_currentTeamIndex];
-        public TeamWithTimer[]                Teams           { get; private set; }
-        public GameState                      State                { get; private set; }
+        public IBoardEvents         BoardEvents         => m_gameBoard;
+        public TeamWithTimer        CurrentTeamTurn     => Teams[m_currentTeamIndex];
+        public TeamWithTimer[]      Teams               { get; private set; }
+        public IGameStateController GameStateController { get; }
 
         private                 ChessBoard m_gameBoard;
         private                 int        m_currentTeamIndex;
@@ -25,9 +23,44 @@ namespace ChessGame
         public OfflineChessGameManager(TeamWithTimer team1
                                      , TeamWithTimer team2)
         {
-            Teams                = new[] { team1, team2 };
-            State                = GameState.NotStarted;
-            m_gameBoard          = new ChessBoard();
+            Teams       = new[] { team1, team2 };
+            GameStateController = new GameStateController();
+            GameStateController.StateChanged += onStateChanged;
+            m_gameBoard = new ChessBoard();
+        }
+
+        private void onStateChanged(object?   sender
+                                  , GameState currState)
+        {
+            switch (currState)
+            {
+                case GameState.Running:
+                {
+                    s_log.Info($"Game Started");
+                    CurrentTeamTurn.StartTimer();
+                }
+                    break;
+                case GameState.Paused:
+                {
+                    s_log.Info($"Game Paused");
+                    CurrentTeamTurn.StopTimer();
+                }
+                    break;
+                case GameState.Ended:
+                {
+                    s_log.Info("End Game");
+                    m_gameBoard.Clear();
+                    m_currentTeamIndex = 0;
+                }
+                    break;
+                case GameState.NotStarted:
+                {
+                    s_log.Info($"Game State changed to Game Not Started");
+                }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(currState), currState, null);
+            }
         }
 
         public void Init()
@@ -59,14 +92,12 @@ namespace ChessGame
         {
             s_log.Info($"Game Started");
             CurrentTeamTurn.StartTimer();
-            setState(GameState.Running);
         }
 
         public void PauseGame()
         {
             s_log.Info($"Game Paused");
             CurrentTeamTurn.StopTimer();
-            setState(GameState.Paused);
         }
 
         public void EndGame()
@@ -75,7 +106,6 @@ namespace ChessGame
 
             m_gameBoard.Clear();
             m_currentTeamIndex = 0;
-            setState(GameState.Ended);
         }
 
         public MoveResult Move(BoardPosition start
@@ -131,14 +161,5 @@ namespace ChessGame
             CurrentTeamTurn.StartTimer();
         }
 
-        private void setState(GameState state)
-        {
-            if (state == State)
-                return;
-
-            State = state;
-            StateChanged?.Invoke(this, state);
-            
-        }
     }
 }

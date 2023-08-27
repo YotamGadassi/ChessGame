@@ -28,7 +28,7 @@ namespace Client.Game
             m_dispatcher           = Dispatcher.CurrentDispatcher;
             m_chessGameManager     = gameManager;
             m_availableMovesHelper = new AvailableMovesHelper(gameManager);
-            ControllerViewModel    = new GameControllerViewModel(gameManager);
+            ControllerViewModel    = new GameControllerViewModel(gameManager.GameStateController);
         }
 
         protected override void onSqualeClickHandler(object?         sender
@@ -85,7 +85,7 @@ namespace Client.Game
                                                                                                 {
                                                                                                     Message = null;
                                                                                                     m_dispatcher
-                                                                                                       .InvokeAsync(() => m_chessGameManager.EndGame());
+                                                                                                       .InvokeAsync(() => m_chessGameManager.GameStateController.EndGame());
                                                                                                 });
             Message = checkMateMessage;
         }

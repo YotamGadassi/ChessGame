@@ -10,47 +10,47 @@ public class GameControllerViewModel : BaseGameControllerViewModel
     public override ICommand EndGame     { get; }
     public override ICommand Pause       { get; }
 
-    private IGameManager m_gameManager;
+    private IGameStateController m_gameController;
 
-    public GameControllerViewModel(IGameManager gameManager)
+    public GameControllerViewModel(IGameStateController gameController)
     {
-        m_gameManager              =  gameManager;
+        m_gameController              =  gameController;
         StartResume                =  new WpfCommand(onStartResumeExecute, onStartResumeCanExecute);
         Pause                      =  new WpfCommand(onPauseExecute,       onPauseCanExecute);
         EndGame                    =  new WpfCommand(onEndGameExecute,     onEndGameCanExecute);
-        GameState                  =  gameManager.State;
-        m_gameManager.StateChanged += onStateChanged;
+        GameState                  =  gameController.State;
+        m_gameController.StateChanged += onStateChanged;
     }
 
     private void onStartResumeExecute(object state)
     {
-        m_gameManager.StartResumeGame();
+        m_gameController.StartResumeGame();
     }
 
     private bool onStartResumeCanExecute(object state)
     {
         return isGameNotEnded()
-            && m_gameManager.State != GameState.Running;
+            && m_gameController.State != GameState.Running;
     }
 
     private void onPauseExecute(object state)
     {
-        m_gameManager.PauseGame();
+        m_gameController.PauseGame();
     }
 
     private bool onPauseCanExecute(object state)
     {
-        return m_gameManager.State == GameState.Running;
+        return m_gameController.State == GameState.Running;
     }
 
     private void onEndGameExecute(object state)
     {
-        m_gameManager.EndGame();
+        m_gameController.EndGame();
     }
 
     private bool onEndGameCanExecute(object state)
     {
-        return m_gameManager.State != GameState.Ended;
+        return m_gameController.State != GameState.Ended;
     }
 
     private void onStateChanged(object?   sender
