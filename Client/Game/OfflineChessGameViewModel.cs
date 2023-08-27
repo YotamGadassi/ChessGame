@@ -6,6 +6,7 @@ using Client.Board;
 using Client.Messages;
 using Common;
 using Common.Chess;
+using FrontCommon;
 using log4net;
 using Tools;
 
@@ -18,12 +19,14 @@ namespace Client.Game
         private IChessGameManager     m_chessGameManager;
         private IAvailableMovesHelper m_availableMovesHelper;
         private Dispatcher            m_dispatcher;
+        public override BaseGameControllerViewModel ControllerViewModel { get; }
 
         public OfflineChessGameViewModel(OfflineChessGameManager gameManager) : base(gameManager)
         {
             m_dispatcher           = Dispatcher.CurrentDispatcher;
             m_chessGameManager     = gameManager;
             m_availableMovesHelper = gameManager.AvailableMovesHelper;
+            ControllerViewModel    = new GameControllerViewModel(gameManager);
         }
 
         protected override void onSqualeClickHandler(object?         sender

@@ -11,7 +11,7 @@ using Tools;
 
 namespace Client.Game;
 
-public abstract class ChessGameViewModel : BaseGameViewModel
+public abstract class ChessGameViewModel : DependencyObject
 {
     private static readonly ILog s_log = LogManager.GetLogger(typeof(ChessGameViewModel));
 
@@ -44,7 +44,9 @@ public abstract class ChessGameViewModel : BaseGameViewModel
 
     public BoardViewModel BoardViewModel { get; }
 
-    protected ChessGameViewModel(IChessGameManager gameManager) : base(gameManager)
+    public abstract BaseGameControllerViewModel ControllerViewModel { get; }
+
+    protected ChessGameViewModel(IChessGameManager gameManager)
     {
         BoardViewModel               =  new BoardViewModel(gameManager.BoardEvents);
         BoardViewModel.OnSquareClick += onSqualeClickHandler;

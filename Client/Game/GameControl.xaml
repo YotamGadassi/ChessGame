@@ -35,7 +35,7 @@
             <RowDefinition Height="5*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <game:ControlBarControl Grid.Row="0"/>
+        <game:ControllerBarControl Grid.Row="0" DataContext="{Binding ControllerViewModel}"/>
         <ContentControl Grid.Row="1" Content="{Binding NorthTeamStatus}"/>
         <Grid Grid.Row="2">
             <ContentControl x:Name="m_board" Grid.Row="0" Content="{Binding BoardViewModel}">
@@ -47,7 +47,7 @@
                                 <DataTrigger.Binding>
                                     <MultiBinding Converter="{StaticResource BoardEnableConverter}">
                                         <Binding ElementName="m_message" Path="Visibility"/>
-                                        <Binding Path="GameState"/>
+                                        <Binding Path="ControllerViewModel.GameState"/>
                                     </MultiBinding>
                                 </DataTrigger.Binding>
                                 <Setter Property="IsEnabled" Value="True"/>
@@ -56,7 +56,7 @@
                                 <DataTrigger.Binding>
                                     <MultiBinding Converter="{StaticResource BoardEnableConverter}">
                                         <Binding ElementName="m_message" Path="Visibility"/>
-                                        <Binding Path="GameState"/>
+                                        <Binding Path="ControllerViewModel.GameState"/>
                                     </MultiBinding>
                                 </DataTrigger.Binding>
                                 <Setter Property="IsEnabled" Value="False"/>
