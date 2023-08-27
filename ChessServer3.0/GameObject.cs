@@ -26,7 +26,7 @@ public class GameUnit : IDisposable
         //m_gameController.TeamSwitchEvent += onTeamSwitch;
     }
 
-    private OfflineChessGameManager m_gameController;
+    private OfflineChessGameManager m_gameManager;
 
     private IHubContext<ChessHub> m_hubContext;
     public  string                GroupName { get; }
@@ -48,7 +48,7 @@ public class GameUnit : IDisposable
 
         GameToken = Guid.NewGuid();
 
-        m_gameController.GameStateController.StartResumeGame();
+        m_gameManager.GameStateController.StartResumeGame();
         WhitePlayer1.PlayersTeam = new Team(WhitePlayer1.Name, Colors.White, GameDirection.North);
         WhitePlayer1.GameUnit    = this;
         BlackPlayer2.PlayersTeam = new Team(BlackPlayer2.Name, Colors.Black, GameDirection.South);
@@ -67,7 +67,7 @@ public class GameUnit : IDisposable
 
         GameToken = Guid.Empty;
 
-        m_gameController.EndGame();
+        //m_gameController.EndGame();
 
         await Task.WhenAll(m_hubContext.Groups.RemoveFromGroupAsync(WhitePlayer1.ConnectionId, GroupName),
                            m_hubContext.Groups.RemoveFromGroupAsync(BlackPlayer2.ConnectionId, GroupName)
@@ -83,7 +83,7 @@ public class GameUnit : IDisposable
             return MoveResult.NoChangeOccurredResult;
         }
 
-        return m_gameController.Move(start, end);
+        return m_gameManager.ChessBoardProxy.Move(start, end);
         ;
     }
 
@@ -96,7 +96,7 @@ public class GameUnit : IDisposable
             return false;
         }
 
-        m_gameController.Promote(position, promotedTool);
+        m_gameManager.ChessBoardProxy.Promote(position, promotedTool);
         return true;
     }
 
@@ -139,11 +139,11 @@ public class GameUnit : IDisposable
 
     public bool IsPlayerTurn(PlayerObject player)
     {
-        return m_gameController.CurrentTeamTurn.Color.Equals(player.PlayersTeam.Color);
+        return m_gameManager.CurrentTeamTurn.Color.Equals(player.PlayersTeam.Color);
     }
 
     public BoardState GetBoardState()
     {
-        return m_gameController.GetBoardState();
+        return m_gameManager.GetBoardState();
     }
 }

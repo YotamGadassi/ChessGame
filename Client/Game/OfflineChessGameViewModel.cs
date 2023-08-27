@@ -54,7 +54,7 @@ namespace Client.Game
             {
                 BoardPosition start      = BoardViewModel.SelectedBoardPosition;
                 BoardPosition end        = position;
-                MoveResult    moveResult = m_chessGameManager.Move(start, end);
+                MoveResult    moveResult = m_chessGameManager.ChessBoardProxy.Move(start, end);
                 handleMoveResult(moveResult);
             }
 
@@ -72,7 +72,7 @@ namespace Client.Game
             ITool chosenTool = await promotionMessage.ToolAwaiter;
             Message = null;
 
-            PromotionResult promoteResult = m_chessGameManager.Promote(position, chosenTool);
+            PromotionResult promoteResult = m_chessGameManager.ChessBoardProxy.Promote(position, chosenTool);
             handlePromotionResult(promoteResult);
         }
 

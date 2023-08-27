@@ -1,27 +1,18 @@
 ﻿using System;
-using Board;
-using Common.Chess;
-using Tools;
 
 namespace Common
 {
     public interface IChessGameManager
     {
         IGameStateController GameStateController { get; }
-        IBoardEvents         BoardEvents     { get; }
+        ITeamsManager        TeamsManager        { get; }
+        IBoardEvents         BoardEvents         { get; }
+
+        IChessBoardProxy ChessBoardProxy { get; }
+
         public TeamWithTimer CurrentTeamTurn { get; }
 
-        public TeamWithTimer[] Teams         { get; }
-
-        bool TryGetTool(BoardPosition position
-                      , out ITool     tool);
-
-        MoveResult Move(BoardPosition start
-                      , BoardPosition end);
-
-        PromotionResult Promote(BoardPosition start
-                              , ITool         newTool);
-
+        public TeamWithTimer[] Teams { get; }
     }
 
     public interface IGameEvents

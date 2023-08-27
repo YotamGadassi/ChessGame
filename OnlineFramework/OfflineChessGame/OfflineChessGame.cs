@@ -30,7 +30,9 @@ namespace Frameworks.ChessGame
 
             TeamWithTimer team2 = new("Black", Colors.Black, GameDirection.South, TimeSpan.FromMinutes(10));
 
-            GameManager              =  new OfflineChessGameManager(team1, team2);
+            OfflineTeamsManager teamsManager = new(new[] { team1, team2 });
+
+            GameManager              =  new OfflineChessGameManager(teamsManager);
             GameManager.GameStateController.StateChanged += onGameStateChanged;
             m_gameViewModel          =  new OfflineChessGameViewModel(GameManager);
             GameControl.DataContext  =  null;
