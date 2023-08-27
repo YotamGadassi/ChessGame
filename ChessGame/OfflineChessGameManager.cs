@@ -17,7 +17,6 @@ namespace ChessGame
         public TeamWithTimer                  CurrentTeamTurn => Teams[m_currentTeamIndex];
         public TeamWithTimer[]                Teams           { get; private set; }
         public GameState                      State                { get; private set; }
-        public IAvailableMovesHelper          AvailableMovesHelper { get; }
 
         private                 ChessBoard m_gameBoard;
         private                 int        m_currentTeamIndex;
@@ -29,7 +28,6 @@ namespace ChessGame
             Teams                = new[] { team1, team2 };
             State                = GameState.NotStarted;
             m_gameBoard          = new ChessBoard();
-            AvailableMovesHelper = new AvailableMovesHelper(this);
         }
 
         public void Init()

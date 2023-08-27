@@ -2,6 +2,7 @@
 using System.Windows.Threading;
 using Board;
 using ChessGame;
+using ChessGame.Helpers;
 using Client.Board;
 using Client.Messages;
 using Common;
@@ -19,13 +20,14 @@ namespace Client.Game
         private IChessGameManager     m_chessGameManager;
         private IAvailableMovesHelper m_availableMovesHelper;
         private Dispatcher            m_dispatcher;
+
         public override BaseGameControllerViewModel ControllerViewModel { get; }
 
         public OfflineChessGameViewModel(OfflineChessGameManager gameManager) : base(gameManager)
         {
             m_dispatcher           = Dispatcher.CurrentDispatcher;
             m_chessGameManager     = gameManager;
-            m_availableMovesHelper = gameManager.AvailableMovesHelper;
+            m_availableMovesHelper = new AvailableMovesHelper(gameManager);
             ControllerViewModel    = new GameControllerViewModel(gameManager);
         }
 

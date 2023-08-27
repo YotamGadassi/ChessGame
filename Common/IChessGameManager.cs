@@ -12,8 +12,6 @@ namespace Common
 
         public TeamWithTimer[] Teams         { get; }
 
-        IAvailableMovesHelper AvailableMovesHelper { get; }
-
         bool TryGetTool(BoardPosition position
                       , out ITool     tool);
 
