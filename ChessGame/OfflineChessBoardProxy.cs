@@ -1,9 +1,10 @@
 ﻿using Board;
+using Common;
 using Common.Chess;
 using log4net;
 using Tools;
 
-namespace Common;
+namespace ChessGame;
 
 public interface IChessBoardProxy
 {
@@ -17,14 +18,14 @@ public interface IChessBoardProxy
                   , out ITool     tool);
 }
 
-public class ChessBoardProxy : IChessBoardProxy
+public class OfflineChessBoardProxy : IChessBoardProxy
 {
-    private static readonly ILog s_log = LogManager.GetLogger(typeof(ChessBoardProxy));
+    private static readonly ILog s_log = LogManager.GetLogger(typeof(OfflineChessBoardProxy));
 
     private ChessBoard          m_chessBoard;
     private OfflineTeamsManager m_teamsManager;
 
-    public ChessBoardProxy(ChessBoard chessBoard, OfflineTeamsManager teamsManager)
+    public OfflineChessBoardProxy(ChessBoard chessBoard, OfflineTeamsManager teamsManager)
     {
         m_chessBoard = chessBoard;
         m_teamsManager = teamsManager;

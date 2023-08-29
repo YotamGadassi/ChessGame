@@ -27,11 +27,7 @@ namespace Frameworks.ChessGame
 
         public override void Init()
         {
-            ChessTeam team1 = new("White", Colors.White, GameDirection.North, new TeamTimer(TimeSpan.FromMinutes(10), TimeSpan.FromSeconds(1)));
-
-            ChessTeam team2 = new("Black", Colors.Black, GameDirection.South, new TeamTimer(TimeSpan.FromMinutes(10), TimeSpan.FromSeconds(1)));
-
-            OfflineTeamsManager teamsManager = new(new[] { team1, team2 });
+            OfflineTeamsManager teamsManager = createOfflineTeamsManager();
 
             GameManager              =  new OfflineChessGameManager(teamsManager);
             GameManager.GameStateController.StateChanged += onGameStateChanged;
@@ -63,5 +59,18 @@ namespace Frameworks.ChessGame
                 Reset();
             }
         }
+
+        private OfflineTeamsManager createOfflineTeamsManager()
+        {
+            ChessTeam team1 = new("White", Colors.White, GameDirection.North
+                                , new TeamTimer(TimeSpan.FromMinutes(10), TimeSpan.FromSeconds(1)));
+
+            ChessTeam team2 = new("Black", Colors.Black, GameDirection.South
+                                , new TeamTimer(TimeSpan.FromMinutes(10), TimeSpan.FromSeconds(1)));
+
+            OfflineTeamsManager teamsManager = new(new[] { team1, team2 });
+            return teamsManager;
+        }
+
     }
 }

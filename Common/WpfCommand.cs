@@ -1,11 +1,12 @@
-﻿using System.Windows.Input;
+﻿using System;
+using System.Windows.Input;
 
 namespace FrontCommon
 {
     public class WpfCommand : ICommand
     {
         private readonly Func<object, bool>? m_canExecute;
-        private readonly Action<object>     m_execute;
+        private readonly Action<object>      m_execute;
 
         public WpfCommand(Action<object> executeHandler, Func<object, bool>? canExecuteHandler)
         {

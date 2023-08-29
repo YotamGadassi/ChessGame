@@ -2,14 +2,6 @@
 
 namespace Common;
 
-public enum GameState
-{
-    Running,
-    NotStarted,
-    Paused,
-    Ended
-}
-
 public interface IGameStateController
 {
     event EventHandler<GameState> StateChanged;

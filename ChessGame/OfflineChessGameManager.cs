@@ -7,12 +7,12 @@ using Tools;
 
 namespace ChessGame
 {
-    public class OfflineChessGameManager : IChessGameManager
+    public class OfflineChessGameManager
     {
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public IBoardEvents         BoardEvents         => m_gameBoard;
-        public IChessBoardProxy     ChessBoardProxy     { get; }
+        public OfflineChessBoardProxy     ChessBoardProxy     { get; }
         public IChessTeamManager    TeamsManager        => m_teamsManager;
         public IGameStateController GameStateController { get; }
 
@@ -24,7 +24,7 @@ namespace ChessGame
             GameStateController              =  new GameStateController();
             GameStateController.StateChanged += onStateChanged;
             m_gameBoard                      =  new ChessBoard();
-            ChessBoardProxy                  =  new ChessBoardProxy(m_gameBoard, teamsManager);
+            ChessBoardProxy                  =  new OfflineChessBoardProxy(m_gameBoard, teamsManager);
         }
 
         private void onStateChanged(object?   sender

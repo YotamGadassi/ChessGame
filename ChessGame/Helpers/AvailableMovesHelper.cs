@@ -13,11 +13,11 @@ namespace ChessGame.Helpers
 
         private Dictionary<Color, GameDirection> m_colorToDirection;
 
-        private IChessGameManager m_gameManager;
+        private IChessBoardProxy m_boardProxy;
 
-        public AvailableMovesHelper(IChessGameManager gameManager)
+        public AvailableMovesHelper(IChessBoardProxy boardProxy)
         {
-            m_gameManager = gameManager;
+            m_boardProxy = boardProxy;
             initColorToDirection();
             initAvailableMovesDelegates();
         }
@@ -39,7 +39,7 @@ namespace ChessGame.Helpers
 
         public BoardPosition[] GetAvailablePositionToMove(BoardPosition position)
         {
-            if (m_gameManager.ChessBoardProxy.TryGetTool(position, out ITool toolToMove))
+            if (m_boardProxy.TryGetTool(position, out ITool toolToMove))
             {
                 return m_availableMovesDelegatesDict[toolToMove.GetType()](position, toolToMove);
             }
@@ -229,12 +229,12 @@ namespace ChessGame.Helpers
 
         private bool isPositionFree(BoardPosition position)
         {
-            return false == m_gameManager.ChessBoardProxy.TryGetTool(position, out _);
+            return false == m_boardProxy.TryGetTool(position, out _);
         }
 
         private  bool isPositionFreeOrKilling(BoardPosition positionToMove, ITool tool)
         {
-            bool isPositionOccupied = m_gameManager.ChessBoardProxy.TryGetTool(positionToMove, out ITool toolOnPosition);
+            bool isPositionOccupied = m_boardProxy.TryGetTool(positionToMove, out ITool toolOnPosition);
             if (isPositionOccupied && isSameTeam(toolOnPosition, tool))
             {
                 return false;
@@ -245,7 +245,7 @@ namespace ChessGame.Helpers
 
         private bool isKilling(BoardPosition positionToMove, ITool tool)
         {
-            bool isPositionOccupied = m_gameManager.ChessBoardProxy.TryGetTool(positionToMove, out ITool toolOnPosition);
+            bool isPositionOccupied = m_boardProxy.TryGetTool(positionToMove, out ITool toolOnPosition);
             if (isPositionOccupied && false == isSameTeam(toolOnPosition, tool))
             {
                 return true;

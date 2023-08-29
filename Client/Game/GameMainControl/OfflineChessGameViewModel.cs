@@ -17,9 +17,9 @@ namespace Client.Game
     {
         private static readonly ILog s_log = LogManager.GetLogger(typeof(OfflineChessGameViewModel));
 
-        private IChessGameManager     m_chessGameManager;
-        private IAvailableMovesHelper m_availableMovesHelper;
-        private Dispatcher            m_dispatcher;
+        private OfflineChessGameManager m_chessGameManager;
+        private IAvailableMovesHelper   m_availableMovesHelper;
+        private Dispatcher              m_dispatcher;
 
         public override BaseGameControllerViewModel ControllerViewModel { get; }
 
@@ -27,7 +27,7 @@ namespace Client.Game
         {
             m_dispatcher           = Dispatcher.CurrentDispatcher;
             m_chessGameManager     = gameManager;
-            m_availableMovesHelper = new AvailableMovesHelper(gameManager);
+            m_availableMovesHelper = new AvailableMovesHelper(gameManager.ChessBoardProxy);
             ControllerViewModel    = new GameControllerViewModel(gameManager.GameStateController);
         }
 
