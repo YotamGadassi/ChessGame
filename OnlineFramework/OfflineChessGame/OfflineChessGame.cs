@@ -18,7 +18,7 @@ namespace Frameworks.ChessGame
 
         private OfflineChessGameViewModel m_gameViewModel;
         private GameControl m_gameControl;
-
+        private OfflineTeamsManager m_teamsManager;
         public OfflineChessGamePanel(string panelName)
             : base(panelName)
         {
@@ -27,19 +27,19 @@ namespace Frameworks.ChessGame
 
         public override void Init()
         {
-            OfflineTeamsManager teamsManager = createOfflineTeamsManager();
+            m_teamsManager = createOfflineTeamsManager();
 
-            GameManager              =  new OfflineChessGameManager(teamsManager);
+            GameManager                                  =  new OfflineChessGameManager(m_teamsManager);
             GameManager.GameStateController.StateChanged += onGameStateChanged;
-            m_gameViewModel          =  new OfflineChessGameViewModel(GameManager);
-            GameControl.DataContext  =  null;
-            GameControl.DataContext  =  m_gameViewModel;
+            m_gameViewModel                              =  new OfflineChessGameViewModel(GameManager);
+            GameControl.DataContext                      =  null;
+            GameControl.DataContext                      =  m_gameViewModel;
             GameManager.Init();
         }
 
         public override void Reset()
         {
-            GameManager.GameStateController.StateChanged -= onGameStateChanged;
+            disposeResources();
             GameManager              =  null;
             m_gameViewModel          =  null;
             m_gameControl            =  new GameControl();
@@ -47,7 +47,14 @@ namespace Frameworks.ChessGame
 
         public override void Dispose()
         {
+            disposeResources();
+        }
+
+        private void disposeResources()
+        {
             GameManager.GameStateController.StateChanged -= onGameStateChanged;
+            GameManager.Dispose();
+            m_teamsManager.Dispose();
         }
 
         private void onGameStateChanged(object?   sender

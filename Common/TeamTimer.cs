@@ -13,7 +13,7 @@ public interface ITeamTimer
     TimeSpan TimeLeft { get; }
 }
 
-public class TeamTimer : ITeamTimer
+public class TeamTimer : ITeamTimer, IDisposable
 {
     public event Action<TimeSpan> TimeLeftChange;
     public event Action<bool> TimerStateChanged;
@@ -52,5 +52,10 @@ public class TeamTimer : ITeamTimer
             TimeLeft = TimeLeft.Subtract(TimeSpan.FromSeconds(1));
             ThreadPool.QueueUserWorkItem((_) => TimeLeftChange?.Invoke(TimeLeft));
         }
+    }
+
+    public void Dispose()
+    {
+        m_timer.Dispose();
     }
 }

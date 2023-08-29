@@ -2,7 +2,7 @@
 
 namespace Common;
 
-public class OfflineTeamsManager : IChessTeamManager
+public class OfflineTeamsManager : IChessTeamManager, IDisposable
 {
     public event EventHandler<Team> TeamSwitchedEvent;
 
@@ -56,4 +56,11 @@ public class OfflineTeamsManager : IChessTeamManager
 
     private ChessTeam getCurrentTeam()      => m_teams[m_currentTeamIndex];
     private TeamTimer getCurrentTeamTimer() => getCurrentTeam().TeamTimer;
+    public  void      Dispose()
+    {
+        foreach (ChessTeam chessTeam in m_teams)
+        {
+            chessTeam.TeamTimer.Dispose();
+        }
+    }
 }

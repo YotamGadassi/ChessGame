@@ -7,7 +7,7 @@ using Tools;
 
 namespace ChessGame
 {
-    public class OfflineChessGameManager
+    public class OfflineChessGameManager : IDisposable
     {
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -17,14 +17,59 @@ namespace ChessGame
         public IGameStateController GameStateController { get; }
 
         private ChessBoard m_gameBoard;
+
         private OfflineTeamsManager m_teamsManager;
+
         public OfflineChessGameManager(OfflineTeamsManager teamsManager)
         {
             m_teamsManager                   =  teamsManager;
             GameStateController              =  new GameStateController();
-            GameStateController.StateChanged += onStateChanged;
             m_gameBoard                      =  new ChessBoard();
             ChessBoardProxy                  =  new OfflineChessBoardProxy(m_gameBoard, teamsManager);
+            registerToEvents();
+        }
+
+        public void Init()
+        {
+            s_log.Info("Init Game");
+
+            Team team1 = TeamsManager.Teams[0];
+            Team team2 = TeamsManager.Teams[1];
+
+            KeyValuePair<BoardPosition, ITool>[] firstGroupBoardArrangement =
+                GameInitHelper.GenerateInitialArrangement(team1.MoveDirection, team1.Color);
+            KeyValuePair<BoardPosition, ITool>[] secondkGroupBoardArrangement =
+                GameInitHelper.GenerateInitialArrangement(team2.MoveDirection, team2.Color);
+
+            foreach (KeyValuePair<BoardPosition, ITool> pair in firstGroupBoardArrangement)
+            {
+                m_gameBoard.Add(pair.Key, pair.Value);
+            }
+
+            foreach (KeyValuePair<BoardPosition, ITool> pair in secondkGroupBoardArrangement)
+            {
+                m_gameBoard.Add(pair.Key, pair.Value);
+            }
+        }
+
+        public BoardState GetBoardState()
+        {
+            return m_gameBoard.GetBoard;
+        }
+
+        public void Dispose()
+        {
+            unregisterToEvents();
+        }
+
+        private void registerToEvents()
+        {
+            GameStateController.StateChanged += onStateChanged;
+        }
+
+        private void unregisterToEvents()
+        {
+            GameStateController.StateChanged -= onStateChanged;
         }
 
         private void onStateChanged(object?   sender
@@ -60,32 +105,5 @@ namespace ChessGame
             }
         }
 
-        public void Init()
-        {
-            s_log.Info("Init Game");
-
-            Team team1 = TeamsManager.Teams[0];
-            Team team2 = TeamsManager.Teams[1];
-
-            KeyValuePair<BoardPosition, ITool>[] firstGroupBoardArrangement =
-                GameInitHelper.GenerateInitialArrangement(team1.MoveDirection, team1.Color);
-            KeyValuePair<BoardPosition, ITool>[] secondkGroupBoardArrangement =
-                GameInitHelper.GenerateInitialArrangement(team2.MoveDirection, team2.Color);
-
-            foreach (KeyValuePair<BoardPosition, ITool> pair in firstGroupBoardArrangement)
-            {
-                m_gameBoard.Add(pair.Key, pair.Value);
-            }
-
-            foreach (KeyValuePair<BoardPosition, ITool> pair in secondkGroupBoardArrangement)
-            {
-                m_gameBoard.Add(pair.Key, pair.Value);
-            }
-        }
-
-        public BoardState GetBoardState()
-        {
-            return m_gameBoard.GetBoard;
-        }
     }
 }
