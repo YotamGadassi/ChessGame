@@ -13,16 +13,14 @@ namespace ChessGame
 
         public IBoardEvents         BoardEvents         => m_gameBoard;
         public IChessBoardProxy     ChessBoardProxy     { get; }
-        public ITeamsManager        TeamsManager        { get; }
-        public TeamWithTimer        CurrentTeamTurn     => TeamsManager.CurrentTeamTurn;
-        public TeamWithTimer[]      Teams               => TeamsManager.Teams;
+        public IChessTeamManager    TeamsManager        => m_teamsManager;
         public IGameStateController GameStateController { get; }
 
         private ChessBoard m_gameBoard;
-
+        private OfflineTeamsManager m_teamsManager;
         public OfflineChessGameManager(OfflineTeamsManager teamsManager)
         {
-            TeamsManager                     =  teamsManager;
+            m_teamsManager                   =  teamsManager;
             GameStateController              =  new GameStateController();
             GameStateController.StateChanged += onStateChanged;
             m_gameBoard                      =  new ChessBoard();
@@ -37,13 +35,13 @@ namespace ChessGame
                 case GameState.Running:
                 {
                     s_log.Info($"Game Started");
-                    CurrentTeamTurn.StartTimer();
+                    m_teamsManager.StartTimer(m_teamsManager.CurrentTeamTurn);
                 }
                     break;
                 case GameState.Paused:
                 {
                     s_log.Info($"Game Paused");
-                    CurrentTeamTurn.StopTimer();
+                    m_teamsManager.StopTimer(m_teamsManager.CurrentTeamTurn);
                 }
                     break;
                 case GameState.Ended:
@@ -66,8 +64,8 @@ namespace ChessGame
         {
             s_log.Info("Init Game");
 
-            TeamWithTimer team1 = Teams[0];
-            TeamWithTimer team2 = Teams[1];
+            Team team1 = TeamsManager.Teams[0];
+            Team team2 = TeamsManager.Teams[1];
 
             KeyValuePair<BoardPosition, ITool>[] firstGroupBoardArrangement =
                 GameInitHelper.GenerateInitialArrangement(team1.MoveDirection, team1.Color);

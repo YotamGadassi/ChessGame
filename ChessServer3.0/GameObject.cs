@@ -139,7 +139,7 @@ public class GameUnit : IDisposable
 
     public bool IsPlayerTurn(PlayerObject player)
     {
-        return m_gameManager.CurrentTeamTurn.Color.Equals(player.PlayersTeam.Color);
+        return m_gameManager.TeamsManager.CurrentTeamTurn.Color.Equals(player.PlayersTeam.Color);
     }
 
     public BoardState GetBoardState()

@@ -38,7 +38,7 @@ namespace Client.Game
 
             ITool?        tool          = squareVM.Tool;
             BoardPosition position      = squareVM.Position;
-            Color         currTeamColor = m_chessGameManager.CurrentTeamTurn.Color;
+            Color         currTeamColor = m_chessGameManager.TeamsManager.CurrentTeamTurn.Color;
 
             bool isToolBelongsToTeam = null != tool && tool.Color.Equals(currTeamColor);
             if (isToolBelongsToTeam)

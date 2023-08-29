@@ -12,8 +12,9 @@ namespace Client.Game
         private static readonly DependencyProperty IsTeamTurnProperty = DependencyProperty.Register("IsTeamTurn", typeof(bool), typeof(TeamStatusViewModel), new FrameworkPropertyMetadata(false));
         private static readonly DependencyProperty TimeLeftProperty = DependencyProperty.Register("TimeLeft", typeof(TimeSpan), typeof(TeamStatusViewModel), new PropertyMetadata(TimeSpan.FromMinutes(10)));
 
-        private readonly Dispatcher    m_dispatcher;
-        private          TeamWithTimer m_team;
+        private readonly Dispatcher m_dispatcher;
+        private          Team       m_team;
+        private          ITeamTimer m_teamTimer;
 
         public bool IsTeamTurn
         {
@@ -33,18 +34,19 @@ namespace Client.Game
             private set=> SetValue(TimeLeftProperty, value);
         }
 
-        public TeamStatusViewModel(TeamWithTimer team)
+        public TeamStatusViewModel(Team team, ITeamTimer teamTimer)
         {
             m_dispatcher    = Dispatcher.CurrentDispatcher;
             m_team = team;
-            TimeLeft = m_team.TimeLeft;
+            m_teamTimer = teamTimer;
+            TimeLeft = m_teamTimer.TimeLeft;
             registerToEvents();
         }
 
         private void registerToEvents()
         {
-            m_team.TimeLeftChange += onTimeLeftChange;
-            m_team.TimerStateChanged += onTimerStateChanged;
+            m_teamTimer.TimeLeftChange    += onTimeLeftChange;
+            m_teamTimer.TimerStateChanged += onTimerStateChanged;
         }
 
         private void onTimerStateChanged(bool isTimerOn)

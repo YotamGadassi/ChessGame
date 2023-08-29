@@ -46,11 +46,12 @@ public abstract class ChessGameViewModel : DependencyObject
 
     public abstract BaseGameControllerViewModel ControllerViewModel { get; }
 
-    protected ChessGameViewModel(IBoardEvents boardEvents, ITeamsManager teamsManager)
+    protected ChessGameViewModel(IBoardEvents boardEvents, IChessTeamManager teamsManager)
     {
         BoardViewModel               =  new BoardViewModel(boardEvents);
         BoardViewModel.OnSquareClick += onSqualeClickHandler;
-        initTeams(teamsManager.Teams[0], teamsManager.Teams[1]);
+        
+        initTeams(teamsManager);
         s_log.Info("Created");
     }
 
@@ -105,18 +106,22 @@ public abstract class ChessGameViewModel : DependencyObject
         }
     }
 
-    private void initTeams(TeamWithTimer team1
-                         , TeamWithTimer team2)
+    private void initTeams(IChessTeamManager teamsManager)
     {
+        Team       team1      = teamsManager.Teams[0];
+        ITeamTimer team1Timer = teamsManager.GetTeamTimer(team1);
+        Team       team2      = teamsManager.Teams[1];
+        ITeamTimer team2Timer = teamsManager.GetTeamTimer(team2);
+
         if (team1.MoveDirection == GameDirection.North)
         {
-            SouthTeamStatus = new TeamStatusViewModel(team1);
-            NorthTeamStatus = new TeamStatusViewModel(team2);
+            SouthTeamStatus = new TeamStatusViewModel(team1, team1Timer);
+            NorthTeamStatus = new TeamStatusViewModel(team2, team2Timer);
         }
         else
         {
-            SouthTeamStatus = new TeamStatusViewModel(team2);
-            NorthTeamStatus = new TeamStatusViewModel(team1);
+            SouthTeamStatus = new TeamStatusViewModel(team2, team2Timer);
+            NorthTeamStatus = new TeamStatusViewModel(team1, team1Timer);
         }
     }
 }

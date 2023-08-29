@@ -4,6 +4,7 @@ using System.Windows.Media;
 using ChessGame;
 using Client.Game;
 using Common;
+using Common.Chess;
 using FrontCommon;
 
 namespace Frameworks.ChessGame
@@ -26,9 +27,9 @@ namespace Frameworks.ChessGame
 
         public override void Init()
         {
-            TeamWithTimer team1 = new("White", Colors.White, GameDirection.North, TimeSpan.FromMinutes(10));
+            ChessTeam team1 = new("White", Colors.White, GameDirection.North, new TeamTimer(TimeSpan.FromMinutes(10), TimeSpan.FromSeconds(1)));
 
-            TeamWithTimer team2 = new("Black", Colors.Black, GameDirection.South, TimeSpan.FromMinutes(10));
+            ChessTeam team2 = new("Black", Colors.Black, GameDirection.South, new TeamTimer(TimeSpan.FromMinutes(10), TimeSpan.FromSeconds(1)));
 
             OfflineTeamsManager teamsManager = new(new[] { team1, team2 });
 
