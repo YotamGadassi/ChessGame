@@ -34,16 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Remove="Board\ToolsDictionary.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Board\ToolsDictionary.xaml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
   </ItemGroup>
 
@@ -104,6 +94,12 @@
     </Page>
     <Page Update="Board\SquareControl\BoardSquare.xaml">
       <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Board\ToolsDictionary.xaml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Page>
+    <Page Update="Game\GameMainControl\GameControlDictionary.xaml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Page>
   </ItemGroup>
 
