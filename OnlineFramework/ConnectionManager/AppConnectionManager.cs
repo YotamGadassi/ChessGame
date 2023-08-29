@@ -8,14 +8,14 @@ using Tools;
 
 namespace Frameworks
 {
-    public class AppConnectionManager : IConnectionManager<IGameServerAgent>
+    public class AppConnectionManager : IConnectionManager<IChessServerAgent>
     {
         private static readonly ILog   s_log        = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private static readonly string s_hubAddress = @"https://localhost:7034/ChessHub";
 
         public event Action<ConnectionErrorType>? ConnectionError;
         public event Func<Exception?, Task>?          ConnectionClosed;
-        public IGameServerAgent                   ServerAgent      => m_gameServerAgent;
+        public IChessServerAgent                   ServerAgent      => m_gameServerAgent;
         public ConnectionStatus                   ConnectionStatus => convertHubConnectionState(m_connection.State);
 
         private GameServerAgent m_gameServerAgent;

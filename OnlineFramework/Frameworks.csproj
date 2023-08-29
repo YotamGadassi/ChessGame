@@ -13,14 +13,6 @@
     <Compile Remove="OnlineFramework.cs" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="LogConfiguration.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="LogConfiguration.xml" />
-  </ItemGroup>
-
  <ItemGroup>
     <PackageReference Include="log4net" Version="2.0.15" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="6.0.10" />

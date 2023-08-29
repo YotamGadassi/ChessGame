@@ -14,9 +14,4 @@ namespace Common
 
         public TeamWithTimer[] Teams { get; }
     }
-
-    public interface IGameEvents
-    {
-        event Action<Team, Team> TeamChanged;
-    }
 }

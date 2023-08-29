@@ -10,7 +10,7 @@ using PromotionEventHandler = FrontCommon.PromotionEventHandler;
 
 namespace Frameworks
 {
-    internal class GameServerAgent : IGameServerAgent
+    internal class GameServerAgent : IChessServerAgent
     {
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

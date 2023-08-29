@@ -22,7 +22,7 @@ namespace FrontCommon
     public delegate void TimeReceivedHandler(Team     team
                                            , TimeSpan timeLeft);
 
-    public interface IGameServerAgent
+    public interface IChessServerAgent
     {
         event StartGameRequestHandler StartGameRequestEvent;
         event EndGameRequestHandler   EndtGameRequestEvent;
