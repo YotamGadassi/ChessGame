@@ -46,11 +46,11 @@ public abstract class ChessGameViewModel : DependencyObject
 
     public abstract BaseGameControllerViewModel ControllerViewModel { get; }
 
-    protected ChessGameViewModel(IChessGameManager gameManager)
+    protected ChessGameViewModel(IBoardEvents boardEvents, ITeamsManager teamsManager)
     {
-        BoardViewModel               =  new BoardViewModel(gameManager.BoardEvents);
+        BoardViewModel               =  new BoardViewModel(boardEvents);
         BoardViewModel.OnSquareClick += onSqualeClickHandler;
-        initTeams(gameManager.Teams[0], gameManager.Teams[1]);
+        initTeams(teamsManager.Teams[0], teamsManager.Teams[1]);
         s_log.Info("Created");
     }
 

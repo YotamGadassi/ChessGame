@@ -23,7 +23,7 @@ namespace Client.Game
 
         public override BaseGameControllerViewModel ControllerViewModel { get; }
 
-        public OfflineChessGameViewModel(OfflineChessGameManager gameManager) : base(gameManager)
+        public OfflineChessGameViewModel(OfflineChessGameManager gameManager) : base(gameManager.BoardEvents, gameManager.TeamsManager)
         {
             m_dispatcher           = Dispatcher.CurrentDispatcher;
             m_chessGameManager     = gameManager;
