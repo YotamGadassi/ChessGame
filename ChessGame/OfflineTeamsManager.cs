@@ -49,6 +49,14 @@ public class OfflineTeamsManager : IChessTeamManager, IDisposable
         m_teamTimers[team].StopTimer();
     }
 
+    public void Dispose()
+    {
+        foreach (ChessTeam chessTeam in m_teams)
+        {
+            chessTeam.TeamTimer.Dispose();
+        }
+    }
+
     private void switchTeamIndex()
     {
         m_currentTeamIndex = (m_currentTeamIndex + 1) % s_teamsAmount;
@@ -56,11 +64,6 @@ public class OfflineTeamsManager : IChessTeamManager, IDisposable
 
     private ChessTeam getCurrentTeam()      => m_teams[m_currentTeamIndex];
     private TeamTimer getCurrentTeamTimer() => getCurrentTeam().TeamTimer;
-    public  void      Dispose()
-    {
-        foreach (ChessTeam chessTeam in m_teams)
-        {
-            chessTeam.TeamTimer.Dispose();
-        }
-    }
+
+
 }
