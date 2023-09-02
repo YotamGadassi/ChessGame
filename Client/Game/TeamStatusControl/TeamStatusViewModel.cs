@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Timers;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -7,7 +6,7 @@ using Common;
 
 namespace Client.Game
 {
-    public class TeamStatusViewModel : DependencyObject
+    public class TeamStatusViewModel : DependencyObject, IDisposable
     {
         private static readonly DependencyProperty IsTeamTurnProperty = DependencyProperty.Register("IsTeamTurn", typeof(bool), typeof(TeamStatusViewModel), new FrameworkPropertyMetadata(false));
         private static readonly DependencyProperty TimeLeftProperty = DependencyProperty.Register("TimeLeft", typeof(TimeSpan), typeof(TeamStatusViewModel), new PropertyMetadata(TimeSpan.FromMinutes(10)));
@@ -43,11 +42,23 @@ namespace Client.Game
             registerToEvents();
         }
 
+        public void Dispose()
+        {
+            unRegisterFromEvents();
+        }
+
         private void registerToEvents()
         {
             m_teamTimer.TimeLeftChange    += onTimeLeftChange;
             m_teamTimer.TimerStateChanged += onTimerStateChanged;
         }
+
+        private void unRegisterFromEvents()
+        {
+            m_teamTimer.TimeLeftChange    -= onTimeLeftChange;
+            m_teamTimer.TimerStateChanged -= onTimerStateChanged;
+        }
+
 
         private void onTimerStateChanged(bool isTimerOn)
         {

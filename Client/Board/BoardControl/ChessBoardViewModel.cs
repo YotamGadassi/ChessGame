@@ -9,7 +9,7 @@ using Tools;
 
 namespace Client.Board;
 
-public class BoardViewModel : DependencyObject
+public class BoardViewModel : DependencyObject, IDisposable
 {
     public event EventHandler<SquareViewModel>? OnSquareClick;
 
@@ -20,12 +20,13 @@ public class BoardViewModel : DependencyObject
     private          HashSet<SquareViewModel>?                  m_hintedBoardPositions;
     private          IBoardEvents                               m_boardEvents;
     private          Dispatcher                                 m_dispatcher;
+
     public BoardViewModel(IBoardEvents boardEvents)
     {
-        m_dispatcher = Dispatcher.CurrentDispatcher;
+        m_dispatcher           = Dispatcher.CurrentDispatcher;
         m_hintedBoardPositions = new HashSet<SquareViewModel>();
         m_squaresDictionary    = new Dictionary<BoardPosition, SquareViewModel>();
-        m_boardEvents = boardEvents;
+        m_boardEvents          = boardEvents;
         initSquares();
         registerToEvents();
     }
@@ -109,10 +110,35 @@ public class BoardViewModel : DependencyObject
         }
     }
 
+    public void Dispose()
+    {
+        unRegisterFromEvents();
+    }
+
     private void registerToEvents()
     {
         m_boardEvents.ToolAddEvent += AddTool;
-        m_boardEvents.ToolRemoved  += (position) => RemoveTool(position, out _);
+        m_boardEvents.ToolRemoved  += onToolRemoved;
+    }
+
+    private void unRegisterFromEvents()
+    {
+        m_boardEvents.ToolAddEvent -= AddTool;
+        m_boardEvents.ToolRemoved  -= onToolRemoved;
+        unRegisterFromSquareVmEvents();
+    }
+
+    private void unRegisterFromSquareVmEvents()
+    {
+        foreach (SquareViewModel squareVM in SquaresDictionary.Values)
+        {
+            squareVM.ClickEvent -= onSquareClickHandler;
+        }
+    }
+
+    private void onToolRemoved(BoardPosition position)
+    {
+        RemoveTool(position, out _);
     }
 
     private void initSquares()
@@ -134,4 +160,6 @@ public class BoardViewModel : DependencyObject
     {
         OnSquareClick?.Invoke(this, squareVM);
     }
+
+
 }

@@ -11,7 +11,7 @@ using Tools;
 
 namespace Client.Game;
 
-public abstract class ChessGameViewModel : DependencyObject
+public abstract class ChessGameViewModel : DependencyObject, IDisposable
 {
     private static readonly ILog s_log = LogManager.GetLogger(typeof(ChessGameViewModel));
 
@@ -53,6 +53,14 @@ public abstract class ChessGameViewModel : DependencyObject
         
         initTeams(teamsManager);
         s_log.Info("Created");
+    }
+
+    public virtual void Dispose()
+    {
+        BoardViewModel.OnSquareClick -= onSqualeClickHandler;
+        BoardViewModel.Dispose();
+        SouthTeamStatus?.Dispose();
+        NorthTeamStatus?.Dispose();
     }
 
     protected abstract void onSqualeClickHandler(object?         sender
@@ -124,4 +132,6 @@ public abstract class ChessGameViewModel : DependencyObject
             NorthTeamStatus = new TeamStatusViewModel(team1, team1Timer);
         }
     }
+
+
 }

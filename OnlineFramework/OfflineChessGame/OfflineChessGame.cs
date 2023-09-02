@@ -52,6 +52,7 @@ namespace Frameworks.ChessGame
 
         private void disposeResources()
         {
+            m_gameViewModel.Dispose();
             GameManager.GameStateController.StateChanged -= onGameStateChanged;
             GameManager.Dispose();
             m_teamsManager.Dispose();

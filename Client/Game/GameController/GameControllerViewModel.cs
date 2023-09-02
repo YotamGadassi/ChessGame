@@ -1,10 +1,11 @@
-﻿using System.Windows.Input;
+﻿using System;
+using System.Windows.Input;
 using Common;
 using FrontCommon;
 
 namespace Client.Game;
 
-public class GameControllerViewModel : BaseGameControllerViewModel
+public class GameControllerViewModel : BaseGameControllerViewModel, IDisposable
 {
     public override ICommand StartResume { get; }
     public override ICommand EndGame     { get; }
@@ -19,7 +20,22 @@ public class GameControllerViewModel : BaseGameControllerViewModel
         Pause                      =  new WpfCommand(onPauseExecute,       onPauseCanExecute);
         EndGame                    =  new WpfCommand(onEndGameExecute,     onEndGameCanExecute);
         GameState                  =  gameController.State;
+        registerToEvents();
+    }
+
+    public void Dispose()
+    {
+        unRegisterFromEvents();
+    }
+
+    private void registerToEvents()
+    {
         m_gameController.StateChanged += onStateChanged;
+    }
+
+    private void unRegisterFromEvents()
+    {
+        m_gameController.StateChanged -= onStateChanged;
     }
 
     private void onStartResumeExecute(object state)
@@ -63,4 +79,6 @@ public class GameControllerViewModel : BaseGameControllerViewModel
     {
         return GameState != GameState.Ended;
     }
+
+
 }
