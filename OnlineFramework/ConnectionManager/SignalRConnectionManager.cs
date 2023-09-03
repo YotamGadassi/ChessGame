@@ -8,7 +8,7 @@ using Tools;
 
 namespace Frameworks
 {
-    public class AppConnectionManager : IConnectionManager<IChessServerAgent>
+    public class SignalRConnectionManager : IConnectionManager<IChessServerAgent>
     {
         private static readonly ILog   s_log        = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private static readonly string s_hubAddress = @"https://localhost:7034/ChessHub";
@@ -21,7 +21,7 @@ namespace Frameworks
         private GameServerAgent m_gameServerAgent;
         private HubConnection  m_connection;
 
-        public AppConnectionManager(string userName)
+        public SignalRConnectionManager(string userName)
         {
             m_connection = new HubConnectionBuilder().WithUrl(s_hubAddress + $"?name={userName}")
                                                      .ConfigureLogging(builder => builder.AddLog4Net("LogConfiguration.xml"))

@@ -19,6 +19,7 @@ namespace Frameworks.ChessGame
         private OfflineChessGameViewModel m_gameViewModel;
         private GameControl m_gameControl;
         private OfflineTeamsManager m_teamsManager;
+
         public OfflineChessGamePanel(string panelName)
             : base(panelName)
         {

@@ -49,7 +49,7 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
     protected ChessGameViewModel(IBoardEvents boardEvents, IChessTeamManager teamsManager)
     {
         BoardViewModel               =  new BoardViewModel(boardEvents);
-        BoardViewModel.OnSquareClick += onSqualeClickHandler;
+        BoardViewModel.OnSquareClick += onSquareClick;
         
         initTeams(teamsManager);
         s_log.Info("Created");
@@ -57,19 +57,19 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
 
     public virtual void Dispose()
     {
-        BoardViewModel.OnSquareClick -= onSqualeClickHandler;
+        BoardViewModel.OnSquareClick -= onSquareClick;
         BoardViewModel.Dispose();
         SouthTeamStatus?.Dispose();
         NorthTeamStatus?.Dispose();
     }
 
-    protected abstract void onSqualeClickHandler(object?         sender
+    protected abstract void onSquareClick(object?         sender
                                                , SquareViewModel squareVM);
 
-    protected abstract void onPromotionEvent(BoardPosition position
+    protected abstract void onPromotion(BoardPosition position
                                            , ITool         toolToPromote);
 
-    protected abstract void onCheckMateEvent(BoardPosition position
+    protected abstract void onCheckMate(BoardPosition position
                                            , ITool         tool);
 
     protected void handleMoveResult(MoveResult moveResult)
@@ -84,12 +84,12 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
 
         if (moveResultEnum.HasFlag(MoveResultEnum.NeedPromotion))
         {
-            onPromotionEvent(moveResult.EndPosition, moveResult.ToolAtInitial);
+            onPromotion(moveResult.EndPosition, moveResult.ToolAtInitial);
         }
 
         if (moveResultEnum.HasFlag(MoveResultEnum.CheckMate))
         {
-            onCheckMateEvent(moveResult.EndPosition, moveResult.ToolAtInitial);
+            onCheckMate(moveResult.EndPosition, moveResult.ToolAtInitial);
         }
     }
 
