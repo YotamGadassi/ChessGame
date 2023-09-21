@@ -13,13 +13,5 @@ public class OfflineGameButton : BaseGameButton
 
     }
 
-    protected override BaseGamePanel getPanel()
-    {
-        bool isExists = m_panelManager.TryGetPanel(PanelGameName, out BaseGamePanel panel);
-        if (false == isExists)
-        {
-            throw new KeyNotFoundException($"Panel: {PanelGameName} does not exist");
-        }
-        return panel;
-    }
+
 }
