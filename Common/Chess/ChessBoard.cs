@@ -7,14 +7,14 @@ using Tools;
 
 namespace Common.Chess
 {
-    public class ChessBoard : IBoard, IBoardEvents
+    public class ChessBoard : IBoard, IBoardQuery, IBoardEvents
     {
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public event Action<ITool, BoardPosition> ToolAddEvent;
         public event Action<BoardPosition>        ToolRemoved;
 
-        private IBoard         m_board;
+        private BasicBoard     m_board;
         private GameMoveHelper m_gameMoveHelper;
 
         public ChessBoard()

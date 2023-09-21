@@ -27,7 +27,7 @@ namespace Client.Game
         {
             m_dispatcher           = Dispatcher.CurrentDispatcher;
             m_chessGameManager     = gameManager;
-            m_availableMovesHelper = new AvailableMovesHelper(gameManager.ChessBoardProxy);
+            m_availableMovesHelper = new AvailableMovesHelper(gameManager.BoardQuery);
             ControllerViewModel    = new GameControllerViewModel(gameManager.GameStateController);
         }
 

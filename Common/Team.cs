@@ -1,4 +1,5 @@
-﻿using System.Windows.Media;
+﻿using System;
+using System.Windows.Media;
 
 namespace Common
 {
@@ -10,6 +11,8 @@ namespace Common
 
         public Color Color { get; }
 
+        public Guid Id { get; }
+
         public Team(string        name
                   , Color         color
                   , GameDirection moveDirection)
@@ -17,6 +20,7 @@ namespace Common
             MoveDirection = moveDirection;
             Name          = name;
             Color         = color;
+            Id = Guid.NewGuid();
         }
 
         public bool Equals(Team? other)

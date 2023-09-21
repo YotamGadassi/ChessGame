@@ -28,9 +28,17 @@ namespace FrontCommon
             ButtonCommand  = new WpfCommand(playCommandExecute, playCommandCanExecute);
         }
 
-        protected abstract BaseGamePanel getPanel();
+        protected virtual BaseGamePanel getPanel()
+        {
+            bool isExists = m_panelManager.TryGetPanel(PanelGameName, out BaseGamePanel panel);
+            if (false == isExists)
+            {
+                throw new KeyNotFoundException($"Panel: {PanelGameName} does not exist");
+            }
+            return panel;
+        }
 
-        private void playCommandExecute(object parameter)
+        protected virtual void playCommandExecute(object parameter)
         {
             BaseGamePanel gamePanel = getPanel();
             gamePanel.Init();

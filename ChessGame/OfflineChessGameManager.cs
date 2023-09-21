@@ -16,7 +16,8 @@ namespace ChessGame
         public IChessTeamManager    TeamsManager        => m_teamsManager;
         public IGameStateController GameStateController { get; }
 
-        private ChessBoard m_gameBoard;
+        public  IBoardQuery BoardQuery => m_gameBoard;
+        private ChessBoard  m_gameBoard;
 
         private OfflineTeamsManager m_teamsManager;
 

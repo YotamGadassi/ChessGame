@@ -2,7 +2,7 @@
 
 namespace Board
 {
-    public class BasicBoard : IBoard
+    public class BasicBoard : IBoard, IBoardQuery
     {
         private BoardState m_boardState = new();
         private Dictionary<ITool, BoardPosition> m_toolToPosition = new();

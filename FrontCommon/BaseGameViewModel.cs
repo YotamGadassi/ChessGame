@@ -26,10 +26,10 @@ namespace FrontCommon
         protected BaseGameViewModel(IGameStateController gameController)
         {
             m_gameController              =  gameController;
-            StartResume                =  new WpfCommand(onStartResumeExecute, onStartResumeCanExecute);
-            Pause                      =  new WpfCommand(onPauseExecute,       onPauseCanExecute);
-            EndGame                    =  new WpfCommand(onEndGameExecute,     onEndGameCanExecute);
-            GameState                  =  gameController.State;
+            StartResume                   =  new WpfCommand(onStartResumeExecute, onStartResumeCanExecute);
+            Pause                         =  new WpfCommand(onPauseExecute,       onPauseCanExecute);
+            EndGame                       =  new WpfCommand(onEndGameExecute,     onEndGameCanExecute);
+            GameState                     =  gameController.State;
             m_gameController.StateChanged += onStateChanged;
         }
 
