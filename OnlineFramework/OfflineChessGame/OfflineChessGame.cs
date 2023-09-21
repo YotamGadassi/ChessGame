@@ -19,6 +19,7 @@ namespace Frameworks.ChessGame
         private OfflineChessGameViewModel m_gameViewModel;
         private GameControl m_gameControl;
         private OfflineTeamsManager m_teamsManager;
+
         public OfflineChessGamePanel(string panelName)
             : base(panelName)
         {
@@ -52,6 +53,7 @@ namespace Frameworks.ChessGame
 
         private void disposeResources()
         {
+            m_gameViewModel.Dispose();
             GameManager.GameStateController.StateChanged -= onGameStateChanged;
             GameManager.Dispose();
             m_teamsManager.Dispose();

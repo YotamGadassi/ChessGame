@@ -60,7 +60,7 @@ namespace ChessGame
 
         public void Dispose()
         {
-            unregisterToEvents();
+            unRegisterFromEvents();
         }
 
         private void registerToEvents()
@@ -68,7 +68,7 @@ namespace ChessGame
             GameStateController.StateChanged += onStateChanged;
         }
 
-        private void unregisterToEvents()
+        private void unRegisterFromEvents()
         {
             GameStateController.StateChanged -= onStateChanged;
         }

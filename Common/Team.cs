@@ -23,24 +23,24 @@ namespace Common
             Id = Guid.NewGuid();
         }
 
-        public bool Equals(Team? other)
+        public bool Equals(Team other)
         {
-            if (null == other)
-            {
-                return false;
-            }
-
-            return other.MoveDirection.Equals(MoveDirection)
+            return other.Id.Equals(Id)
+                && other.MoveDirection.Equals(MoveDirection)
                 && other.Name.Equals(Name)
                 && other.Color.Equals(Color);
         }
 
         public override bool Equals(object? obj)
         {
-            return Equals(obj as Team);
+            if (obj is Team otherTeam)
+            {
+                return Equals(otherTeam);
+            }
+            return false;
         }
 
-        public override int    GetHashCode()
+        public override int GetHashCode()
         {
             unchecked
             {
@@ -48,13 +48,14 @@ namespace Common
                 hash = hash * 23 + MoveDirection.GetHashCode();
                 hash = hash * 23 + Name?.GetHashCode() ?? 0;
                 hash = hash * 23 + Color.GetHashCode();
+                hash = hash * 23 + Id.GetHashCode();
                 return hash;
             }
         }
 
         public override string ToString()
         {
-            return $"Name:[{Name}], Move Direction:[{MoveDirection}], Color:[{Color}]";
+            return $"{nameof(MoveDirection)}: {MoveDirection}, {nameof(Name)}: {Name}, {nameof(Color)}: {Color}, {nameof(Id)}: {Id}";
         }
     }
 }

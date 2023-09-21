@@ -16,22 +16,28 @@ namespace Client.Game
     public class OfflineChessGameViewModel : ChessGameViewModel
     {
         private static readonly ILog s_log = LogManager.GetLogger(typeof(OfflineChessGameViewModel));
+        public override         BaseGameControllerViewModel ControllerViewModel => m_gameControllerVM;
 
         private OfflineChessGameManager m_chessGameManager;
         private IAvailableMovesHelper   m_availableMovesHelper;
         private Dispatcher              m_dispatcher;
-
-        public override BaseGameControllerViewModel ControllerViewModel { get; }
+        private GameControllerViewModel m_gameControllerVM;
 
         public OfflineChessGameViewModel(OfflineChessGameManager gameManager) : base(gameManager.BoardEvents, gameManager.TeamsManager)
         {
             m_dispatcher           = Dispatcher.CurrentDispatcher;
             m_chessGameManager     = gameManager;
             m_availableMovesHelper = new AvailableMovesHelper(gameManager.BoardQuery);
-            ControllerViewModel    = new GameControllerViewModel(gameManager.GameStateController);
+            m_gameControllerVM     = new GameControllerViewModel(gameManager.GameStateController);
         }
 
-        protected override void onSqualeClickHandler(object?         sender
+        public override void Dispose()
+        {
+            base.Dispose();
+            m_gameControllerVM.Dispose();
+        }
+
+        protected override void onSquareClick(object?         sender
                                                    , SquareViewModel squareVM)
         {
             s_log.DebugFormat("Click on square: {0}", squareVM);
@@ -61,8 +67,8 @@ namespace Client.Game
             BoardViewModel.ClearSelectedAndHintedBoardPositions();
         }
 
-        protected override async void onPromotionEvent(BoardPosition position
-                                                     , ITool         toolToPromote)
+        protected override async void onPromotion(BoardPosition position
+                                                , ITool         toolToPromote)
         {
             s_log.Info($"Promotion event: position: {position} | tool to promote: {toolToPromote}");
 
@@ -76,7 +82,7 @@ namespace Client.Game
             handlePromotionResult(promoteResult);
         }
 
-        protected override void onCheckMateEvent(BoardPosition position
+        protected override void onCheckMate(BoardPosition position
                                                , ITool         tool)
         {
             s_log.Info($"Checkmate Event: Position:{position} | Tool:{tool}");

@@ -11,7 +11,7 @@ using Tools;
 
 namespace Client.Game;
 
-public abstract class ChessGameViewModel : DependencyObject
+public abstract class ChessGameViewModel : DependencyObject, IDisposable
 {
     private static readonly ILog s_log = LogManager.GetLogger(typeof(ChessGameViewModel));
 
@@ -49,19 +49,27 @@ public abstract class ChessGameViewModel : DependencyObject
     protected ChessGameViewModel(IBoardEvents boardEvents, IChessTeamManager teamsManager)
     {
         BoardViewModel               =  new BoardViewModel(boardEvents);
-        BoardViewModel.OnSquareClick += onSqualeClickHandler;
+        BoardViewModel.OnSquareClick += onSquareClick;
         
         initTeams(teamsManager);
         s_log.Info("Created");
     }
 
-    protected abstract void onSqualeClickHandler(object?         sender
+    public virtual void Dispose()
+    {
+        BoardViewModel.OnSquareClick -= onSquareClick;
+        BoardViewModel.Dispose();
+        SouthTeamStatus?.Dispose();
+        NorthTeamStatus?.Dispose();
+    }
+
+    protected abstract void onSquareClick(object?         sender
                                                , SquareViewModel squareVM);
 
-    protected abstract void onPromotionEvent(BoardPosition position
+    protected abstract void onPromotion(BoardPosition position
                                            , ITool         toolToPromote);
 
-    protected abstract void onCheckMateEvent(BoardPosition position
+    protected abstract void onCheckMate(BoardPosition position
                                            , ITool         tool);
 
     protected void handleMoveResult(MoveResult moveResult)
@@ -76,12 +84,12 @@ public abstract class ChessGameViewModel : DependencyObject
 
         if (moveResultEnum.HasFlag(MoveResultEnum.NeedPromotion))
         {
-            onPromotionEvent(moveResult.EndPosition, moveResult.ToolAtInitial);
+            onPromotion(moveResult.EndPosition, moveResult.ToolAtInitial);
         }
 
         if (moveResultEnum.HasFlag(MoveResultEnum.CheckMate))
         {
-            onCheckMateEvent(moveResult.EndPosition, moveResult.ToolAtInitial);
+            onCheckMate(moveResult.EndPosition, moveResult.ToolAtInitial);
         }
     }
 
@@ -124,4 +132,6 @@ public abstract class ChessGameViewModel : DependencyObject
             NorthTeamStatus = new TeamStatusViewModel(team1, team1Timer);
         }
     }
+
+
 }
