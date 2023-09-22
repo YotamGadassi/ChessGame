@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="WaitingForConnectionGamePanel\**" />
+    <EmbeddedResource Remove="WaitingForConnectionGamePanel\**" />
+    <None Remove="WaitingForConnectionGamePanel\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Board\Board.csproj" />
     <ProjectReference Include="..\Client\Client.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
@@ -19,10 +25,6 @@
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.0-rc.1.23421.29" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="8.0.0-rc.1.23421.29" />
     <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="6.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="WaitingForConnectionGamePanel\" />
   </ItemGroup>
 
 </Project>
