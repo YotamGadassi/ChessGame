@@ -45,6 +45,11 @@ namespace Board
             return m_toolToPosition.TryGetValue(tool, out position);
         }
 
+        public BoardState GetBoardState()
+        {
+            return new BoardState(m_boardState);
+        }
+
         public void Clear()
         {
             m_toolToPosition.Clear();

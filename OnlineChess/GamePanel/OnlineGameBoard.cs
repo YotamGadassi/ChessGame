@@ -104,4 +104,9 @@ public class OnlineGameBoard : IBoardEvents, IBoardQuery, IDisposable
     {
         return m_board.TryGetPosition(tool, out position);
     }
+
+    public BoardState GetBoardState()
+    {
+        return m_board.GetBoardState();
+    }
 }

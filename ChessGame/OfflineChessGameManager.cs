@@ -55,7 +55,7 @@ namespace ChessGame
 
         public BoardState GetBoardState()
         {
-            return m_gameBoard.GetBoard;
+            return m_gameBoard.GetBoardState();
         }
 
         public void Dispose()

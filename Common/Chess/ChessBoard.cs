@@ -155,12 +155,15 @@ namespace Common.Chess
             return m_board.TryGetPosition(tool, out position);
         }
 
+        public BoardState GetBoardState()
+        {
+            return m_board.GetBoardState();
+        }
+
         public void Clear()
         {
             m_board.Clear();
         }
-
-        public BoardState GetBoard => m_board.GetBoard;
 
         private void addTool(BoardPosition position
                            , ITool         tool)
