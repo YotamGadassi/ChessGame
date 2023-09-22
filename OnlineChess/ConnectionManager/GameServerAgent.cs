@@ -14,7 +14,7 @@ namespace Frameworks
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public event StartGameHandler?     StartGameEvent;
-        public event EndGameHandler?       EndtGameEvent;
+        public event EndGameHandler?       EndGameEvent;
         public event BoardCommandsHandler? BoardCommandsEvent;
         public event PromotionHandler?     PromotionEvent;
         public event TimeReceivedHandler?  TimeReceivedEvent;
@@ -98,7 +98,7 @@ namespace Frameworks
 
         private void handleEndGameRequest(EndGameReason reason)
         {
-            EndtGameEvent?.Invoke(reason);
+            EndGameEvent?.Invoke(reason);
         }
 
         private void handleStartGameRequest(TeamWithTimer localTeam

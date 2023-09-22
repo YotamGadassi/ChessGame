@@ -21,7 +21,7 @@ namespace OnlineChess
     public interface IChessServerAgent
     {
         event StartGameHandler StartGameEvent;
-        event EndGameHandler EndtGameEvent;
+        event EndGameHandler EndGameEvent;
         event BoardCommandsHandler BoardCommandsEvent;
         event PromotionHandler PromotionEvent;
         event TimeReceivedHandler TimeReceivedEvent;
