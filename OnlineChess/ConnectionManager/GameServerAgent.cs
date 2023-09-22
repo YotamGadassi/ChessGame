@@ -1,13 +1,13 @@
 ﻿using System.Reflection;
 using Board;
+using Common;
 using Common.Chess;
 using log4net;
 using Microsoft.AspNetCore.SignalR.Client;
-using OnlineChess;
 using OnlineChess.GamePanel;
 using Tools;
 
-namespace Frameworks
+namespace OnlineChess.ConnectionManager
 {
     public class GameServerAgent : IChessServerAgent
     {
@@ -56,6 +56,7 @@ namespace Frameworks
 
         public Task<bool> IsMyTurn()
         {
+            //TODO: consider remove
             return m_connection.InvokeAsync<bool>("IsMyTurn");
         }
 
@@ -67,7 +68,7 @@ namespace Frameworks
 
         private void registerToEvents()
         {
-            m_connection.On<TeamWithTimer, TeamWithTimer, BoardState>("StartGame", handleStartGameRequest);
+            m_connection.On<TeamWithTimer, TeamWithTimer, Team, BoardState>("StartGame", handleStartGameRequest);
             m_connection.On<EndGameReason>("EndGame", handleEndGameRequest);
             m_connection.On<Guid, TimeSpan>("UpdateTime", handleTimeUpdate);
             m_connection.On<BoardPosition, ITool>("PromoteTool", handlePromotion);
@@ -103,10 +104,11 @@ namespace Frameworks
 
         private void handleStartGameRequest(TeamWithTimer localTeam
                                           , TeamWithTimer remoteTeam
+                                          , Team          firstTeamTurn
                                           , BoardState    boardState)
         {
             OnlineGameBoard        gameBoard              = new(this, boardState);
-            OnlineChessTeamManager teamManager            = new(localTeam, remoteTeam, this);
+            OnlineChessTeamManager teamManager            = new(localTeam, remoteTeam, firstTeamTurn,this);
             OnlineChessGameManager onlineChessGameManager = new(gameBoard, teamManager, this);
             StartGameEvent?.Invoke(onlineChessGameManager);
         }

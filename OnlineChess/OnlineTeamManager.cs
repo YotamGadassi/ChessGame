@@ -28,9 +28,13 @@ namespace OnlineChess
 
         public OnlineChessTeamManager(TeamWithTimer     localTeam
                                     , TeamWithTimer     otherTeam
+                                    , Team              currentTeamTurn
                                     , IChessServerAgent serverAgent)
         {
-            m_serverAgent = serverAgent;
+            m_serverAgent   = serverAgent;
+            m_teams         = new Dictionary<Guid, Team>();
+            m_teamsTimers   = new Dictionary<Guid, ITeamTimer>();
+            CurrentTeamTurn = currentTeamTurn;
             initTeamsDict(localTeam.Team, otherTeam.Team);
             initTeamsTimerDict(localTeam, otherTeam);
             LocalMachineTeam = localTeam.Team;
@@ -76,9 +80,9 @@ namespace OnlineChess
             m_serverAgent.SwitchTeamEvent -= onTeamSwitch;
         }
 
-        private void onTeamSwitch(Guid currentTeamid)
+        private void onTeamSwitch(Guid currentTeamId)
         {
-            CurrentTeamTurn = m_teams[currentTeamid];
+            CurrentTeamTurn = m_teams[currentTeamId];
             TeamSwitchedEvent?.Invoke(this, CurrentTeamTurn);
         }
     }
