@@ -68,7 +68,7 @@ namespace OnlineChess.ConnectionManager
 
         private void registerToEvents()
         {
-            m_connection.On<TeamWithTimer, TeamWithTimer, Team, BoardState>("StartGame", handleStartGameRequest);
+            m_connection.On<OnlineChessGameConfiguration>("StartGame", handleStartGameRequest);
             m_connection.On<EndGameReason>("EndGame", handleEndGameRequest);
             m_connection.On<Guid, TimeSpan>("UpdateTime", handleTimeUpdate);
             m_connection.On<BoardPosition, ITool>("PromoteTool", handlePromotion);
@@ -102,15 +102,9 @@ namespace OnlineChess.ConnectionManager
             EndGameEvent?.Invoke(reason);
         }
 
-        private void handleStartGameRequest(TeamWithTimer localTeam
-                                          , TeamWithTimer remoteTeam
-                                          , Team          firstTeamTurn
-                                          , BoardState    boardState)
+        private void handleStartGameRequest(OnlineChessGameConfiguration gameConfiguration)
         {
-            OnlineGameBoard        gameBoard              = new(this, boardState);
-            OnlineChessTeamManager teamManager            = new(localTeam, remoteTeam, firstTeamTurn,this);
-            OnlineChessGameManager onlineChessGameManager = new(gameBoard, teamManager, this);
-            StartGameEvent?.Invoke(onlineChessGameManager);
+            StartGameEvent?.Invoke(gameConfiguration);
         }
     }
 }

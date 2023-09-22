@@ -1,6 +1,8 @@
 ﻿using System.Windows.Threading;
+using Common;
 using FrontCommon;
 using log4net;
+using OnlineChess.ConnectionManager;
 
 namespace OnlineChess.GamePanel;
 
@@ -52,8 +54,10 @@ public class OnlineGameButton : BaseGameButton, IDisposable
         m_requestGameRequestManager.StartGameEvent -= onGameStart;
     }
 
-    private void onGameStart(OnlineChessGameManager onlineGameManager)
+    private void onGameStart(OnlineChessGameConfiguration gameConfiguration)
     {
+        OnlineChessGameManager onlineGameManager = createOnlineGameManager(gameConfiguration);
+
         BaseGamePanel         panel           = getPanel();
         if (panel is OnlineChessGamePanel onlineGamePanel)
         {
@@ -64,5 +68,15 @@ public class OnlineGameButton : BaseGameButton, IDisposable
         m_panelManager.Show(panel);
     }
 
+    private OnlineChessGameManager createOnlineGameManager(OnlineChessGameConfiguration gameConfiguration)
+    {
+        TeamWithTimer          localTeam              = gameConfiguration.LocalTeam;
+        TeamWithTimer          remoteTeam             = gameConfiguration.RemoteTeam;
+        Team                   firstTeamTurn          = gameConfiguration.FirstTeamTurn;
 
+        OnlineGameBoard        gameBoard              = new(m_serverAgent, gameConfiguration.BoardState);
+        OnlineChessTeamManager teamManager            = new(localTeam, remoteTeam, firstTeamTurn, m_serverAgent);
+        OnlineChessGameManager onlineChessGameManager = new(gameBoard, teamManager, m_serverAgent);
+        return onlineChessGameManager;
+    }
 }

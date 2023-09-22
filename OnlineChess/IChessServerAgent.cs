@@ -1,13 +1,13 @@
 ﻿using Board;
 using Common.Chess;
-using OnlineChess.GamePanel;
+using OnlineChess.ConnectionManager;
 using Tools;
 
 namespace OnlineChess
 {
     public delegate void BoardCommandsHandler(BoardCommand[] commands);
 
-    public delegate void StartGameHandler(OnlineChessGameManager onlineChessGameManager);
+    public delegate void StartGameHandler(OnlineChessGameConfiguration gameConfiguration);
 
     public delegate void EndGameHandler(EndGameReason reason);
 
