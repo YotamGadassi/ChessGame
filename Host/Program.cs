@@ -3,11 +3,13 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Threading;
 using Common.MainWindow;
+using Frameworks;
 using Frameworks.ChessGame;
 using FrontCommon;
 using FrontCommon.Facade;
 using log4net;
 using log4net.Config;
+using OnlineChess.GamePanel;
 
 namespace Host
 {
@@ -49,14 +51,29 @@ namespace Host
         {
             OfflineGameButton offlineGameButton = new OfflineGameButton(Dispatcher.CurrentDispatcher, panelManager);
             mainWindowViewModel.AddGameButton(offlineGameButton);
+
+            OnlineGameButton onlineGameButton = createOnlineGameButton(panelManager);
+            mainWindowViewModel.AddGameButton(onlineGameButton);
+        }
+
+        private static OnlineGameButton createOnlineGameButton(IGamePanelManager panelManager)
+        {
+            IChessConnctionManager   connectionManager  = new SignalRConnectionManager(); //TODO: use Factory
+            OnlineGameRequestManager gameRequestManager = new(connectionManager);
+            OnlineGameButton         gameButton         = new(Dispatcher.CurrentDispatcher, panelManager, gameRequestManager);
+            return gameButton;
         }
 
         private static IGamePanelManager createGamePanelManager()
         {
             GamePanelManager      panelManager          = new();
             string                panelName             = "OfflineChessGame";
-            OfflineChessGamePanel offlineChessGamePanel = new OfflineChessGamePanel(panelName);
+            OfflineChessGamePanel offlineChessGamePanel = new(panelName);
             panelManager.Add(panelName, offlineChessGamePanel);
+
+            panelName = "OnlineChessGame";
+            OnlineChessGamePanel onlineChessGamePanel = new(panelName);
+            panelManager.Add(panelName, onlineChessGamePanel);
 
             return panelManager;
         }
