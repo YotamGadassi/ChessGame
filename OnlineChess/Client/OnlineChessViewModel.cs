@@ -26,16 +26,26 @@ public class OnlineChessViewModel : ChessGameViewModel
 
     public OnlineChessViewModel(OnlineChessGameManager gameManager) : base(gameManager.BoardEvents, gameManager.TeamsManager)
     {
-        m_dispatcher = Dispatcher.CurrentDispatcher;
+        m_dispatcher           = Dispatcher.CurrentDispatcher;
         m_gameManager          = gameManager;
         m_boardProxy           = gameManager.BoardProxy;
         m_teamManager          = gameManager.TeamsManager;
         m_availableMovesHelper = new AvailableMovesHelper(gameManager.BoardQuery);
+        initBoardState(gameManager.BoardQuery);
+    }
+
+    private void initBoardState(IBoardQuery boardQuery)
+    {
+        BoardState boardState = boardQuery.GetBoardState();
+        foreach (KeyValuePair<BoardPosition, ITool> pair in boardState)
+        {
+            BoardViewModel.AddTool(pair.Value, pair.Key);
+        }
     }
 
 
     protected override async void onSquareClick(object?         sender
-                                               , SquareViewModel squareVM)
+                                              , SquareViewModel squareVM)
     {
         s_log.DebugFormat("Click on square: {0}", squareVM);
 
