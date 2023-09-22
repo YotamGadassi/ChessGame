@@ -26,7 +26,7 @@ public class OnlineGameRequestManager
         m_serverAgent      = connctionManager.ServerAgent;
     }
 
-    public async void RequestGame(string userName)
+    public async Task RequestGame(string userName)
     {
         if (m_connctionManager.ConnectionStatus == ConnectionStatus.Disconnected)
         {
