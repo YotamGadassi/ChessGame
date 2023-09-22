@@ -5,16 +5,17 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OnlineChess;
+using OnlineChess.ConnectionManager;
 using Tools;
 
 namespace Frameworks
 {
-    public interface IChessConnctionManager : IConnectionManager<IChessServerAgent>
+    public interface IChessConnectionManager : IConnectionManager<IChessServerAgent>
     {
 
     }
 
-    public class SignalRConnectionManager : IChessConnctionManager
+    public class SignalRConnectionManager : IChessConnectionManager
     {
         private static readonly ILog   s_log        = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private static readonly string s_hubAddress = @"https://localhost:7034/ChessHub";

@@ -16,11 +16,11 @@ public class OnlineGameRequestManager
         remove => m_serverAgent.EndGameEvent -= value;
     }
 
-    private IChessConnctionManager m_connctionManager;
+    private IChessConnectionManager m_connctionManager;
     private IChessServerAgent m_serverAgent;
 
 
-    public OnlineGameRequestManager(IChessConnctionManager connctionManager)
+    public OnlineGameRequestManager(IChessConnectionManager connctionManager)
     {
         m_connctionManager = connctionManager;
         m_serverAgent      = connctionManager.ServerAgent;

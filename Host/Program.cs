@@ -58,7 +58,7 @@ namespace Host
 
         private static OnlineGameButton createOnlineGameButton(IGamePanelManager panelManager)
         {
-            IChessConnctionManager   connectionManager  = new SignalRConnectionManager(); //TODO: use Factory
+            IChessConnectionManager   connectionManager  = new SignalRConnectionManager(); //TODO: use Factory
             OnlineGameRequestManager gameRequestManager = new(connectionManager);
             OnlineGameButton         gameButton         = new(Dispatcher.CurrentDispatcher, panelManager, gameRequestManager);
             return gameButton;
