@@ -1,6 +1,6 @@
 ﻿namespace OnlineChess
 {
-    public enum OnlineEndGameReason
+    public enum EndGameReason
     {
         Checkmate,
         Withdraw
