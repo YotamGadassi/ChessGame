@@ -69,7 +69,7 @@ namespace OnlineChess.ConnectionManager
         private void registerToEvents()
         {
             m_connection.On<OnlineChessGameConfiguration>("StartGame", handleStartGameRequest);
-            m_connection.On<EndGameReason>("EndGame", handleEndGameRequest);
+            m_connection.On<OnlineEndGameReason>("EndGame", handleEndGameRequest);
             m_connection.On<Guid, TimeSpan>("UpdateTime", handleTimeUpdate);
             m_connection.On<BoardPosition, ITool>("PromoteTool", handlePromotion);
             m_connection.On<BoardCommand[]>("BoardCommands", handleBoardCommands);
@@ -97,7 +97,7 @@ namespace OnlineChess.ConnectionManager
             TimeReceivedEvent?.Invoke(teamId, timeLeft);
         }
 
-        private void handleEndGameRequest(EndGameReason reason)
+        private void handleEndGameRequest(OnlineEndGameReason reason)
         {
             EndGameEvent?.Invoke(reason);
         }
