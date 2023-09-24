@@ -9,7 +9,7 @@ namespace OnlineChess
 
     public delegate void StartGameHandler(OnlineChessGameConfiguration gameConfiguration);
 
-    public delegate void EndGameHandler(EndGameReason reason);
+    public delegate void EndGameHandler(OnlineEndGameReason reason);
 
     public delegate Task<ITool> PromotionHandler(BoardPosition positionToPromote);
 
