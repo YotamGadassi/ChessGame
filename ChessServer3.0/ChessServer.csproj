@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ChessGame\ChessGame.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\OnlineChess\OnlineChess.csproj" />
     <ProjectReference Include="..\Utils\Utils.csproj" />
   </ItemGroup>
 
