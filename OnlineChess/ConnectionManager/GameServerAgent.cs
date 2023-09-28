@@ -1,10 +1,8 @@
 ﻿using System.Reflection;
 using Board;
-using Common;
 using Common.Chess;
 using log4net;
 using Microsoft.AspNetCore.SignalR.Client;
-using OnlineChess.GamePanel;
 using Tools;
 
 namespace OnlineChess.ConnectionManager

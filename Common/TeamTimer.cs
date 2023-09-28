@@ -56,6 +56,7 @@ public class TeamTimer : ITeamTimer, IDisposable
 
     public void Dispose()
     {
+        m_timer.Elapsed -= TimerOnElapsed;
         m_timer.Dispose();
     }
 }
