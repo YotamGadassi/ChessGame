@@ -20,8 +20,8 @@ namespace Frameworks
         private static readonly ILog   s_log        = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private static readonly string s_hubAddress = @"https://localhost:7034/ChessHub";
 
-        public event Action<ConnectionErrorType>? ConnectionError;
-        public event Func<Exception?, Task>?          ConnectionClosed;
+        public event Action<ConnectionErrorType>? ConnectionErrorEvent;
+        public event Func<Exception?, Task>?          ConnectionClosedEvent;
         public IChessServerAgent                   ServerAgent      => m_gameServerAgent;
         public ConnectionStatus                   ConnectionStatus => convertHubConnectionState(m_connection.State);
 
@@ -75,7 +75,7 @@ namespace Frameworks
 
         private Task onConnectionClosed(Exception? exception)
         {
-            return ConnectionClosed?.Invoke(exception);
+            return ConnectionClosedEvent?.Invoke(exception);
         }
 
         private static ConnectionStatus convertHubConnectionState(HubConnectionState connectionState)

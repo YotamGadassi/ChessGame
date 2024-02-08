@@ -7,6 +7,7 @@ namespace FrontCommon
     {
         ICommand ButtonCommand { get; }
         string   PanelGameName { get; }
+        string CommandName { get; }
     }
 
     public abstract class BaseGameButton : IGameButton

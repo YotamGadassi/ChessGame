@@ -1,60 +1,35 @@
 ﻿using System.Windows.Media;
 using Board;
 using ChessGame;
+using ChessServer3._0.ClientInterface;
 using Common;
 using Common.Chess;
 using Microsoft.AspNetCore.SignalR;
 using Tools;
 
-namespace ChessServer3._0;
+namespace ChessServer3._0.Game;
 
-public delegate void PlayerTimeChanged(PlayerObject player
-                                     , TimeSpan     timeLeft);
-
-public class GameUnit : IDisposable
+public class ServerGameMangaer : IDisposable
 {
-    public GameUnit(PlayerObject player1
-                  , PlayerObject player2)
+    private OfflineTeamsManager                m_teamManager;
+    private OfflineChessBoardProxy             m_chessBoardProxy;
+    private IChessPlayer[]                     m_players;
+    private Dictionary<Guid, Action<TimeSpan>> m_timeLeftEventDict;
+
+    public ServerGameMangaer(GameConfiguration gameConfiguration)
     {
-        GroupName                     =  Guid.NewGuid().ToString();
-        GameToken                     =  Guid.Empty;
-        //m_gameController                 =  new OfflineChessGameManager();
-        WhitePlayer1                  =  player1;
-        WhitePlayer1.OneSecPassEvent  += onPlayerOneSecElapsed;
-        BlackPlayer2                  =  player2;
-        BlackPlayer2.OneSecPassEvent  += onPlayerOneSecElapsed;
-        //m_gameController.TeamSwitchEvent += onTeamSwitch;
+        m_players           = gameConfiguration.Players;
+        m_timeLeftEventDict = new Dictionary<Guid, Action<TimeSpan>>();
+        ChessTeam[] chessTeams = m_players.Select((player) => player.Team).ToArray();
+        m_teamManager = new(chessTeams);
+
+        m_chessBoardProxy = new OfflineChessBoardProxy()
+        registerToEvents();
     }
-
-    private OfflineChessGameManager m_gameManager;
-
-    private IHubContext<ChessHub> m_hubContext;
-    public  string                GroupName { get; }
-    public  Guid                  GameToken { get; private set; }
-
-    public PlayerObject WhitePlayer1 { get; }
-    public PlayerObject BlackPlayer2 { get; }
-
-    public event PlayerTimeChanged PlayerTimeChangedEvent;
-
-    public bool IsStarted => !GameToken.Equals(Guid.Empty);
 
     public async Task<bool> StartGame()
     {
-        if (IsStarted)
-        {
-            return false;
-        }
-
-        GameToken = Guid.NewGuid();
-
         m_gameManager.GameStateController.StartResumeGame();
-        WhitePlayer1.PlayersTeam = new Team(WhitePlayer1.Name, Colors.White, GameDirection.North);
-        WhitePlayer1.GameUnit    = this;
-        BlackPlayer2.PlayersTeam = new Team(BlackPlayer2.Name, Colors.Black, GameDirection.South);
-        BlackPlayer2.GameUnit    = this;
-
-        WhitePlayer1.StartTimer();
         return true;
     }
 
@@ -110,17 +85,30 @@ public class GameUnit : IDisposable
         return WhitePlayer1;
     }
 
-    public void Dispose() { }
-
-    private void onPlayerOneSecElapsed(object?  sender
-                                     , TimeSpan timeLeft)
+    public void Dispose()
     {
-        if (false == sender is PlayerObject player)
-        {
-            return;
-        }
+        unRegisterFromEvents();
+        m_gameManager.Dispose();
+    }
 
-        PlayerTimeChangedEvent?.Invoke(player, timeLeft);
+    private void registerToEvents()
+    {
+        foreach (IChessPlayer player in m_players)
+        {
+            Guid             teamId = player.Team.Id;
+            Action<TimeSpan> del    = (timeLeft) => player.UpdateTime(teamId, timeLeft);
+            m_timeLeftEventDict[teamId]          =  del;
+            player.Team.TeamTimer.TimeLeftChange += del;
+        }
+    }
+
+    private void unRegisterFromEvents()
+    {
+        foreach (IChessPlayer player in m_players)
+        {
+            Guid teamId = player.Team.Id;
+            player.Team.TeamTimer.TimeLeftChange -= m_timeLeftEventDict[teamId];
+        }
     }
 
     private void onTeamSwitch(object? sender

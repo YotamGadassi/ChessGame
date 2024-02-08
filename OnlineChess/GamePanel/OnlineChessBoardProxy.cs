@@ -16,14 +16,14 @@ public class OnlineChessBoardProxy
     public Task<MoveResult> Move(BoardPosition start
                                , BoardPosition end)
     {
-        return m_serverAgent.RequestMove(start, end);
+        return m_serverAgent.MoveTool(start, end);
     }
 
     public Task<PromotionResult> RequestPromotion(BoardPosition position
                                                 , ITool         tool)
     {
         IToolWrapperForServer toolWrapper = new IToolWrapperForServer(tool);
-        return m_serverAgent.RequestPromote(position, toolWrapper);
+        return m_serverAgent.PromoteTool(position, toolWrapper);
     }
 
 }

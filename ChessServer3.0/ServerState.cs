@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using Utils.DataStructures;
 using Microsoft.AspNetCore.SignalR;
+using ChessServer3._0.Game;
 
 namespace ChessServer3._0
 {
@@ -14,7 +15,7 @@ namespace ChessServer3._0
     
     public interface IServerState
     {
-        System.Threading.Tasks.Task<GameRequestResult> OnGameRequest(string connectionId);
+        Task<GameRequestResult> OnGameRequest(string connectionId);
         bool                    OnConnection(string  name,         string       connectionId);
         bool                    TryGetGame(string    connectionId, out GameUnit game);
         void                    EndGame(GameUnit     game);

@@ -26,7 +26,7 @@ namespace OnlineChess.ConnectionManager
             registerToEvents();
         }
 
-        public async Task<bool> RequestGame(string userName)
+        public async Task<bool> SubmitGameRequest(string userName)
         {
             s_log.Info("Game request sent to server");
             return await m_connection.InvokeAsync<bool>("RequestGame", userName);
@@ -38,13 +38,13 @@ namespace OnlineChess.ConnectionManager
             await m_connection.InvokeAsync("WithdrawGame");
         }
 
-        public async Task<MoveResult> RequestMove(BoardPosition start
+        public async Task<MoveResult> MoveTool(BoardPosition start
                                                 , BoardPosition end)
         {
             return await m_connection.InvokeAsync<MoveResult>("RequestMove", start, end);
         }
 
-        public async Task<PromotionResult> RequestPromote(BoardPosition         positionToPromote
+        public async Task<PromotionResult> PromoteTool(BoardPosition         positionToPromote
                                              , IToolWrapperForServer tool)
         {
             return await m_connection.InvokeAsync<PromotionResult>("RequestPromote"

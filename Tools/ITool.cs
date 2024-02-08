@@ -24,9 +24,8 @@ public class IToolConverter : JsonConverter<ITool>
                               , Type                  typeToConvert
                               , JsonSerializerOptions options)
     {
-        string? typeName = null;
-        ITool   tool     = null;
         while (reader.Read() && reader.TokenType != JsonTokenType.PropertyName) { }
+        
         string propertyName = reader.GetString();
         if (propertyName != "Type")
         {
@@ -34,8 +33,8 @@ public class IToolConverter : JsonConverter<ITool>
         }
 
         reader.Read();
-        typeName = reader.GetString();
-        Type toolType = Type.GetType(typeName);
+        string? typeName = reader.GetString();
+        Type    toolType = Type.GetType(typeName);
         
         while (reader.Read() && reader.TokenType != JsonTokenType.PropertyName) { }
         propertyName = reader.GetString();
@@ -45,7 +44,7 @@ public class IToolConverter : JsonConverter<ITool>
         }
 
         reader.Read();
-        tool = (ITool)JsonSerializer.Deserialize(ref reader, toolType, options);
+        ITool? tool = (ITool)JsonSerializer.Deserialize(ref reader, toolType, options);
 
         reader.Read(); // End Object
         return tool;

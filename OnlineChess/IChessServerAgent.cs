@@ -5,11 +5,11 @@ using Tools;
 
 namespace OnlineChess
 {
-    public delegate void BoardCommandsHandler(BoardCommand[] commands);
-
     public delegate void StartGameHandler(OnlineChessGameConfiguration gameConfiguration);
 
     public delegate void EndGameHandler(OnlineEndGameReason reason);
+
+    public delegate void BoardCommandsHandler(BoardCommand[] commands);
 
     public delegate Task<ITool> PromotionHandler(BoardPosition positionToPromote);
 
@@ -18,7 +18,24 @@ namespace OnlineChess
 
     public delegate void SwitchTeamHandler(Guid currentTeamId);
 
-    public interface IChessServerAgent
+    public interface IChessServerAPI
+    {
+        Task<bool> SubmitGameRequest(string userName);
+
+        Task WithdrawGame();
+
+        Task<MoveResult> MoveTool(BoardPosition start
+                                   , BoardPosition end);
+
+        Task<PromotionResult> PromoteTool(BoardPosition         positionToPromote
+                                           , IToolWrapperForServer tool);
+
+        Task<bool> IsMyTurn();
+
+        Task SendMessage(string msg);
+    }
+
+    public interface IChessServerAgent : IChessServerAPI
     {
         event StartGameHandler StartGameEvent;
         event EndGameHandler EndGameEvent;
@@ -26,19 +43,5 @@ namespace OnlineChess
         event PromotionHandler PromotionEvent;
         event TimeReceivedHandler TimeReceivedEvent;
         event SwitchTeamHandler SwitchTeamEvent;
-
-        Task<bool> RequestGame(string userName);
-
-        Task WithdrawGame();
-
-        Task<MoveResult> RequestMove(BoardPosition start
-                                       , BoardPosition end);
-
-        Task<PromotionResult> RequestPromote(BoardPosition positionToPromote
-                                , IToolWrapperForServer tool);
-
-        Task<bool> IsMyTurn();
-
-        Task SendMessage(string msg);
     }
 }

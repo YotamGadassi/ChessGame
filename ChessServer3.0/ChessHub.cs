@@ -1,12 +1,14 @@
 ﻿using Board;
-using Common;
 using Common.Chess;
 using Microsoft.AspNetCore.SignalR;
+using OnlineChess;
 using Tools;
+using OnlineChess.ConnectionManager;
+using ChessServer3._0.Game;
 
 namespace ChessServer3._0;
 
-public class ChessHub : Hub
+public class ChessHub : Hub, IChessServerAPI
 {
     private readonly IServerState      m_serverState;
     private readonly ILogger<ChessHub> m_log;
@@ -18,7 +20,41 @@ public class ChessHub : Hub
         m_log         = logger;
     }
 
-    public bool IsMyTurn()
+    public async Task<UserData> SignIn(SignInRequest request)
+    {
+
+    }
+
+    public async Task SignOut(UserData userData)
+    {
+
+    }
+
+    public async Task<bool> SubmitGameRequest(string playerName)
+    {
+        GameRequestResult result = await m_serverState.OnGameRequest(Context.ConnectionId);
+        m_log.LogInformation($"Request Game From ConnectionId [{Context.ConnectionId}] Result: [{result}]");
+        switch (result)
+        {
+            case GameRequestResult.GameStarted:
+            {
+                await sendStartGameToGroup();
+                return true;
+            }
+            case GameRequestResult.PlayerAddedToPendingList:
+            {
+                return true;
+            }
+            case GameRequestResult.CannotStartGame:
+            case GameRequestResult.CannotAddPlayerToPendingList:
+            default:
+            {
+                return false;
+            }
+        }
+    }
+
+    public Task<bool> IsMyTurn()
     {
         string connectionId = Context.ConnectionId;
         if (false == m_serverState.TryGetGame(connectionId, out GameUnit game))
@@ -33,12 +69,16 @@ public class ChessHub : Hub
             throw new InvalidOperationException("Move request is not authorized");
         }
 
-        return game.IsPlayerTurn(player);
+        return new Task<bool>(() => game.IsPlayerTurn(player));
     }
 
-    public async Task<MoveResult> MoveRequest(BoardPosition start
-                                            , BoardPosition end
-                                            , Guid          gameVersion)
+    public Task SendMessage(string msg)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<MoveResult> MoveTool(BoardPosition start
+                                            , BoardPosition end)
     {
         string connectionId = Context.ConnectionId;
         if (false == m_serverState.TryGetGame(connectionId, out GameUnit game))
@@ -47,7 +87,7 @@ public class ChessHub : Hub
             throw new InvalidOperationException("Move request is not authorized");
         }
 
-        MoveResult     moveResult = game.Move(gameVersion, start, end);
+        MoveResult     moveResult = game.Move(start, end);
         MoveResultEnum resultEnum = moveResult.Result;
 
         if (resultEnum.HasFlag(MoveResultEnum.ToolMoved))
@@ -92,9 +132,8 @@ public class ChessHub : Hub
         return moveResult;
     }
 
-    public async Task<bool> PromoteRequest(BoardPosition position
-                                         , IToolWrapperForServer         toolWrapper
-                                         , Guid          gameVersion)
+    public async Task<PromotionResult> PromoteTool(BoardPosition         position
+                                         , IToolWrapperForServer toolWrapper)
     {
         ITool  tool         = toolWrapper.Tool;
         string connectionId = Context.ConnectionId;
@@ -112,7 +151,7 @@ public class ChessHub : Hub
 
         PlayerObject otherPlayer = game.GetOtherPlayer(player);
 
-        bool isPromoted = game.Promote(gameVersion, position, tool);
+        bool isPromoted = game.Promote(position, tool);
         if (false == isPromoted)
         {
             return false;
@@ -122,35 +161,20 @@ public class ChessHub : Hub
 
         return true;
     }
+    public override async Task OnConnectedAsync()
+    {
+        string connectionId = Context.ConnectionId;
 
-    public async Task QuitGame()
+        m_log.LogInformation($"Connected established: {connectionId}");
+        string name = getNameForConnection();
+        m_serverState.OnConnection(name, connectionId);
+        await base.OnConnectedAsync();
+    }
+
+    public async Task WithdrawGame()
     {
         m_log.LogInformation($"Player quit: {Context.ConnectionId}");
         await m_serverState.OnPlayerQuit(Context.ConnectionId);
-    }
-
-    public async Task<bool> RequestGame()
-    {
-        GameRequestResult result = await m_serverState.OnGameRequest(Context.ConnectionId);
-        m_log.LogInformation($"Request Game From ConnectionId [{Context.ConnectionId}] Result: [{result}]");
-        switch (result)
-        {
-            case GameRequestResult.GameStarted:
-            {
-                await sendStartGameToGroup();
-                return true;
-            }
-            case GameRequestResult.PlayerAddedToPendingList:
-            {
-                return true;
-            }
-            case GameRequestResult.CannotStartGame:
-            case GameRequestResult.CannotAddPlayerToPendingList:
-            default:
-            {
-                return false;
-            }
-        }
     }
 
     private async Task sendStartGameToGroup()
@@ -180,15 +204,6 @@ public class ChessHub : Hub
                          Clients.Groups(game.GroupName).SendAsync("ForceAddToBoard", gameBoard));
     }
 
-    public override async Task OnConnectedAsync()
-    {
-        string connectionId = Context.ConnectionId;
-
-        m_log.LogInformation($"Connected established: {connectionId}");
-        string name = getNameForConnection();
-        m_serverState.OnConnection(name, connectionId);
-        await base.OnConnectedAsync();
-    }
 
     private string getNameForConnection()
     {

@@ -21,11 +21,11 @@ namespace Host
         private static void Main(string[] args)
         {
             setUpLog();
-            setUpUnhandledExceptions();
             s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            setUpUnhandledExceptions();
             s_log.Info("App started");
             initFacade();
-            MainWindowControl       mainWinControl = new MainWindowControl();
+            MainWindowControl       mainWinControl = new();
             BaseMainWindowViewModel mainWinVm      = BaseGameFacade.Instance.MainWindowViewModel;
             mainWinControl.DataContext = mainWinVm;
             mainWinControl.ShowDialog();

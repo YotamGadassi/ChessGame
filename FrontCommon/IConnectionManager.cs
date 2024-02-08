@@ -12,8 +12,8 @@
 
     public interface IConnectionManager
     {
-        event Action<ConnectionErrorType> ConnectionError;
-        event Func<Exception?, Task>      ConnectionClosed;
+        event Action<ConnectionErrorType> ConnectionErrorEvent;
+        event Func<Exception?, Task>      ConnectionClosedEvent;
         ConnectionStatus                  ConnectionStatus { get; }
 
         Task<bool> Connect();

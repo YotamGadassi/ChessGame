@@ -19,7 +19,6 @@ public class OnlineGameRequestManager
     private IChessConnectionManager m_connctionManager;
     private IChessServerAgent m_serverAgent;
 
-
     public OnlineGameRequestManager(IChessConnectionManager connctionManager)
     {
         m_connctionManager = connctionManager;
@@ -34,7 +33,7 @@ public class OnlineGameRequestManager
             //TODO: Handle error
         }
 
-        bool isRequestSuccessfully = await m_serverAgent.RequestGame(userName);
+        bool isRequestSuccessfully = await m_serverAgent.SubmitGameRequest(userName);
         //TODO: Handle error
     }
 

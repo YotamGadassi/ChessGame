@@ -43,7 +43,6 @@ public class OnlineChessViewModel : ChessGameViewModel
         }
     }
 
-
     protected override async void onSquareClick(object?         sender
                                               , SquareViewModel squareVM)
     {

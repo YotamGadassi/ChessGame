@@ -12,14 +12,14 @@ public class OnlineGameButton : BaseGameButton, IDisposable
     public override         string PanelGameName => "OnlineChessGame";
     public override         string CommandName   => "Online Chess Game";
 
-    private OnlineGameRequestManager m_requestGameRequestManager;
+    private OnlineGameRequestManager m_gameRequestManager;
     private IChessServerAgent m_serverAgent;
 
     public OnlineGameButton(Dispatcher               dispatcer
                           , IGamePanelManager        panelManager
-                          , OnlineGameRequestManager requestGameRequestManager) : base(dispatcer, panelManager)
+                          , OnlineGameRequestManager gameRequestManager) : base(dispatcer, panelManager)
     {
-        m_requestGameRequestManager                =  requestGameRequestManager;
+        m_gameRequestManager                =  gameRequestManager;
         registerToEvents();
     }
 
@@ -34,24 +34,29 @@ public class OnlineGameButton : BaseGameButton, IDisposable
         //TODO: show message
         try
         {
-            await m_requestGameRequestManager.RequestGame(userName);
+            //TODO: Show Waiting For Connection Panel\Message
+            await m_gameRequestManager.RequestGame(userName);
         }
         catch (Exception e)
         {
             s_log.Error(e.Message);
             //TODO: Handle Error
         }
-        //TODO: Show Waiting For Connection Panel\Message
+        finally
+        {
+            //TODO: Remove waiting message
+        }
+        
     }
 
     private void registerToEvents()
     {
-        m_requestGameRequestManager.StartGameEvent += onGameStart;
+        m_gameRequestManager.StartGameEvent += onGameStart;
     }
 
     private void unRegisterFromEvent()
     {
-        m_requestGameRequestManager.StartGameEvent -= onGameStart;
+        m_gameRequestManager.StartGameEvent -= onGameStart;
     }
 
     private void onGameStart(OnlineChessGameConfiguration gameConfiguration)
