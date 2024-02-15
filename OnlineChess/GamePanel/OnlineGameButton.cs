@@ -1,5 +1,6 @@
 ﻿using System.Windows.Threading;
 using Common;
+using Frameworks;
 using FrontCommon;
 using log4net;
 using OnlineChess.ConnectionManager;
@@ -12,14 +13,15 @@ public class OnlineGameButton : BaseGameButton, IDisposable
     public override         string PanelGameName => "OnlineChessGame";
     public override         string CommandName   => "Online Chess Game";
 
-    private OnlineGameRequestManager m_requestGameRequestManager;
-    private IChessServerAgent m_serverAgent;
+    private readonly OnlineGameRequestManager m_gameRequestManager;
+    private readonly IChessServerAgent        m_serverAgent;
 
     public OnlineGameButton(Dispatcher               dispatcer
                           , IGamePanelManager        panelManager
-                          , OnlineGameRequestManager requestGameRequestManager) : base(dispatcer, panelManager)
+                          , IChessConnectionManager connectionManager) : base(dispatcer, panelManager)
     {
-        m_requestGameRequestManager                =  requestGameRequestManager;
+        m_gameRequestManager = new OnlineGameRequestManager(connectionManager);
+        m_serverAgent        = connectionManager.ServerAgent;
         registerToEvents();
     }
 
@@ -34,7 +36,7 @@ public class OnlineGameButton : BaseGameButton, IDisposable
         //TODO: show message
         try
         {
-            await m_requestGameRequestManager.RequestGame(userName);
+            await m_gameRequestManager.RequestGame(userName);
         }
         catch (Exception e)
         {
@@ -46,23 +48,24 @@ public class OnlineGameButton : BaseGameButton, IDisposable
 
     private void registerToEvents()
     {
-        m_requestGameRequestManager.StartGameEvent += onGameStart;
+        m_gameRequestManager.StartGameEvent += onGameStart;
     }
 
     private void unRegisterFromEvent()
     {
-        m_requestGameRequestManager.StartGameEvent -= onGameStart;
+        m_gameRequestManager.StartGameEvent -= onGameStart;
     }
 
     private void onGameStart(OnlineChessGameConfiguration gameConfiguration)
     {
         OnlineChessGameManager onlineGameManager = createOnlineGameManager(gameConfiguration);
 
-        BaseGamePanel         panel           = getPanel();
+        BaseGamePanel panel = getPanel();
         if (panel is OnlineChessGamePanel onlineGamePanel)
         {
             onlineGamePanel.SetGameManager(onlineGameManager);
         }
+
         panel.Init();
         //TODO: Remove Waiting For Connection Panel\Message
         m_panelManager.Show(panel);
@@ -70,13 +73,13 @@ public class OnlineGameButton : BaseGameButton, IDisposable
 
     private OnlineChessGameManager createOnlineGameManager(OnlineChessGameConfiguration gameConfiguration)
     {
-        TeamWithTimer          localTeam              = gameConfiguration.LocalTeam;
-        TeamWithTimer          remoteTeam             = gameConfiguration.RemoteTeam;
-        Team                   firstTeamTurn          = gameConfiguration.FirstTeamTurn;
+        TeamWithTimer localTeam     = gameConfiguration.LocalTeam;
+        TeamWithTimer remoteTeam    = gameConfiguration.RemoteTeam;
+        Team          firstTeamTurn = gameConfiguration.FirstTeamTurn;
 
         OnlineGameBoard        gameBoard              = new(m_serverAgent, gameConfiguration.BoardState);
         OnlineChessTeamManager teamManager            = new(localTeam, remoteTeam, firstTeamTurn, m_serverAgent);
-        OnlineChessGameManager onlineChessGameManager = new(gameBoard, teamManager, m_serverAgent);
+        OnlineChessGameManager onlineChessGameManager = new(gameBoard, teamManager);
         return onlineChessGameManager;
     }
 }

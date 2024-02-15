@@ -16,21 +16,20 @@ public class OnlineGameRequestManager
         remove => m_serverAgent.EndGameEvent -= value;
     }
 
-    private IChessConnectionManager m_connctionManager;
-    private IChessServerAgent m_serverAgent;
+    private readonly IChessConnectionManager m_connctionManager;
+    private readonly IChessServerAgent       m_serverAgent;
 
-
-    public OnlineGameRequestManager(IChessConnectionManager connctionManager)
+    public OnlineGameRequestManager(IChessConnectionManager connectionManager)
     {
-        m_connctionManager = connctionManager;
-        m_serverAgent      = connctionManager.ServerAgent;
+        m_connctionManager = connectionManager;
+        m_serverAgent      = connectionManager.ServerAgent;
     }
 
     public async Task RequestGame(string userName)
     {
         if (m_connctionManager.ConnectionStatus == ConnectionStatus.Disconnected)
         {
-            bool isConnectedSuccefully = await m_connctionManager.Connect();
+            bool isConnectedSuccessfully = await m_connctionManager.Connect();
             //TODO: Handle error
         }
 

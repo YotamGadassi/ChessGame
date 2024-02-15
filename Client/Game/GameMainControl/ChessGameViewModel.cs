@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Media;
 using Board;
 using Client.Board;
 using Common;
@@ -132,6 +131,4 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
             NorthTeamStatus = new TeamStatusViewModel(team1, team1Timer);
         }
     }
-
-
 }

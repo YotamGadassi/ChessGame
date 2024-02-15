@@ -25,7 +25,7 @@ namespace Frameworks
         public IChessServerAgent                   ServerAgent      => m_gameServerAgent;
         public ConnectionStatus                   ConnectionStatus => convertHubConnectionState(m_connection.State);
 
-        private GameServerAgent m_gameServerAgent;
+        private SignalRServerAgent m_gameServerAgent;
         private HubConnection  m_connection;
 
         public SignalRConnectionManager()
@@ -36,7 +36,7 @@ namespace Frameworks
                                                                                         .Converters
                                                                                         .Add(new IToolConverter()))
                                                      .Build();
-            m_gameServerAgent = new GameServerAgent(m_connection);
+            m_gameServerAgent = new SignalRServerAgent(m_connection);
         }
 
         public async Task<bool> Connect()
@@ -61,7 +61,7 @@ namespace Frameworks
                 return false;
             }
 
-            m_gameServerAgent = new GameServerAgent(m_connection);
+            m_gameServerAgent = new SignalRServerAgent(m_connection);
             s_log.Info($"connection to client completed. server state:{m_connection.State}");
 
             return true;

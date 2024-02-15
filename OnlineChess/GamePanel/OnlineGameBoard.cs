@@ -1,5 +1,6 @@
 ﻿using Board;
 using Common;
+using Common.Chess;
 using log4net;
 using Tools;
 
@@ -23,6 +24,41 @@ public class OnlineGameBoard : IBoardEvents, IBoardQuery, IDisposable
         setBoardState(boardState);
     }
 
+    public bool TryGetTool(BoardPosition position
+                         , out ITool     tool)
+    {
+        return m_board.TryGetTool(position, out tool);
+    }
+
+    public bool TryGetPosition(ITool             tool
+                             , out BoardPosition position)
+    {
+        return m_board.TryGetPosition(tool, out position);
+    }
+
+    public BoardState GetBoardState()
+    {
+        return m_board.GetBoardState();
+    }
+
+    public Task<MoveResult> Move(BoardPosition start
+                               , BoardPosition end)
+    {
+        return m_serverAgent.RequestMove(start, end);
+    }
+
+    public Task<PromotionResult> PromoteTool(BoardPosition position
+                                           , ITool         tool)
+    {
+        IToolWrapperForServer toolWrapper = new(tool);
+        return m_serverAgent.RequestPromote(position, toolWrapper);
+    }
+
+    public void Dispose()
+    {
+        unRegisterFromEvents();
+    }
+
     private void setBoardState(BoardState boardState)
     {
         foreach (KeyValuePair<BoardPosition, ITool> pair in boardState)
@@ -31,11 +67,6 @@ public class OnlineGameBoard : IBoardEvents, IBoardQuery, IDisposable
             ITool tool = pair.Value;
             addTool(position, tool);
         }
-    }
-
-    public void Dispose()
-    {
-        unRegisterFromEvents();
     }
 
     private void registerToEvents()
@@ -93,20 +124,4 @@ public class OnlineGameBoard : IBoardEvents, IBoardQuery, IDisposable
         ToolRemoved?.Invoke(position);
     }
 
-    public bool TryGetTool(BoardPosition position
-                         , out ITool     tool)
-    {
-        return m_board.TryGetTool(position, out tool);
-    }
-
-    public bool TryGetPosition(ITool             tool
-                             , out BoardPosition position)
-    {
-        return m_board.TryGetPosition(tool, out position);
-    }
-
-    public BoardState GetBoardState()
-    {
-        return m_board.GetBoardState();
-    }
 }

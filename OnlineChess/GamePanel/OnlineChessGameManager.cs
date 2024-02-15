@@ -8,34 +8,24 @@ public class OnlineChessGameManager : IDisposable
 {
     private static readonly ILog s_log = LogManager.GetLogger(typeof(OnlineChessGameManager));
 
-    public IBoardEvents BoardEvents => m_gameBoard;
+    public IBoardEvents           BoardEvents  => GameBoard;
+    public IBoardQuery            BoardQuery   => GameBoard;
+    public OnlineChessTeamManager TeamsManager { get; }
 
-    public OnlineChessTeamManager TeamsManager => m_teamManager;
-
-    public OnlineChessBoardProxy BoardProxy { get; }
-
-    public IBoardQuery BoardQuery => m_gameBoard;
-
-    private OnlineGameBoard        m_gameBoard;
-    private OnlineChessTeamManager m_teamManager;
-
-    private IChessServerAgent m_serverAgent;
+    public OnlineGameBoard        GameBoard    { get; }
 
     public OnlineChessGameManager(OnlineGameBoard        gameBoard
-                                , OnlineChessTeamManager teamManager
-                                , IChessServerAgent      serverAgent)
+                                , OnlineChessTeamManager teamManager)
     {
-        m_gameBoard   = gameBoard;
-        m_teamManager = teamManager;
-        m_serverAgent = serverAgent;
-        BoardProxy    = new OnlineChessBoardProxy(m_serverAgent);
+        GameBoard    = gameBoard;
+        TeamsManager = teamManager;
 
         s_log.Info("Created");
     }
 
     public void Dispose()
     {
-        m_gameBoard.Dispose();
-        m_teamManager.Dispose();
+        GameBoard.Dispose();
+        TeamsManager.Dispose();
     }
 }

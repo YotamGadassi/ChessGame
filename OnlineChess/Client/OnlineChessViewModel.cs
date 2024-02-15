@@ -1,5 +1,4 @@
-﻿using System.Windows.Threading;
-using Board;
+﻿using Board;
 using ChessGame.Helpers;
 using Client.Board;
 using Client.Game;
@@ -18,17 +17,14 @@ public class OnlineChessViewModel : ChessGameViewModel
     private static readonly ILog                        s_log = LogManager.GetLogger(typeof(OnlineChessViewModel));
     public override         BaseGameControllerViewModel ControllerViewModel { get; }
 
-    private OnlineChessGameManager m_gameManager;
-    private OnlineChessBoardProxy  m_boardProxy;
+    private OnlineGameBoard  m_gameBoard;
     private OnlineChessTeamManager m_teamManager;
     private IAvailableMovesHelper  m_availableMovesHelper;
-    private Dispatcher             m_dispatcher;
 
-    public OnlineChessViewModel(OnlineChessGameManager gameManager) : base(gameManager.BoardEvents, gameManager.TeamsManager)
+    public OnlineChessViewModel(OnlineChessGameManager gameManager) : base(gameManager.BoardEvents
+                                                                         , gameManager.TeamsManager)
     {
-        m_dispatcher           = Dispatcher.CurrentDispatcher;
-        m_gameManager          = gameManager;
-        m_boardProxy           = gameManager.BoardProxy;
+        m_gameBoard            = gameManager.GameBoard;
         m_teamManager          = gameManager.TeamsManager;
         m_availableMovesHelper = new AvailableMovesHelper(gameManager.BoardQuery);
         initBoardState(gameManager.BoardQuery);
@@ -43,7 +39,6 @@ public class OnlineChessViewModel : ChessGameViewModel
         }
     }
 
-
     protected override async void onSquareClick(object?         sender
                                               , SquareViewModel squareVM)
     {
@@ -51,31 +46,33 @@ public class OnlineChessViewModel : ChessGameViewModel
 
         bool isLocalMachineTeamTurn = m_teamManager.IsLocalMachineTeamTurn();
 
-        if (isLocalMachineTeamTurn)
+        if (!isLocalMachineTeamTurn)
         {
-            ITool         tool                = squareVM.Tool;
-            BoardPosition position            = squareVM.Position;
-            Team          localMachineTeam    = m_teamManager.LocalMachineTeam;
-            bool          isToolBelongsToTeam = null != tool && tool.Color.Equals(localMachineTeam);
-            if (isToolBelongsToTeam)
-            {
-                BoardViewModel.ClearSelectedAndHintedBoardPositions();
-                BoardViewModel.SelectedBoardPosition = position;
-                BoardPosition[] availablePositionsToMove = m_availableMovesHelper.GetAvailablePositionToMove(position);
-                BoardViewModel.SetHintedBoardPosition(availablePositionsToMove);
-                return;
-            }
-
-            if (false == BoardViewModel.SelectedBoardPosition.IsEmpty())
-            {
-                BoardPosition start      = BoardViewModel.SelectedBoardPosition;
-                BoardPosition end        = position;
-                MoveResult    moveResult = await m_boardProxy.Move(start, end);
-                handleMoveResult(moveResult);
-            }
-
-            BoardViewModel.ClearSelectedAndHintedBoardPositions();
+            return;
         }
+
+        ITool         tool                = squareVM.Tool;
+        BoardPosition position            = squareVM.Position;
+        Team          localMachineTeam    = m_teamManager.LocalMachineTeam;
+        bool          isToolBelongsToTeam = null != tool && tool.Color.Equals(localMachineTeam);
+        if (isToolBelongsToTeam)
+        {
+            BoardViewModel.ClearSelectedAndHintedBoardPositions();
+            BoardViewModel.SelectedBoardPosition = position;
+            BoardPosition[] availablePositionsToMove = m_availableMovesHelper.GetAvailablePositionToMove(position);
+            BoardViewModel.SetHintedBoardPosition(availablePositionsToMove);
+            return;
+        }
+
+        if (false == BoardViewModel.SelectedBoardPosition.IsEmpty())
+        {
+            BoardPosition start      = BoardViewModel.SelectedBoardPosition;
+            BoardPosition end        = position;
+            MoveResult    moveResult = await m_gameBoard.Move(start, end);
+            handleMoveResult(moveResult);
+        }
+
+        BoardViewModel.ClearSelectedAndHintedBoardPositions();
     }
 
     protected override async void onPromotion(BoardPosition position
@@ -89,7 +86,7 @@ public class OnlineChessViewModel : ChessGameViewModel
         ITool chosenTool = await promotionMessage.ToolAwaiter;
         Message = null;
 
-        PromotionResult promoteResult = await m_boardProxy.RequestPromotion(position, chosenTool);
+        PromotionResult promoteResult = await m_gameBoard.PromoteTool(position, chosenTool);
         handlePromotionResult(promoteResult);
     }
 

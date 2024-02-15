@@ -1,15 +1,13 @@
 ﻿using System.Reflection;
 using Board;
-using Common;
 using Common.Chess;
 using log4net;
 using Microsoft.AspNetCore.SignalR.Client;
-using OnlineChess.GamePanel;
 using Tools;
 
 namespace OnlineChess.ConnectionManager
 {
-    public class GameServerAgent : IChessServerAgent
+    public class SignalRServerAgent : IChessServerAgent
     {
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -22,7 +20,7 @@ namespace OnlineChess.ConnectionManager
 
         private HubConnection m_connection;
 
-        public GameServerAgent(HubConnection connection)
+        public SignalRServerAgent(HubConnection connection)
         {
             m_connection = connection;
             registerToEvents();
