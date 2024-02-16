@@ -32,11 +32,12 @@ public class OnlineGameButton : BaseGameButton, IDisposable
 
     protected override async void playCommandExecute(object parameter)
     {
-        string userName = "A"; //TODO: use parameter as object name
+        string      userName    = "A"; //TODO: use parameter as object name
+        GameRequest gameRequest = new GameRequest(userName);
         //TODO: show message
         try
         {
-            await m_gameRequestManager.RequestGame(userName);
+            await m_gameRequestManager.RequestGame(gameRequest);
         }
         catch (Exception e)
         {

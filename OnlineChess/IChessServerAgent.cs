@@ -27,7 +27,7 @@ namespace OnlineChess
         event TimeReceivedHandler TimeReceivedEvent;
         event SwitchTeamHandler SwitchTeamEvent;
 
-        Task<bool> RequestGame(string userName);
+        Task<bool> RequestGame(GameRequest gameRequest);
 
         Task WithdrawGame();
 
