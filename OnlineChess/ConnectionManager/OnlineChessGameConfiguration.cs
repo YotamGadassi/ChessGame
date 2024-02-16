@@ -5,13 +5,13 @@ namespace OnlineChess.ConnectionManager;
 
 public class OnlineChessGameConfiguration
 {
-    public TeamWithTimer     LocalTeam     { get; }
-    public TeamWithTimer     RemoteTeam    { get; }
+    public OnlineChessTeam     LocalTeam     { get; }
+    public OnlineChessTeam     RemoteTeam    { get; }
     public Team              FirstTeamTurn { get; }
     public BoardState        BoardState    { get; }
 
-    public OnlineChessGameConfiguration(TeamWithTimer  localTeam
-                                       , TeamWithTimer remoteTeam
+    public OnlineChessGameConfiguration(OnlineChessTeam  localTeam
+                                       , OnlineChessTeam remoteTeam
                                        , Team          firstTeamTurn
                                        , BoardState    boardState)
     {

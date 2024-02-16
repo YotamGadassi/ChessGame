@@ -21,14 +21,14 @@ public class TeamTimer : ITeamTimer, IDisposable
     private readonly Timer m_timer;
     private readonly object m_lock = new();
 
-    public TeamTimer(TimeSpan      totalTime, TimeSpan timerInterval)
+    public TeamTimer(TimeSpan totalTime
+                   , TimeSpan timerInterval)
     {
         m_timer           =  new Timer(timerInterval.TotalMilliseconds);
         m_timer.AutoReset =  true;
         TimeLeft          =  totalTime;
         m_timer.Elapsed   += TimerOnElapsed;
     }
-
 
     public TimeSpan TimeLeft { get; private set; }
 

@@ -1,16 +1,17 @@
-﻿using Common;
+﻿using System.Windows.Media;
+using Common;
 
 namespace OnlineChess
 {
-    public class TeamWithTimer
+    public class OnlineChessTeam : Team
     {
-        public Team       Team      { get; }
         public ITeamTimer TeamTimer { get; }
 
-        public TeamWithTimer(Team       team
-                           , ITeamTimer teamTimer)
+        public OnlineChessTeam(string        name
+                             , Color         color
+                             , GameDirection gameDirection
+                             , ITeamTimer    teamTimer) : base(name, color, gameDirection)
         {
-            Team      = team;
             TeamTimer = teamTimer;
         }
     }
@@ -22,12 +23,12 @@ namespace OnlineChess
         public Team[]                    Teams            => m_teams.Values.ToArray();
         public Team                      LocalMachineTeam { get; }
 
-        private Dictionary<Guid, Team>       m_teams;
-        private Dictionary<Guid, ITeamTimer> m_teamsTimers;
-        private IChessServerAgent            m_serverAgent;
+        private readonly Dictionary<Guid, Team>       m_teams;
+        private readonly Dictionary<Guid, ITeamTimer> m_teamsTimers;
+        private readonly IChessServerAgent            m_serverAgent;
 
-        public OnlineChessTeamManager(TeamWithTimer     localTeam
-                                    , TeamWithTimer     otherTeam
+        public OnlineChessTeamManager(OnlineChessTeam     localTeam
+                                    , OnlineChessTeam     otherTeam
                                     , Team              currentTeamTurn
                                     , IChessServerAgent serverAgent)
         {
@@ -35,9 +36,9 @@ namespace OnlineChess
             m_teams         = new Dictionary<Guid, Team>();
             m_teamsTimers   = new Dictionary<Guid, ITeamTimer>();
             CurrentTeamTurn = currentTeamTurn;
-            initTeamsDict(localTeam.Team, otherTeam.Team);
+            initTeamsDict(localTeam, otherTeam);
             initTeamsTimerDict(localTeam, otherTeam);
-            LocalMachineTeam = localTeam.Team;
+            LocalMachineTeam = localTeam;
             registerToEvents();
         }
 
@@ -56,11 +57,11 @@ namespace OnlineChess
             unRegisterFromEvents();
         }
 
-        private void initTeamsTimerDict(TeamWithTimer firstTeam
-                                      , TeamWithTimer secondTeam)
+        private void initTeamsTimerDict(OnlineChessTeam firstTeam
+                                      , OnlineChessTeam secondTeam)
         {
-            m_teamsTimers[firstTeam.Team.Id]  = firstTeam.TeamTimer;
-            m_teamsTimers[secondTeam.Team.Id] = secondTeam.TeamTimer;
+            m_teamsTimers[firstTeam.Id]  = firstTeam.TeamTimer;
+            m_teamsTimers[secondTeam.Id] = secondTeam.TeamTimer;
         }
 
         private void initTeamsDict(Team firstTeam

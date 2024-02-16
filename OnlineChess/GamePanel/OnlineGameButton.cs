@@ -74,8 +74,8 @@ public class OnlineGameButton : BaseGameButton, IDisposable
 
     private OnlineChessGameManager createOnlineGameManager(OnlineChessGameConfiguration gameConfiguration)
     {
-        TeamWithTimer localTeam     = gameConfiguration.LocalTeam;
-        TeamWithTimer remoteTeam    = gameConfiguration.RemoteTeam;
+        OnlineChessTeam localTeam     = gameConfiguration.LocalTeam;
+        OnlineChessTeam remoteTeam    = gameConfiguration.RemoteTeam;
         Team          firstTeamTurn = gameConfiguration.FirstTeamTurn;
 
         OnlineGameBoard        gameBoard              = new(m_serverAgent, gameConfiguration.BoardState);
