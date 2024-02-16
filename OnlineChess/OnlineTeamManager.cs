@@ -23,9 +23,9 @@ namespace OnlineChess
         public Team[]                    Teams            => m_teams.Values.ToArray();
         public Team                      LocalMachineTeam { get; }
 
-        private readonly Dictionary<Guid, Team>       m_teams;
-        private readonly Dictionary<Guid, ITeamTimer> m_teamsTimers;
-        private readonly IChessServerAgent            m_serverAgent;
+        private readonly Dictionary<TeamId, Team>       m_teams;
+        private readonly Dictionary<TeamId, ITeamTimer> m_teamsTimers;
+        private readonly IChessServerAgent              m_serverAgent;
 
         public OnlineChessTeamManager(OnlineChessTeam     localTeam
                                     , OnlineChessTeam     otherTeam
@@ -33,8 +33,8 @@ namespace OnlineChess
                                     , IChessServerAgent serverAgent)
         {
             m_serverAgent   = serverAgent;
-            m_teams         = new Dictionary<Guid, Team>();
-            m_teamsTimers   = new Dictionary<Guid, ITeamTimer>();
+            m_teams         = new Dictionary<TeamId, Team>();
+            m_teamsTimers   = new Dictionary<TeamId, ITeamTimer>();
             CurrentTeamTurn = currentTeamTurn;
             initTeamsDict(localTeam, otherTeam);
             initTeamsTimerDict(localTeam, otherTeam);
@@ -73,15 +73,15 @@ namespace OnlineChess
 
         private void registerToEvents()
         {
-            m_serverAgent.SwitchTeamEvent += onTeamSwitch;
+            m_serverAgent.UpdatePlayingTeamEvent += onTeamSwitch;
         }
 
         private void unRegisterFromEvents()
         {
-            m_serverAgent.SwitchTeamEvent -= onTeamSwitch;
+            m_serverAgent.UpdatePlayingTeamEvent -= onTeamSwitch;
         }
 
-        private void onTeamSwitch(Guid currentTeamId)
+        private void onTeamSwitch(TeamId currentTeamId)
         {
             CurrentTeamTurn = m_teams[currentTeamId];
             TeamSwitchedEvent?.Invoke(this, CurrentTeamTurn);

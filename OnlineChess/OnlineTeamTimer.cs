@@ -19,11 +19,11 @@ namespace OnlineChess
 
         private TimeSpan m_timeLeft;
         private IChessServerAgent m_agent;
-        private Guid m_teamId;
+        private TeamId m_teamId;
         private object m_timeLock;
 
         public OnlineTeamTimer(IChessServerAgent agent
-                             , Guid teamId
+                             , TeamId teamId
                              , TimeSpan timeLeft)
         {
             m_timeLock = new object();
@@ -40,15 +40,15 @@ namespace OnlineChess
 
         private void registerToEvents()
         {
-            m_agent.TimeReceivedEvent += onTimeReceived;
+            m_agent.UpdateTimeEvent += onTimeReceived;
         }
 
         private void unregisterFromEvents()
         {
-            m_agent.TimeReceivedEvent -= onTimeReceived;
+            m_agent.UpdateTimeEvent -= onTimeReceived;
         }
 
-        private void onTimeReceived(Guid teamId
+        private void onTimeReceived(TeamId teamId
                                   , TimeSpan timeleft)
         {
             if (m_teamId.Equals(teamId))

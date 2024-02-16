@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Board;
+using Common;
 using Common.Chess;
 using log4net;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -15,10 +16,10 @@ namespace OnlineChess.ConnectionManager
         public event EndGameHandler?       EndGameEvent;
         public event BoardCommandsHandler? BoardCommandsEvent;
         public event PromotionHandler?     PromotionEvent;
-        public event TimeReceivedHandler?  TimeReceivedEvent;
-        public event SwitchTeamHandler?    SwitchTeamEvent;
+        public event UpdateTimerHandler?  UpdateTimeEvent;
+        public event UpdatePlayingTeamHandler?    UpdatePlayingTeamEvent;
 
-        private HubConnection m_connection;
+        private readonly HubConnection m_connection;
 
         public SignalRServerAgent(HubConnection connection)
         {
@@ -68,15 +69,15 @@ namespace OnlineChess.ConnectionManager
         {
             m_connection.On<OnlineChessGameConfiguration>("StartGame", handleStartGameRequest);
             m_connection.On<EndGameReason>("EndGame", handleEndGameRequest);
-            m_connection.On<Guid, TimeSpan>("UpdateTime", handleTimeUpdate);
+            m_connection.On<TeamId, TimeSpan>("UpdateTime", handleTimeUpdate);
             m_connection.On<BoardPosition, ITool>("PromoteTool", handlePromotion);
             m_connection.On<BoardCommand[]>("BoardCommands", handleBoardCommands);
-            m_connection.On<Guid>("SwitchTeam", handleTeamSwitch);
+            m_connection.On<TeamId>("SwitchTeam", handleTeamSwitch);
         }
 
-        private void handleTeamSwitch(Guid currentTeamId)
+        private void handleTeamSwitch(TeamId currentTeamId)
         {
-            SwitchTeamEvent?.Invoke(currentTeamId);
+            UpdatePlayingTeamEvent?.Invoke(currentTeamId);
         }
 
         private void handleBoardCommands(BoardCommand[] commands)
@@ -89,10 +90,10 @@ namespace OnlineChess.ConnectionManager
             return PromotionEvent?.Invoke(positionToPromote);
         }
 
-        private void handleTimeUpdate(Guid     teamId
+        private void handleTimeUpdate(TeamId     teamId
                                     , TimeSpan timeLeft)
         {
-            TimeReceivedEvent?.Invoke(teamId, timeLeft);
+            UpdateTimeEvent?.Invoke(teamId, timeLeft);
         }
 
         private void handleEndGameRequest(EndGameReason reason)

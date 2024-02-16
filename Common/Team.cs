@@ -11,7 +11,7 @@ namespace Common
 
         public Color Color { get; }
 
-        public Guid Id { get; }
+        public TeamId Id { get; }
 
         public Team(string        name
                   , Color         color
@@ -20,7 +20,7 @@ namespace Common
             MoveDirection = moveDirection;
             Name          = name;
             Color         = color;
-            Id = Guid.NewGuid();
+            Id = TeamId.NewTeamId();
         }
 
         public bool Equals(Team other)

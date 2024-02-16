@@ -1,4 +1,5 @@
 ﻿using Board;
+using Common;
 using Common.Chess;
 using OnlineChess.ConnectionManager;
 using Tools;
@@ -13,19 +14,19 @@ namespace OnlineChess
 
     public delegate Task<ITool> PromotionHandler(BoardPosition positionToPromote);
 
-    public delegate void TimeReceivedHandler(Guid teamId
-                                           , TimeSpan timeLeft);
+    public delegate void UpdateTimerHandler(TeamId   teamId
+                                          , TimeSpan timeLeft);
 
-    public delegate void SwitchTeamHandler(Guid currentTeamId);
+    public delegate void UpdatePlayingTeamHandler(TeamId currentTeamId);
 
     public interface IChessServerAgent
     {
-        event StartGameHandler StartGameEvent;
-        event EndGameHandler EndGameEvent;
-        event BoardCommandsHandler BoardCommandsEvent;
-        event PromotionHandler PromotionEvent;
-        event TimeReceivedHandler TimeReceivedEvent;
-        event SwitchTeamHandler SwitchTeamEvent;
+        event StartGameHandler         StartGameEvent;
+        event EndGameHandler           EndGameEvent;
+        event BoardCommandsHandler     BoardCommandsEvent;
+        event PromotionHandler         PromotionEvent;
+        event UpdateTimerHandler       UpdateTimeEvent;
+        event UpdatePlayingTeamHandler UpdatePlayingTeamEvent;
 
         Task<bool> RequestGame(GameRequest gameRequest);
 
