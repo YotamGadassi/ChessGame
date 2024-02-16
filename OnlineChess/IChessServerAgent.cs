@@ -28,7 +28,9 @@ namespace OnlineChess
         event UpdateTimerHandler       UpdateTimeEvent;
         event UpdatePlayingTeamHandler UpdatePlayingTeamEvent;
 
-        Task<bool> RequestGame(GameRequest gameRequest);
+        Task<GameRequestResult> SubmitGameRequest(GameRequest gameRequest);
+
+        Task CancelGameRequest(GameRequestId gameRequestId);
 
         Task WithdrawGame();
 

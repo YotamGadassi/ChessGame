@@ -27,10 +27,16 @@ namespace OnlineChess.ConnectionManager
             registerToEvents();
         }
 
-        public async Task<bool> RequestGame(GameRequest gameRequest)
+        public async Task<GameRequestResult> SubmitGameRequest(GameRequest gameRequest)
         {
             s_log.InfoFormat("Game request sent to server: {0}", gameRequest);
-            return await m_connection.InvokeAsync<bool>("RequestGame", gameRequest.UserName);
+            return await m_connection.InvokeAsync<GameRequestResult>("SubmitGameRequest", gameRequest.UserName);
+        }
+
+        public Task CancelGameRequest(GameRequestId gameRequestId)
+        {
+            s_log.InfoFormat("Cancel game request sent to server: {0}", gameRequestId);
+            return m_connection.InvokeAsync("CancelGameRequest", gameRequestId);
         }
 
         public async Task WithdrawGame()

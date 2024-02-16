@@ -44,8 +44,8 @@ public class OnlineGameRequestManager
             }
         }
 
-        bool isRequestSuccessfully = await m_serverAgent.RequestGame(gameRequest);
-        if (false == isRequestSuccessfully)
+        GameRequestResult gameRequestResult = await m_serverAgent.SubmitGameRequest(gameRequest);
+        if (gameRequestResult.IsError)
         {
             //TODO: Handle error
             s_log.ErrorFormat("Can't request game from server");
