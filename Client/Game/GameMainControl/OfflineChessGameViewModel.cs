@@ -16,7 +16,7 @@ namespace Client.Game
     public class OfflineChessGameViewModel : ChessGameViewModel
     {
         private static readonly ILog s_log = LogManager.GetLogger(typeof(OfflineChessGameViewModel));
-        public override         BaseGameControllerViewModel ControllerViewModel => m_gameControllerVM;
+        public                  BaseGameControllerViewModel ControllerViewModel => m_gameControllerVM;
 
         private OfflineChessGameManager m_chessGameManager;
         private IAvailableMovesHelper   m_availableMovesHelper;

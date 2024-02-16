@@ -43,8 +43,6 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
 
     public BoardViewModel BoardViewModel { get; }
 
-    public abstract BaseGameControllerViewModel ControllerViewModel { get; }
-
     protected ChessGameViewModel(IBoardEvents boardEvents, IChessTeamManager teamsManager)
     {
         BoardViewModel               =  new BoardViewModel(boardEvents);

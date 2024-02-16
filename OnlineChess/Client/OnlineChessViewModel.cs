@@ -15,9 +15,8 @@ namespace OnlineChess.Client;
 public class OnlineChessViewModel : ChessGameViewModel
 {
     private static readonly ILog                        s_log = LogManager.GetLogger(typeof(OnlineChessViewModel));
-    public override         BaseGameControllerViewModel ControllerViewModel { get; }
-
-    private OnlineGameBoard  m_gameBoard;
+    
+    private OnlineGameBoard        m_gameBoard;
     private OnlineChessTeamManager m_teamManager;
     private IAvailableMovesHelper  m_availableMovesHelper;
 
