@@ -32,13 +32,13 @@ namespace OnlineChess
 
         Task CancelGameRequest(GameRequestId gameRequestId);
 
-        Task WithdrawGame();
+        Task SubmitGameWithdraw();
 
-        Task<MoveResult> RequestMove(BoardPosition start
-                                       , BoardPosition end);
+        Task<MoveResult> SubmitMove(BoardPosition start
+                                  , BoardPosition end);
 
-        Task<PromotionResult> RequestPromote(BoardPosition positionToPromote
-                                , IToolWrapperForServer tool);
+        Task<PromotionResult> SubmitPromote(BoardPosition         positionToPromote
+                                          , IToolWrapperForServer tool);
 
         Task<bool> IsMyTurn();
 

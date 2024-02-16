@@ -44,14 +44,14 @@ public class OnlineGameBoard : IBoardEvents, IBoardQuery, IDisposable
     public Task<MoveResult> Move(BoardPosition start
                                , BoardPosition end)
     {
-        return m_serverAgent.RequestMove(start, end);
+        return m_serverAgent.SubmitMove(start, end);
     }
 
     public Task<PromotionResult> PromoteTool(BoardPosition position
                                            , ITool         tool)
     {
         IToolWrapperForServer toolWrapper = new(tool);
-        return m_serverAgent.RequestPromote(position, toolWrapper);
+        return m_serverAgent.SubmitPromote(position, toolWrapper);
     }
 
     public void Dispose()

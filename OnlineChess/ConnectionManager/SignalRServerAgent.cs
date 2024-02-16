@@ -39,22 +39,24 @@ namespace OnlineChess.ConnectionManager
             return m_connection.InvokeAsync("CancelGameRequest", gameRequestId);
         }
 
-        public async Task WithdrawGame()
+        public async Task SubmitGameWithdraw()
         {
             s_log.Info("Game withdraw sent to server");
-            await m_connection.InvokeAsync("WithdrawGame");
+            await m_connection.InvokeAsync("SubmitGameWithdraw");
         }
 
-        public async Task<MoveResult> RequestMove(BoardPosition start
+        public async Task<MoveResult> SubmitMove(BoardPosition start
                                                 , BoardPosition end)
         {
-            return await m_connection.InvokeAsync<MoveResult>("RequestMove", start, end);
+            s_log.Info($"Submit Move sent to server: [start:{start} | end:{end}]");
+            return await m_connection.InvokeAsync<MoveResult>("SubmitMove", start, end);
         }
 
-        public async Task<PromotionResult> RequestPromote(BoardPosition         positionToPromote
-                                             , IToolWrapperForServer tool)
+        public async Task<PromotionResult> SubmitPromote(BoardPosition         positionToPromote
+                                                       , IToolWrapperForServer tool)
         {
-            return await m_connection.InvokeAsync<PromotionResult>("RequestPromote"
+            s_log.Info($"Submit Promote sent to server: [Position: {positionToPromote} | Tool: {tool}]");
+            return await m_connection.InvokeAsync<PromotionResult>("SubmitPromote"
                                                                  , positionToPromote
                                                                  , tool);
         }
@@ -76,9 +78,9 @@ namespace OnlineChess.ConnectionManager
             m_connection.On<OnlineChessGameConfiguration>("StartGame", handleStartGameRequest);
             m_connection.On<EndGameReason>("EndGame", handleEndGameRequest);
             m_connection.On<TeamId, TimeSpan>("UpdateTime", handleTimeUpdate);
-            m_connection.On<BoardPosition, ITool>("PromoteTool", handlePromotion);
-            m_connection.On<BoardCommand[]>("BoardCommands", handleBoardCommands);
-            m_connection.On<TeamId>("SwitchTeam", handleTeamSwitch);
+            m_connection.On<BoardPosition, ITool>("AskPromotion", handlePromotion);
+            m_connection.On<BoardCommand[]>("ApplyBoardCommands", handleBoardCommands);
+            m_connection.On<TeamId>("UpdatePlayingTeam", handleTeamSwitch);
         }
 
         private void handleTeamSwitch(TeamId currentTeamId)
