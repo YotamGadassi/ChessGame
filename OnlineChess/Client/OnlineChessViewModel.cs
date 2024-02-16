@@ -5,7 +5,6 @@ using Client.Game;
 using Client.Messages;
 using Common;
 using Common.Chess;
-using FrontCommon;
 using log4net;
 using OnlineChess.GamePanel;
 using Tools;
@@ -14,11 +13,11 @@ namespace OnlineChess.Client;
 
 public class OnlineChessViewModel : ChessGameViewModel
 {
-    private static readonly ILog                        s_log = LogManager.GetLogger(typeof(OnlineChessViewModel));
-    
-    private OnlineGameBoard        m_gameBoard;
-    private OnlineChessTeamManager m_teamManager;
-    private IAvailableMovesHelper  m_availableMovesHelper;
+    private static readonly ILog s_log = LogManager.GetLogger(typeof(OnlineChessViewModel));
+
+    private readonly OnlineGameBoard        m_gameBoard;
+    private readonly OnlineChessTeamManager m_teamManager;
+    private readonly IAvailableMovesHelper  m_availableMovesHelper;
 
     public OnlineChessViewModel(OnlineChessGameManager gameManager) : base(gameManager.BoardEvents
                                                                          , gameManager.TeamsManager)
@@ -52,8 +51,8 @@ public class OnlineChessViewModel : ChessGameViewModel
 
         ITool         tool                = squareVM.Tool;
         BoardPosition position            = squareVM.Position;
-        Team          localMachineTeam    = m_teamManager.LocalMachineTeam;
-        bool          isToolBelongsToTeam = null != tool && tool.Color.Equals(localMachineTeam);
+        TeamId        localMachineTeamId  = m_teamManager.LocalMachineTeamId;
+        bool          isToolBelongsToTeam = null != tool && m_teamManager.GetTeamId(tool.ToolId).Equals(localMachineTeamId);
         if (isToolBelongsToTeam)
         {
             BoardViewModel.ClearSelectedAndHintedBoardPositions();
@@ -82,15 +81,15 @@ public class OnlineChessViewModel : ChessGameViewModel
         PromotionMessageViewModel promotionMessage = new(toolToPromote.Color, position);
         Message = promotionMessage;
 
-        ITool chosenTool = await promotionMessage.ToolAwaiter;
+        ITool newTool = await promotionMessage.ToolAwaiter;
         Message = null;
 
-        PromotionResult promoteResult = await m_gameBoard.PromoteTool(position, chosenTool);
+        PromotionResult promoteResult = await m_gameBoard.PromoteTool(position, newTool);
         handlePromotionResult(promoteResult);
     }
 
     protected override void onCheckMate(BoardPosition position
-                                           , ITool         tool)
+                                      , ITool         tool)
     {
         s_log.Info($"Checkmate Event: Position:{position} | Tool:{tool}");
 

@@ -114,9 +114,9 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
     private void initTeams(IChessTeamManager teamsManager)
     {
         Team       team1      = teamsManager.Teams[0];
-        ITeamTimer team1Timer = teamsManager.GetTeamTimer(team1);
+        ITeamTimer team1Timer = teamsManager.GetTeamTimer(team1.Id);
         Team       team2      = teamsManager.Teams[1];
-        ITeamTimer team2Timer = teamsManager.GetTeamTimer(team2);
+        ITeamTimer team2Timer = teamsManager.GetTeamTimer(team2.Id);
 
         if (team1.MoveDirection == GameDirection.North)
         {

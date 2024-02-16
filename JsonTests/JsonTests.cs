@@ -34,8 +34,10 @@ namespace JsonTests
             ITool                 toolInterfaceSerialized = (ITool)JsonSerializer.Deserialize(str, typeof(ITool), opt);
             TOOL_TYPE             toolSerialized          = toolInterfaceSerialized as TOOL_TYPE;
             Assert.NotNull(toolSerialized);
-            Assert.AreEqual(toolSerialized.Color, tool.Color);
-            Assert.AreEqual(toolSerialized.Type, toolSerialized.Type);
+            Assert.AreEqual(toolSerialized.Color,  tool.Color);
+            Assert.AreEqual(toolSerialized.Type,   toolSerialized.Type);
+            Assert.AreEqual(toolSerialized.ToolId, toolSerialized.ToolId);
+
         }
 
         [Test]
@@ -69,7 +71,9 @@ namespace JsonTests
             {
                 Assert.AreEqual(pairs[i].Key,         serializedPairs[i].Key);
                 Assert.AreEqual(pairs[i].Value.Color, serializedPairs[i].Value.Color);
-                Assert.AreEqual(pairs[i].Value.Type, serializedPairs[i].Value.Type);
+                Assert.AreEqual(pairs[i].Value.Type,  serializedPairs[i].Value.Type);
+                Assert.AreEqual(pairs[i].Value.ToolId,  serializedPairs[i].Value.ToolId);
+
             }
         }
     }

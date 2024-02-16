@@ -54,11 +54,15 @@ public class OfflineChessBoardProxy : IChessBoardProxy
     }
 
     public PromotionResult Promote(BoardPosition position
-                                 , ITool         promotedTool)
+                                 , ITool         mewTool)
     {
-        s_log.Info($"Promote: Position:{position} | Promoted Tool:{promotedTool}");
-        PromotionResult promotionResult = m_chessBoard.Promote(position, promotedTool);
-
+        s_log.Info($"Promote: Position:{position} | New Tool:{mewTool}");
+        PromotionResult promotionResult = m_chessBoard.Promote(position, mewTool);
+        if (promotionResult.Result == PromotionResultEnum.PromotionSucceeded)
+        {
+            TeamId teamId = m_teamsManager.GetTeamId(promotionResult.PromotedTool.ToolId);
+            m_teamsManager.AddToolId(teamId, promotionResult.NewTool.ToolId);
+        }
         return promotionResult;
     }
 

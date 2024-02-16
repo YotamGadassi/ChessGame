@@ -1,5 +1,4 @@
-﻿using System.Windows.Media;
-using System.Windows.Threading;
+﻿using System.Windows.Threading;
 using Board;
 using ChessGame;
 using ChessGame.Helpers;
@@ -42,11 +41,11 @@ namespace Client.Game
         {
             s_log.DebugFormat("Click on square: {0}", squareVM);
 
-            ITool?        tool          = squareVM.Tool;
-            BoardPosition position      = squareVM.Position;
-            Color         currTeamColor = m_chessGameManager.TeamsManager.CurrentTeamTurn.Color;
+            ITool?        tool           = squareVM.Tool;
+            BoardPosition position       = squareVM.Position;
+            TeamId        teamTurnId = m_chessGameManager.TeamsManager.CurrentTeamTurnId;
 
-            bool isToolBelongsToTeam = null != tool && tool.Color.Equals(currTeamColor);
+            bool isToolBelongsToTeam = null != tool && m_chessGameManager.TeamsManager.GetTeamId(tool.ToolId).Equals(teamTurnId);
             if (isToolBelongsToTeam)
             {
                 BoardViewModel.ClearSelectedAndHintedBoardPositions();
@@ -75,10 +74,10 @@ namespace Client.Game
             PromotionMessageViewModel promotionMessage = new(toolToPromote.Color, position);
             Message = promotionMessage;
 
-            ITool chosenTool = await promotionMessage.ToolAwaiter;
+            ITool newTool = await promotionMessage.ToolAwaiter;
             Message = null;
 
-            PromotionResult promoteResult = m_chessGameManager.ChessBoardProxy.Promote(position, chosenTool);
+            PromotionResult promoteResult = m_chessGameManager.ChessBoardProxy.Promote(position, newTool);
             handlePromotionResult(promoteResult);
         }
 

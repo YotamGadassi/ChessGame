@@ -37,19 +37,21 @@ namespace ChessGame
             Team team1 = TeamsManager.Teams[0];
             Team team2 = TeamsManager.Teams[1];
 
-            KeyValuePair<BoardPosition, ITool>[] firstGroupBoardArrangement =
+            KeyValuePair<BoardPosition, ITool>[] team1BoardArrangement =
                 GameInitHelper.GenerateInitialArrangement(team1.MoveDirection, team1.Color);
-            KeyValuePair<BoardPosition, ITool>[] secondkGroupBoardArrangement =
+            KeyValuePair<BoardPosition, ITool>[] team2BoardArrangement =
                 GameInitHelper.GenerateInitialArrangement(team2.MoveDirection, team2.Color);
 
-            foreach (KeyValuePair<BoardPosition, ITool> pair in firstGroupBoardArrangement)
+            foreach (KeyValuePair<BoardPosition, ITool> pair in team1BoardArrangement)
             {
                 m_gameBoard.Add(pair.Key, pair.Value);
+                m_teamsManager.AddToolId(team1.Id, pair.Value.ToolId);
             }
 
-            foreach (KeyValuePair<BoardPosition, ITool> pair in secondkGroupBoardArrangement)
+            foreach (KeyValuePair<BoardPosition, ITool> pair in team2BoardArrangement)
             {
                 m_gameBoard.Add(pair.Key, pair.Value);
+                m_teamsManager.AddToolId(team2.Id, pair.Value.ToolId);
             }
         }
 
@@ -81,13 +83,13 @@ namespace ChessGame
                 case GameState.Running:
                 {
                     s_log.Info($"Game Started");
-                    m_teamsManager.StartTimer(m_teamsManager.CurrentTeamTurn);
+                    m_teamsManager.StartTimer(m_teamsManager.CurrentTeamTurnId);
                 }
                     break;
                 case GameState.Paused:
                 {
                     s_log.Info($"Game Paused");
-                    m_teamsManager.StopTimer(m_teamsManager.CurrentTeamTurn);
+                    m_teamsManager.StopTimer(m_teamsManager.CurrentTeamTurnId);
                 }
                     break;
                 case GameState.Ended:

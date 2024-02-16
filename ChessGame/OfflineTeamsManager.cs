@@ -1,30 +1,51 @@
-﻿using Common.Chess;
+﻿using Common;
+using Common.Chess;
+using Tools;
 
-namespace Common;
+namespace ChessGame;
 
 public class OfflineTeamsManager : IChessTeamManager, IDisposable
 {
-    public event EventHandler<Team> TeamSwitchedEvent;
+    public event EventHandler<TeamId> TeamSwitchedEvent;
 
     private static readonly int    s_teamsAmount = 2;
-    public                  Team   CurrentTeamTurn => getCurrentTeam();
-    public                  Team[] Teams           => m_teams;
+    public                  TeamId CurrentTeamTurnId      => getCurrentTeam().Id;
+    public                  Team[] Teams                  => m_teams.Cast<Team>().ToArray();
 
-    private int                         m_currentTeamIndex = 0;
-    private ChessTeam[]                 m_teams;
-    private Dictionary<Team, TeamTimer> m_teamTimers;
+    private          int                                 m_currentTeamIndex = 0;
+    private readonly ChessTeam[]                         m_teams;
+    private readonly Dictionary<TeamId, ChessTeam>       m_teamIdToTeams;
+    private readonly Dictionary<TeamId, HashSet<ToolId>> m_teamIdToTools;
+    private readonly Dictionary<ToolId, TeamId>          m_toolIdToTeam;
 
     public OfflineTeamsManager(ChessTeam[] teams)
     {
-        m_teams                  = teams;
-        m_teamTimers             = new Dictionary<Team, TeamTimer>();
-        m_teamTimers[m_teams[0]] = m_teams[0].TeamTimer;
-        m_teamTimers[m_teams[1]] = m_teams[1].TeamTimer;
+        m_teams         = teams;
+        m_teamIdToTeams = teams.ToDictionary((team) => team.Id);
+        m_teamIdToTools = teams.ToDictionary((team) => team.Id, (_) => new HashSet<ToolId>());
+        m_toolIdToTeam  = new Dictionary<ToolId, TeamId>();
     }
 
-    public ITeamTimer GetTeamTimer(Team team)
+    public Team GetTeam(TeamId teamId)
     {
-        return m_teamTimers[team];
+        return m_teamIdToTeams[teamId];
+    }
+
+    public TeamId? GetTeamId(ToolId toolId)
+    {
+        return m_toolIdToTeam[toolId];
+    }
+
+    public ITeamTimer GetTeamTimer(TeamId teamId)
+    {
+        return m_teamIdToTeams[teamId].TeamTimer;
+    }
+
+    public void AddToolId(TeamId teamId
+                        , ToolId toolId)
+    {
+        m_teamIdToTools[teamId].Add(toolId);
+        m_toolIdToTeam[toolId] = teamId;
     }
 
     public void SwitchCurrentTeam()
@@ -33,20 +54,20 @@ public class OfflineTeamsManager : IChessTeamManager, IDisposable
         currTeamTimer.StopTimer();
         
         switchTeamIndex();
-        TeamSwitchedEvent?.Invoke(this, CurrentTeamTurn);
+        TeamSwitchedEvent?.Invoke(this, CurrentTeamTurnId);
         
         currTeamTimer = getCurrentTeamTimer();
         currTeamTimer.StartTimer();
     }
 
-    public void StartTimer(Team team)
+    public void StartTimer(TeamId teamId)
     {
-        m_teamTimers[team].StartTimer();
+        m_teamIdToTeams[teamId].TeamTimer.StartTimer();
     }
 
-    public void StopTimer(Team team)
+    public void StopTimer(TeamId teamId)
     {
-        m_teamTimers[team].StopTimer();
+        m_teamIdToTeams[teamId].TeamTimer.StopTimer();
     }
 
     public void Dispose()
@@ -64,6 +85,5 @@ public class OfflineTeamsManager : IChessTeamManager, IDisposable
 
     private ChessTeam getCurrentTeam()      => m_teams[m_currentTeamIndex];
     private TeamTimer getCurrentTeamTimer() => getCurrentTeam().TeamTimer;
-
 
 }

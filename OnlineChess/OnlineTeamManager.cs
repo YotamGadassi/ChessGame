@@ -1,5 +1,6 @@
 ﻿using System.Windows.Media;
 using Common;
+using Tools;
 
 namespace OnlineChess
 {
@@ -18,38 +19,46 @@ namespace OnlineChess
 
     public class OnlineChessTeamManager : IChessTeamManager, IDisposable
     {
-        public event EventHandler<Team>? TeamSwitchedEvent;
-        public Team                      CurrentTeamTurn  { get; private set; }
-        public Team[]                    Teams            => m_teams.Values.ToArray();
-        public Team                      LocalMachineTeam { get; }
+        public event EventHandler<TeamId>? TeamSwitchedEvent;
+        public TeamId                      CurrentTeamTurnId { get; private set; }
+        public Team[]                      Teams             => m_teams.Values.Cast<Team>().ToArray();
 
-        private readonly Dictionary<TeamId, Team>       m_teams;
-        private readonly Dictionary<TeamId, ITeamTimer> m_teamsTimers;
-        private readonly IChessServerAgent              m_serverAgent;
+        public TeamId LocalMachineTeamId { get; }
 
-        public OnlineChessTeamManager(OnlineChessTeam     localTeam
-                                    , OnlineChessTeam     otherTeam
+        private readonly Dictionary<TeamId, OnlineChessTeam> m_teams;
+        private readonly IChessServerAgent                   m_serverAgent;
+
+        public OnlineChessTeamManager(OnlineChessTeam   localTeam
+                                    , OnlineChessTeam   remoteTeam
                                     , Team              currentTeamTurn
                                     , IChessServerAgent serverAgent)
         {
-            m_serverAgent   = serverAgent;
-            m_teams         = new Dictionary<TeamId, Team>();
-            m_teamsTimers   = new Dictionary<TeamId, ITeamTimer>();
-            CurrentTeamTurn = currentTeamTurn;
-            initTeamsDict(localTeam, otherTeam);
-            initTeamsTimerDict(localTeam, otherTeam);
-            LocalMachineTeam = localTeam;
+            m_serverAgent     = serverAgent;
+            m_teams           = new Dictionary<TeamId, OnlineChessTeam>();
+            CurrentTeamTurnId = currentTeamTurn.Id;
+            initTeamsDict(localTeam, remoteTeam);
+            LocalMachineTeamId = localTeam.Id;
             registerToEvents();
         }
 
-        public ITeamTimer GetTeamTimer(Team team)
+        public Team GetTeam(TeamId teamId)
         {
-            return m_teamsTimers[team.Id];
+            return m_teams[teamId];
+        }
+
+        public TeamId? GetTeamId(ToolId toolId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITeamTimer GetTeamTimer(TeamId teamId)
+        {
+            return m_teams[teamId].TeamTimer;
         }
 
         public bool IsLocalMachineTeamTurn()
         {
-            return LocalMachineTeam.Equals(CurrentTeamTurn);
+            return LocalMachineTeamId.Equals(CurrentTeamTurnId);
         }
 
         public void Dispose()
@@ -57,15 +66,8 @@ namespace OnlineChess
             unRegisterFromEvents();
         }
 
-        private void initTeamsTimerDict(OnlineChessTeam firstTeam
-                                      , OnlineChessTeam secondTeam)
-        {
-            m_teamsTimers[firstTeam.Id]  = firstTeam.TeamTimer;
-            m_teamsTimers[secondTeam.Id] = secondTeam.TeamTimer;
-        }
-
-        private void initTeamsDict(Team firstTeam
-                                 , Team secondTeam)
+        private void initTeamsDict(OnlineChessTeam firstTeam
+                                 , OnlineChessTeam secondTeam)
         {
             m_teams[firstTeam.Id]  = firstTeam;
             m_teams[secondTeam.Id] = secondTeam;
@@ -83,8 +85,7 @@ namespace OnlineChess
 
         private void onTeamSwitch(TeamId currentTeamId)
         {
-            CurrentTeamTurn = m_teams[currentTeamId];
-            TeamSwitchedEvent?.Invoke(this, CurrentTeamTurn);
+            TeamSwitchedEvent?.Invoke(this, CurrentTeamTurnId);
         }
     }
 }

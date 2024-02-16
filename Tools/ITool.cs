@@ -9,7 +9,8 @@ namespace Tools;
 
 public interface ITool
 {
-    Color Color { get; }
+    ToolId ToolId { get; }
+    Color  Color  { get; }
 
     string Type { get; }
 
