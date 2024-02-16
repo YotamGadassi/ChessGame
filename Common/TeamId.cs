@@ -2,23 +2,47 @@
 
 namespace Common;
 
-public class TeamId
+public abstract class BaseId
 {
-    public Guid Id { get; }
+    protected BaseId(Guid id)
+    {
+        m_id = id;
+    }
 
+    private readonly Guid m_id;
+
+    protected bool Equals(BaseId other)
+    {
+        return m_id.Equals(other.m_id);
+    }
+
+    public abstract override bool Equals(object? obj);
+
+    public override int GetHashCode()
+    {
+        return m_id.GetHashCode();
+    }
+
+    public override string ToString()
+    {
+        return $"Id: {m_id}";
+    }
+}
+
+public class TeamId : BaseId
+{
     public static TeamId NewTeamId()
     {
         return new TeamId(Guid.NewGuid());
     }
 
-    private TeamId(Guid id)
+    private TeamId(Guid id) : base(id)
     {
-        Id = id;
     }
-
+    
     protected bool Equals(TeamId other)
     {
-        return Id.Equals(other.Id);
+        return base.Equals(other);
     }
 
     public override bool Equals(object? obj)
@@ -39,15 +63,5 @@ public class TeamId
         }
 
         return Equals((TeamId)obj);
-    }
-
-    public override int GetHashCode()
-    {
-        return Id.GetHashCode();
-    }
-
-    public override string ToString()
-    {
-        return $"{nameof(Id)}: {Id}";
     }
 }
