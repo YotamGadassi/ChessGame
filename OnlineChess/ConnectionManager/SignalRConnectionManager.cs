@@ -4,11 +4,10 @@ using log4net;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OnlineChess;
-using OnlineChess.ConnectionManager;
+using OnlineChess.Common;
 using Tools;
 
-namespace Frameworks
+namespace OnlineChess.ConnectionManager
 {
     public interface IChessConnectionManager : IConnectionManager<IChessServerAgent>
     {

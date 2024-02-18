@@ -4,6 +4,7 @@ using Common;
 using Common.Chess;
 using log4net;
 using Microsoft.AspNetCore.SignalR.Client;
+using OnlineChess.Common;
 using Tools;
 
 namespace OnlineChess.ConnectionManager

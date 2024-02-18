@@ -1,22 +1,9 @@
-﻿using System.Windows.Media;
-using Common;
+﻿using Common;
+using OnlineChess.Common;
 using Tools;
 
 namespace OnlineChess
 {
-    public class OnlineChessTeam : Team
-    {
-        public ITeamTimer TeamTimer { get; }
-
-        public OnlineChessTeam(string        name
-                             , Color         color
-                             , GameDirection gameDirection
-                             , ITeamTimer    teamTimer) : base(name, color, gameDirection)
-        {
-            TeamTimer = teamTimer;
-        }
-    }
-
     public class OnlineChessTeamManager : IChessTeamManager, IDisposable
     {
         public event EventHandler<TeamId>? TeamSwitchedEvent;

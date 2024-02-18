@@ -1,10 +1,9 @@
 ﻿using Board;
 using Common;
 using Common.Chess;
-using OnlineChess.ConnectionManager;
 using Tools;
 
-namespace OnlineChess
+namespace OnlineChess.Common
 {
     public delegate void BoardCommandsHandler(BoardCommand[] commands);
 
@@ -19,7 +18,7 @@ namespace OnlineChess
 
     public delegate void UpdatePlayingTeamHandler(TeamId currentTeamId);
 
-    public interface IChessServerAgent
+    public interface IChessServerAgent : IChessServerApi
     {
         event StartGameHandler         StartGameEvent;
         event EndGameHandler           EndGameEvent;
@@ -27,21 +26,5 @@ namespace OnlineChess
         event PromotionHandler         PromotionEvent;
         event UpdateTimerHandler       UpdateTimeEvent;
         event UpdatePlayingTeamHandler UpdatePlayingTeamEvent;
-
-        Task<GameRequestResult> SubmitGameRequest(GameRequest gameRequest);
-
-        Task CancelGameRequest(GameRequestId gameRequestId);
-
-        Task SubmitGameWithdraw();
-
-        Task<MoveResult> SubmitMove(BoardPosition start
-                                  , BoardPosition end);
-
-        Task<PromotionResult> SubmitPromote(BoardPosition         positionToPromote
-                                          , IToolWrapperForServer tool);
-
-        Task<bool> IsMyTurn();
-
-        Task SendMessage(string msg);
     }
 }

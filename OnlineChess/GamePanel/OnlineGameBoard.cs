@@ -2,6 +2,7 @@
 using Common;
 using Common.Chess;
 using log4net;
+using OnlineChess.Common;
 using Tools;
 
 namespace OnlineChess.GamePanel;

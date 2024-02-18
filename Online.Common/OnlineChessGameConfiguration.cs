@@ -1,7 +1,7 @@
 ﻿using Board;
 using Common;
 
-namespace OnlineChess.ConnectionManager;
+namespace OnlineChess.Common;
 
 public class OnlineChessGameConfiguration
 {

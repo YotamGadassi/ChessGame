@@ -1,4 +1,4 @@
-﻿namespace OnlineChess
+﻿namespace OnlineChess.Common
 {
     public enum EndGameReason
     {

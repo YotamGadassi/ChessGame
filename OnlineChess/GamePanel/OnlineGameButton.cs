@@ -1,8 +1,8 @@
 ﻿using System.Windows.Threading;
 using Common;
-using Frameworks;
 using FrontCommon;
 using log4net;
+using OnlineChess.Common;
 using OnlineChess.ConnectionManager;
 
 namespace OnlineChess.GamePanel;

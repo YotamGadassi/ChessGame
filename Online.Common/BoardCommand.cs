@@ -1,7 +1,7 @@
 ﻿using Board;
 using Tools;
 
-namespace OnlineChess
+namespace OnlineChess.Common
 {
     public enum BoardCommandType
     {

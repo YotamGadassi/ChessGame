@@ -1,6 +1,7 @@
-﻿using Frameworks;
-using FrontCommon;
+﻿using FrontCommon;
 using log4net;
+using OnlineChess.Common;
+using OnlineChess.ConnectionManager;
 
 namespace OnlineChess.GamePanel;
 

@@ -3,12 +3,12 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Threading;
 using Common.MainWindow;
-using Frameworks;
 using Frameworks.ChessGame;
 using FrontCommon;
 using FrontCommon.Facade;
 using log4net;
 using log4net.Config;
+using OnlineChess.ConnectionManager;
 using OnlineChess.GamePanel;
 
 namespace Host

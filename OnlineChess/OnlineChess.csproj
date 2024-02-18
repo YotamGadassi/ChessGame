@@ -17,6 +17,7 @@
     <ProjectReference Include="..\Client\Client.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\FrontCommon\FrontCommon.csproj" />
+    <ProjectReference Include="..\Online.Common\OnlineChess.Common.csproj" />
     <ProjectReference Include="..\Tools\Tools.csproj" />
   </ItemGroup>
 

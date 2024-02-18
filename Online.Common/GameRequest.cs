@@ -1,7 +1,6 @@
-﻿using Common;
-using Utils;
+﻿using Utils;
 
-namespace OnlineChess;
+namespace OnlineChess.Common;
 
 public class GameRequest
 {

@@ -31,7 +31,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tools", "Tools\Tools.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FrontCommon", "FrontCommon\FrontCommon.csproj", "{6EC74ECF-9175-4D44-B7A5-D56262A1A219}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineChess", "OnlineChess\OnlineChess.csproj", "{3AEC70C5-BFB1-4448-B086-05E8D8D44E2A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineChess", "OnlineChess\OnlineChess.csproj", "{3AEC70C5-BFB1-4448-B086-05E8D8D44E2A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineChess.Common", "Online.Common\OnlineChess.Common.csproj", "{A0A6583F-1184-4888-90F6-681E8688100E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +89,10 @@ Global
 		{3AEC70C5-BFB1-4448-B086-05E8D8D44E2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3AEC70C5-BFB1-4448-B086-05E8D8D44E2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3AEC70C5-BFB1-4448-B086-05E8D8D44E2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0A6583F-1184-4888-90F6-681E8688100E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0A6583F-1184-4888-90F6-681E8688100E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0A6583F-1184-4888-90F6-681E8688100E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0A6583F-1184-4888-90F6-681E8688100E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -104,6 +110,7 @@ Global
 		{D7677162-30AF-4DE9-9386-C4E40EE31B75} = {6D977F08-C7CC-435F-B4BE-11530A4E4024}
 		{6EC74ECF-9175-4D44-B7A5-D56262A1A219} = {5FF0BA73-A919-4750-B4E0-16A98AAF1F64}
 		{3AEC70C5-BFB1-4448-B086-05E8D8D44E2A} = {5FF0BA73-A919-4750-B4E0-16A98AAF1F64}
+		{A0A6583F-1184-4888-90F6-681E8688100E} = {6D977F08-C7CC-435F-B4BE-11530A4E4024}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AC36476D-C476-450C-AD3E-4FB09D99FE01}
