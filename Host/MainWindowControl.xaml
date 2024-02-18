@@ -5,12 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:game="clr-namespace:Client.Game;assembly=Client"
         xmlns:messages="clr-namespace:Client.Messages;assembly=Client"
+        xmlns:gameMainControl="clr-namespace:Client.Game.GameMainControl;assembly=Client"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Grid.Resources>
             <ResourceDictionary>
-                <DataTemplate DataType="{x:Type game:ChessGameViewModel}">
+                <DataTemplate DataType="{x:Type gameMainControl:ChessGameViewModel}">
                     <game:GameControl/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type messages:UserMessageViewModel}">

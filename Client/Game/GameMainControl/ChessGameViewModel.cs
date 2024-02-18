@@ -4,11 +4,10 @@ using Board;
 using Client.Board;
 using Common;
 using Common.Chess;
-using FrontCommon;
 using log4net;
 using Tools;
 
-namespace Client.Game;
+namespace Client.Game.GameMainControl;
 
 public abstract class ChessGameViewModel : DependencyObject, IDisposable
 {

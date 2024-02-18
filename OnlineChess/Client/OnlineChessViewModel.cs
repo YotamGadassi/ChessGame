@@ -2,7 +2,7 @@
 using Board;
 using ChessGame.Helpers;
 using Client.Board;
-using Client.Game;
+using Client.Game.GameMainControl;
 using Client.Messages;
 using Common;
 using Common.Chess;

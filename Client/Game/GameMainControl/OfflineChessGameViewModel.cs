@@ -3,6 +3,7 @@ using Board;
 using ChessGame;
 using ChessGame.Helpers;
 using Client.Board;
+using Client.Game.GameMainControl;
 using Client.Messages;
 using Common;
 using Common.Chess;
