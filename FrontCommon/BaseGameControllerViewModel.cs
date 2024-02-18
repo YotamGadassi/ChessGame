@@ -7,11 +7,11 @@ namespace FrontCommon;
 public abstract class BaseGameControllerViewModel : DependencyObject
 {
     private static readonly DependencyProperty gameStateProperty =
-        DependencyProperty.Register("GameState", typeof(GameState), typeof(BaseGameControllerViewModel));
+        DependencyProperty.Register("GameState", typeof(GameStateEnum), typeof(BaseGameControllerViewModel));
 
-    public GameState GameState
+    public GameStateEnum GameState
     {
-        get => (GameState)GetValue(gameStateProperty);
+        get => (GameStateEnum)GetValue(gameStateProperty);
         set => SetValue(gameStateProperty, value);
     }
 

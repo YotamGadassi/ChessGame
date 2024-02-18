@@ -6,7 +6,7 @@ public enum GameDirection
     South
 }
 
-public enum GameState
+public enum GameStateEnum
 {
     Running,
     NotStarted,

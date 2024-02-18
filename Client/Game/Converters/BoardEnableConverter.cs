@@ -23,9 +23,9 @@ public class BoardEnableConverter : IMultiValueConverter
         }
 
         if (values[0] is Visibility messageVisibility
-         && values[1] is GameState gameState)
+         && values[1] is GameStateEnum gameState)
         {
-            return messageVisibility != Visibility.Visible && gameState == GameState.Running;
+            return messageVisibility != Visibility.Visible && gameState == GameStateEnum.Running;
         }
 
         s_log.Error($"The values types are incorrect. [[0]: {values[0].GetType()} | [1]: {values[1].GetType()}");

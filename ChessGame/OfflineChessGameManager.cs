@@ -76,29 +76,29 @@ namespace ChessGame
         }
 
         private void onStateChanged(object?   sender
-                                  , GameState currState)
+                                  , GameStateEnum currState)
         {
             switch (currState)
             {
-                case GameState.Running:
+                case GameStateEnum.Running:
                 {
                     s_log.Info($"Game Started");
                     m_teamsManager.StartTimer(m_teamsManager.CurrentTeamTurnId);
                 }
                     break;
-                case GameState.Paused:
+                case GameStateEnum.Paused:
                 {
                     s_log.Info($"Game Paused");
                     m_teamsManager.StopTimer(m_teamsManager.CurrentTeamTurnId);
                 }
                     break;
-                case GameState.Ended:
+                case GameStateEnum.Ended:
                 {
                     s_log.Info("End Game");
                     m_gameBoard.Clear();
                 }
                     break;
-                case GameState.NotStarted:
+                case GameStateEnum.NotStarted:
                 {
                     s_log.Info($"Game State changed to Game Not Started");
                 }

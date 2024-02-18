@@ -46,7 +46,7 @@ public class GameControllerViewModel : BaseGameControllerViewModel, IDisposable
     private bool onStartResumeCanExecute(object state)
     {
         return isGameNotEnded()
-            && m_gameController.State != GameState.Running;
+            && m_gameController.State != GameStateEnum.Running;
     }
 
     private void onPauseExecute(object state)
@@ -56,7 +56,7 @@ public class GameControllerViewModel : BaseGameControllerViewModel, IDisposable
 
     private bool onPauseCanExecute(object state)
     {
-        return m_gameController.State == GameState.Running;
+        return m_gameController.State == GameStateEnum.Running;
     }
 
     private void onEndGameExecute(object state)
@@ -66,18 +66,18 @@ public class GameControllerViewModel : BaseGameControllerViewModel, IDisposable
 
     private bool onEndGameCanExecute(object state)
     {
-        return m_gameController.State != GameState.Ended;
+        return m_gameController.State != GameStateEnum.Ended;
     }
 
     private void onStateChanged(object?   sender
-                              , GameState newGameState)
+                              , GameStateEnum newGameState)
     {
         GameState = newGameState;
     }
 
     private bool isGameNotEnded()
     {
-        return GameState != GameState.Ended;
+        return GameState != GameStateEnum.Ended;
     }
 
 

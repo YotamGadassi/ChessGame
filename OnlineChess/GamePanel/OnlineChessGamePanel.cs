@@ -1,9 +1,11 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Client.Game;
+using Common;
 using FrontCommon;
 using log4net;
 using OnlineChess.Client;
+using OnlineChess.Game;
 
 namespace OnlineChess.GamePanel;
 
@@ -11,12 +13,12 @@ public class OnlineChessGamePanel : BaseGamePanel
 {
     private static readonly ILog s_log = LogManager.GetLogger(typeof(OnlineChessGamePanel));
 
-    public override DependencyObject       GameViewModel => m_gameViewModel;
-    public override Control                GameControl   => m_gameControl;
-    public          OnlineChessGameManager GameManager   { get; set; }
-
-    private readonly GameControl          m_gameControl;
-    private          OnlineChessViewModel m_gameViewModel;
+    public override DependencyObject        GameViewModel => m_gameViewModel;
+    public override Control                 GameControl   => m_gameControl;
+    public          OnlineChessGameManager? GameManager   { get; set; }
+    public          IGameState              GameState     { get; private set; }
+    private         GameControl             m_gameControl;
+    private         OnlineChessViewModel?   m_gameViewModel;
 
     public OnlineChessGamePanel(string panelName) : base(panelName)
     {
@@ -25,11 +27,13 @@ public class OnlineChessGamePanel : BaseGamePanel
 
     public void SetGameManager(OnlineChessGameManager gameManager)
     {
-        GameManager             = gameManager;
+        GameManager = gameManager;
+        GameState = gameManager.GameState;
+        GameState.StateChanged += onStateChanged;
         m_gameViewModel         = new OnlineChessViewModel(gameManager);
         GameControl.DataContext = null;
         GameControl.DataContext = m_gameViewModel;
-        
+
         s_log.Info("Game Manager Set");
     }
 
@@ -41,15 +45,33 @@ public class OnlineChessGamePanel : BaseGamePanel
 
     public override void Reset()
     {
-        //TODO: implement
-        throw new NotImplementedException();
+        disposeResources();
+        GameManager     = null;
+        m_gameViewModel = null;
+        GameState       = null;
+        m_gameControl   = new GameControl();
         s_log.Info("Reset");
-
     }
-
     public override void Dispose()
     {
-        //TODO: implement
-        throw new NotImplementedException();
+        disposeResources();
+    }
+
+    private void onStateChanged(object?   sender
+                              , GameStateEnum newState)
+    {
+        s_log.InfoFormat("State Changed: {0}", newState);
+        if (newState == GameStateEnum.Ended)
+        {
+            onGameEnd();
+            Reset();
+        }
+    }
+
+    private void disposeResources()
+    {
+        GameManager.Dispose();
+        m_gameViewModel.Dispose();
+        GameState.StateChanged -= onStateChanged;
     }
 }

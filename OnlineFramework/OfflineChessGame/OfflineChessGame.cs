@@ -60,9 +60,9 @@ namespace Frameworks.ChessGame
         }
 
         private void onGameStateChanged(object?   sender
-                                      , GameState e)
+                                      , GameStateEnum e)
         {
-            if (e == GameState.Ended)
+            if (e == GameStateEnum.Ended)
             {
                 onGameEnd();
                 Reset();

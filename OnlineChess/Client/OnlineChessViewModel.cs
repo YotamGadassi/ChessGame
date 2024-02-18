@@ -1,4 +1,5 @@
-﻿using Board;
+﻿using System.Windows.Threading;
+using Board;
 using ChessGame.Helpers;
 using Client.Board;
 using Client.Game;
@@ -6,6 +7,7 @@ using Client.Messages;
 using Common;
 using Common.Chess;
 using log4net;
+using OnlineChess.Game;
 using OnlineChess.GamePanel;
 using Tools;
 
@@ -18,10 +20,11 @@ public class OnlineChessViewModel : ChessGameViewModel
     private readonly OnlineGameBoard        m_gameBoard;
     private readonly OnlineChessTeamManager m_teamManager;
     private readonly IAvailableMovesHelper  m_availableMovesHelper;
-
+    private readonly Dispatcher             m_dispatcher;
     public OnlineChessViewModel(OnlineChessGameManager gameManager) : base(gameManager.BoardEvents
                                                                          , gameManager.TeamsManager)
     {
+        m_dispatcher           = Dispatcher.CurrentDispatcher;
         m_gameBoard            = gameManager.GameBoard;
         m_teamManager          = gameManager.TeamsManager;
         m_availableMovesHelper = new AvailableMovesHelper(gameManager.BoardQuery);
@@ -93,12 +96,15 @@ public class OnlineChessViewModel : ChessGameViewModel
     {
         s_log.Info($"Checkmate Event: Position:{position} | Tool:{tool}");
 
-        // UserMessageViewModel checkMateMessage = new UserMessageViewModel("Checkmate", "OK", () =>
-        //                                                                                     {
-        //                                                                                         Message = null;
-        //                                                                                         m_dispatcher
-        //                                                                                            .InvokeAsync(() => m_chessGameManager.GameStateController.EndGame());
-        //                                                                                     });
-        // Message = checkMateMessage;
+         UserMessageViewModel checkMateMessage = new("Checkmate", "OK", () =>
+                                                                        {
+                                                                            Message = null;
+                                                                            m_dispatcher
+                                                                               .InvokeAsync(() =>
+                                                                                            {
+
+                                                                                            });
+                                                                        });
+         Message = checkMateMessage;
     }
 }

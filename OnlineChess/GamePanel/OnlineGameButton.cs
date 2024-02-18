@@ -4,6 +4,7 @@ using FrontCommon;
 using log4net;
 using OnlineChess.Common;
 using OnlineChess.ConnectionManager;
+using OnlineChess.Game;
 
 namespace OnlineChess.GamePanel;
 
@@ -76,11 +77,12 @@ public class OnlineGameButton : BaseGameButton, IDisposable
     {
         OnlineChessTeam localTeam     = gameConfiguration.LocalTeam;
         OnlineChessTeam remoteTeam    = gameConfiguration.RemoteTeam;
-        Team          firstTeamTurn = gameConfiguration.FirstTeamTurn;
+        Team            firstTeamTurn = gameConfiguration.FirstTeamTurn;
 
         OnlineGameBoard        gameBoard              = new(m_serverAgent, gameConfiguration.BoardState);
         OnlineChessTeamManager teamManager            = new(localTeam, remoteTeam, firstTeamTurn, m_serverAgent);
-        OnlineChessGameManager onlineChessGameManager = new(gameBoard, teamManager);
+        OnlineGameState        gameState              = new OnlineGameState(m_serverAgent);
+        OnlineChessGameManager onlineChessGameManager = new(gameBoard, teamManager, gameState);
         return onlineChessGameManager;
     }
 }

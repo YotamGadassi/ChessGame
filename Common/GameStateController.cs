@@ -4,29 +4,34 @@ namespace Common;
 
 public class GameStateController : IGameStateController
 {
-    public event EventHandler<GameState>? StateChanged;
-    public GameState                      State { get; private set; }
+    public event EventHandler<GameStateEnum>? StateChanged;
+    public GameStateEnum                      State { get; private set; }
 
     public GameStateController()
     {
-        State = GameState.NotStarted;
+        State = GameStateEnum.NotStarted;
     }
 
     public void StartResumeGame()
     {
-        State = GameState.Running;
+        State = GameStateEnum.Running;
         StateChanged?.Invoke(this, State);
     }
 
     public void PauseGame()
     {
-        State = GameState.Paused;
+        State = GameStateEnum.Paused;
         StateChanged?.Invoke(this, State);
     }
 
     public void EndGame()
     {
-        State = GameState.Ended;
+        State = GameStateEnum.Ended;
         StateChanged?.Invoke(this, State);
+    }
+
+    public void Dispose()
+    {
+        // TODO release managed resources here
     }
 }

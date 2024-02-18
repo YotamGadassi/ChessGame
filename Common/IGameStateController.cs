@@ -2,12 +2,8 @@
 
 namespace Common;
 
-public interface IGameStateController
+public interface IGameStateController : IGameState
 {
-    event EventHandler<GameState> StateChanged;
-
-    GameState State { get; }
-
     void StartResumeGame();
 
     void PauseGame();
