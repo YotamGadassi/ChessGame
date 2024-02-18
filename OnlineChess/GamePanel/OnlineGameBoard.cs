@@ -17,12 +17,15 @@ public class OnlineGameBoard : IBoardEvents, IBoardQuery, IDisposable
     private readonly IChessServerAgent m_serverAgent;
     private readonly BasicBoard        m_board;
 
-    public OnlineGameBoard(IChessServerAgent serverAgent, BoardState boardState)
+    public OnlineGameBoard(IChessServerAgent serverAgent, BoardState? boardState)
     {
         m_board       = new BasicBoard();
         m_serverAgent = serverAgent;
         registerToEvents();
-        setBoardState(boardState);
+        if (null != boardState)
+        {
+            setBoardState(boardState);
+        }
     }
 
     public bool TryGetTool(BoardPosition position
@@ -66,7 +69,7 @@ public class OnlineGameBoard : IBoardEvents, IBoardQuery, IDisposable
     private void setBoardState(BoardState boardState)
     {
         s_log.DebugFormat("Set Boared State: [{0}]", boardState);
-
+        
         foreach (KeyValuePair<BoardPosition, ITool> pair in boardState)
         {
             BoardPosition position = pair.Key;

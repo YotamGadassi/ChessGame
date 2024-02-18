@@ -18,13 +18,16 @@ namespace OnlineChess.Common
 
     public delegate void UpdatePlayingTeamHandler(TeamId currentTeamId);
 
+    public delegate void UpdateToolsAndTeamsHandler(ToolAndTeamPair[] pairs);
+
     public interface IChessServerAgent : IChessServerApi
     {
-        event StartGameHandler         StartGameEvent;
-        event EndGameHandler           EndGameEvent;
-        event BoardCommandsHandler     BoardCommandsEvent;
-        event PromotionHandler         PromotionEvent;
-        event UpdateTimerHandler       UpdateTimeEvent;
-        event UpdatePlayingTeamHandler UpdatePlayingTeamEvent;
+        event StartGameHandler           StartGameEvent;
+        event EndGameHandler             EndGameEvent;
+        event BoardCommandsHandler       BoardCommandsEvent;
+        event PromotionHandler           PromotionEvent;
+        event UpdateTimerHandler         UpdateTimeEvent;
+        event UpdatePlayingTeamHandler   UpdatePlayingTeamEvent;
+        event UpdateToolsAndTeamsHandler UpdateToolsAndTeamsEvent;
     }
 }

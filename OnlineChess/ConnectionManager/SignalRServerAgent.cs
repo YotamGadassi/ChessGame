@@ -13,12 +13,13 @@ namespace OnlineChess.ConnectionManager
     {
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public event StartGameHandler?     StartGameEvent;
-        public event EndGameHandler?       EndGameEvent;
-        public event BoardCommandsHandler? BoardCommandsEvent;
-        public event PromotionHandler?     PromotionEvent;
-        public event UpdateTimerHandler?  UpdateTimeEvent;
-        public event UpdatePlayingTeamHandler?    UpdatePlayingTeamEvent;
+        public event StartGameHandler?           StartGameEvent;
+        public event EndGameHandler?             EndGameEvent;
+        public event BoardCommandsHandler?       BoardCommandsEvent;
+        public event PromotionHandler?           PromotionEvent;
+        public event UpdateTimerHandler?         UpdateTimeEvent;
+        public event UpdatePlayingTeamHandler?   UpdatePlayingTeamEvent;
+        public event UpdateToolsAndTeamsHandler? UpdateToolsAndTeamsEvent;
 
         private readonly HubConnection m_connection;
 
@@ -82,6 +83,13 @@ namespace OnlineChess.ConnectionManager
             m_connection.On<BoardPosition, ITool>("AskPromotion", handleAskPromotion);
             m_connection.On<BoardCommand[]>("ApplyBoardCommands", handleApplyBoardCommands);
             m_connection.On<TeamId>("UpdatePlayingTeam", handleUpdatePlayingTeam);
+            m_connection.On<ToolAndTeamPair[]>("UpdateToolsAndTeams", handleUpdateToolsAndTeams);
+        }
+
+        private void handleUpdateToolsAndTeams(ToolAndTeamPair[] pairs)
+        {
+            s_log.DebugFormat("UpdateToolsAndTeams Arrived: [Pairs: {0}]", string.Join<ToolAndTeamPair>(",", pairs));
+            UpdateToolsAndTeamsEvent?.Invoke(pairs);
         }
 
         private void handleUpdatePlayingTeam(TeamId teamId)
