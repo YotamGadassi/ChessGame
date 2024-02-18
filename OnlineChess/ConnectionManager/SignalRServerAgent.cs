@@ -76,42 +76,48 @@ namespace OnlineChess.ConnectionManager
 
         private void registerToEvents()
         {
-            m_connection.On<OnlineChessGameConfiguration>("StartGame", handleStartGameRequest);
-            m_connection.On<EndGameReason>("EndGame", handleEndGameRequest);
-            m_connection.On<TeamId, TimeSpan>("UpdateTime", handleTimeUpdate);
-            m_connection.On<BoardPosition, ITool>("AskPromotion", handlePromotion);
-            m_connection.On<BoardCommand[]>("ApplyBoardCommands", handleBoardCommands);
-            m_connection.On<TeamId>("UpdatePlayingTeam", handleTeamSwitch);
+            m_connection.On<OnlineChessGameConfiguration>("StartGame", handleStartGame);
+            m_connection.On<EndGameReason>("EndGame", handleEndGame);
+            m_connection.On<TeamId, TimeSpan>("UpdateTime", handleUpdateTime);
+            m_connection.On<BoardPosition, ITool>("AskPromotion", handleAskPromotion);
+            m_connection.On<BoardCommand[]>("ApplyBoardCommands", handleApplyBoardCommands);
+            m_connection.On<TeamId>("UpdatePlayingTeam", handleUpdatePlayingTeam);
         }
 
-        private void handleTeamSwitch(TeamId currentTeamId)
+        private void handleUpdatePlayingTeam(TeamId teamId)
         {
-            UpdatePlayingTeamEvent?.Invoke(currentTeamId);
+            s_log.DebugFormat("UpdatePlayingTeam Arrived: [Team Id: {0}]", teamId);
+            UpdatePlayingTeamEvent?.Invoke(teamId);
         }
 
-        private void handleBoardCommands(BoardCommand[] commands)
+        private void handleApplyBoardCommands(BoardCommand[] commands)
         {
+            s_log.DebugFormat("ApplyBoardCommandsArrived: [command: {0}]", string.Join<BoardCommand>(",", commands));
             BoardCommandsEvent?.Invoke(commands);
         }
 
-        private Task<ITool> handlePromotion(BoardPosition positionToPromote)
+        private Task<ITool> handleAskPromotion(BoardPosition positionToPromote)
         {
+            s_log.DebugFormat("AskPromotion Arrived: [position: {0}]", positionToPromote);
             return PromotionEvent?.Invoke(positionToPromote);
         }
 
-        private void handleTimeUpdate(TeamId     teamId
+        private void handleUpdateTime(TeamId   teamId
                                     , TimeSpan timeLeft)
         {
+            s_log.DebugFormat("UpdateTime Arrived: [team id: {0}| time left: {1}]", teamId, timeLeft);
             UpdateTimeEvent?.Invoke(teamId, timeLeft);
         }
 
-        private void handleEndGameRequest(EndGameReason reason)
+        private void handleEndGame(EndGameReason reason)
         {
+            s_log.DebugFormat("End Game Arrived: [End Game Reason: {0}]", reason);
             EndGameEvent?.Invoke(reason);
         }
 
-        private void handleStartGameRequest(OnlineChessGameConfiguration gameConfiguration)
+        private void handleStartGame(OnlineChessGameConfiguration gameConfiguration)
         {
+            s_log.DebugFormat("Start Game Arrived: [Game Configuration: {0}]", gameConfiguration);
             StartGameEvent?.Invoke(gameConfiguration);
         }
     }

@@ -14,8 +14,8 @@ public class OnlineGameBoard : IBoardEvents, IBoardQuery, IDisposable
     public event Action<ITool, BoardPosition>? ToolAddEvent;
     public event Action<BoardPosition>?        ToolRemoved;
 
-    private IChessServerAgent m_serverAgent;
-    private BasicBoard        m_board;
+    private readonly IChessServerAgent m_serverAgent;
+    private readonly BasicBoard        m_board;
 
     public OnlineGameBoard(IChessServerAgent serverAgent, BoardState boardState)
     {
@@ -45,12 +45,15 @@ public class OnlineGameBoard : IBoardEvents, IBoardQuery, IDisposable
     public Task<MoveResult> Move(BoardPosition start
                                , BoardPosition end)
     {
+        s_log.DebugFormat("Move: [{0} -> {1}]", start, end);
         return m_serverAgent.SubmitMove(start, end);
     }
 
     public Task<PromotionResult> PromoteTool(BoardPosition position
                                            , ITool         tool)
     {
+        s_log.DebugFormat("Promote: [{0} | {1}]", position, tool);
+
         IToolWrapperForServer toolWrapper = new(tool);
         return m_serverAgent.SubmitPromote(position, toolWrapper);
     }
@@ -62,6 +65,8 @@ public class OnlineGameBoard : IBoardEvents, IBoardQuery, IDisposable
 
     private void setBoardState(BoardState boardState)
     {
+        s_log.DebugFormat("Set Boared State: [{0}]", boardState);
+
         foreach (KeyValuePair<BoardPosition, ITool> pair in boardState)
         {
             BoardPosition position = pair.Key;

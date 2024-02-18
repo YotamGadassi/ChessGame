@@ -9,7 +9,7 @@ namespace Board
     [JsonConverter(typeof(BoardStateJsonConverter))]
     public class BoardState : IDictionary<BoardPosition, ITool>
     {
-        private IDictionary<BoardPosition, ITool>               m_boardState;
+        private IDictionary<BoardPosition, ITool> m_boardState;
 
         public BoardState()
         {
@@ -21,12 +21,12 @@ namespace Board
             m_boardState = new Dictionary<BoardPosition, ITool>(other.m_boardState);
         }
 
-        public  IEnumerator<KeyValuePair<BoardPosition, ITool>> GetEnumerator()
+        public IEnumerator<KeyValuePair<BoardPosition, ITool>> GetEnumerator()
         {
             return m_boardState.GetEnumerator();
         }
 
-        IEnumerator IEnumerable.                                GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return ((IEnumerable)m_boardState).GetEnumerator();
         }
@@ -92,6 +92,12 @@ namespace Board
         public ICollection<BoardPosition> Keys => m_boardState.Keys;
 
         public ICollection<ITool> Values => m_boardState.Values;
+
+        public override string ToString()
+        {
+            string pairToStringFunc(KeyValuePair<BoardPosition, ITool> pair) => $"Position: {pair.Key}| Tool: {pair.Value}";
+            return string.Join(',', m_boardState.Select(pairToStringFunc));
+        }
     }
 
     public class BoardStateJsonConverter : JsonConverter<BoardState>
@@ -155,6 +161,7 @@ namespace Board
                 JsonSerializer.Serialize(writer, keyValuePair.Value, options);
                 writer.WriteEndObject();
             }
+
             writer.WriteEndArray();
             writer.WriteEndObject();
 

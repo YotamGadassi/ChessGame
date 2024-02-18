@@ -20,12 +20,12 @@ namespace OnlineChess.ConnectionManager
         private static readonly string s_hubAddress = @"https://localhost:7034/ChessHub";
 
         public event Action<ConnectionErrorType>? ConnectionError;
-        public event Func<Exception?, Task>?          ConnectionClosed;
-        public IChessServerAgent                   ServerAgent      => m_gameServerAgent;
+        public event Func<Exception?, Task>?      ConnectionClosed;
+        public IChessServerAgent                  ServerAgent      => m_gameServerAgent;
         public ConnectionStatus                   ConnectionStatus => convertHubConnectionState(m_connection.State);
 
-        private SignalRServerAgent m_gameServerAgent;
-        private HubConnection  m_connection;
+        private          SignalRServerAgent m_gameServerAgent;
+        private readonly HubConnection      m_connection;
 
         public SignalRConnectionManager()
         {
