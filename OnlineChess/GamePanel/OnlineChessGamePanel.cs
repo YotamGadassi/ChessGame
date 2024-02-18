@@ -63,8 +63,13 @@ public class OnlineChessGamePanel : BaseGamePanel
         s_log.InfoFormat("State Changed: {0}", newState);
         if (newState == GameStateEnum.Ended)
         {
-            onGameEnd();
-            Reset();
+            TimeSpan delayTime = m_gameViewModel.Message == null ? TimeSpan.Zero : TimeSpan.FromSeconds(10);
+            Task.Delay(delayTime)
+                .ContinueWith((_) =>
+                              {
+                                  onGameEnd();
+                                  Reset();
+                              });
         }
     }
 

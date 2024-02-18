@@ -1,4 +1,5 @@
-﻿using FrontCommon.Facade;
+﻿using System.Windows.Threading;
+using FrontCommon.Facade;
 
 namespace FrontCommon;
 
@@ -8,10 +9,12 @@ public class GamePanelManager : IGamePanelManager
     public BaseGamePanel                                  CurrentPanel { get; private set; }
 
     private Dictionary<string, BaseGamePanel> m_panels;
+    private Dispatcher                        m_dispatcher;
 
     public GamePanelManager()
     {
-        m_panels = new Dictionary<string, BaseGamePanel>();
+        m_dispatcher = Dispatcher.CurrentDispatcher;
+        m_panels     = new Dictionary<string, BaseGamePanel>();
     }
 
     public void Add(string        panelName
@@ -30,7 +33,7 @@ public class GamePanelManager : IGamePanelManager
             {
                 ResetCurrentPanel();
             }
-            
+
             gamePanel.GameEnded -= onGameEnd;
             gamePanel.Dispose();
             m_panels.Remove(panelName);
@@ -41,8 +44,13 @@ public class GamePanelManager : IGamePanelManager
     {
         BaseGamePanel oldPanel = CurrentPanel;
         CurrentPanel = gamePanel;
-        GamePanelChanged?.Invoke(this, new GamePanelChangedEventArgs(oldPanel.PanelName, CurrentPanel));
-        BaseGameFacade.Instance.MainWindowViewModel.CurrentViewModel = CurrentPanel.GameControl;
+        GamePanelChanged?.Invoke(this
+                               , new GamePanelChangedEventArgs(oldPanel.PanelName
+                                                             , CurrentPanel));
+        m_dispatcher.Invoke(() =>
+                            {
+                                BaseGameFacade.Instance.MainWindowViewModel.CurrentViewModel = CurrentPanel.GameControl;
+                            });
         return true;
     }
 
@@ -51,7 +59,10 @@ public class GamePanelManager : IGamePanelManager
         BaseGamePanel oldPanel = CurrentPanel;
         CurrentPanel = null;
         GamePanelChanged?.Invoke(this, new GamePanelChangedEventArgs(oldPanel.PanelName, CurrentPanel));
-        BaseGameFacade.Instance.MainWindowViewModel.CurrentViewModel = null;
+        m_dispatcher.Invoke(() =>
+                            {
+                                BaseGameFacade.Instance.MainWindowViewModel.CurrentViewModel = null;
+                            });
     }
 
     public bool TryGetPanel(string            panelName
@@ -67,7 +78,7 @@ public class GamePanelManager : IGamePanelManager
 
     private void onGameEnd(BaseGamePanel gamePanel)
     {
-        if(gamePanel == CurrentPanel)
+        if (gamePanel == CurrentPanel)
             ResetCurrentPanel();
     }
 }
