@@ -25,7 +25,7 @@ public class OnlineGameRequestManager
         s_log.Debug("Created");
     }
 
-    public async Task RequestGame(GameRequest gameRequest)
+    public async Task SubmitGameRequest(GameRequest gameRequest)
     {
         s_log.DebugFormat("Request Game: {0}",gameRequest);
         if (m_connectionManager.ConnectionStatus == ConnectionStatus.Disconnected)

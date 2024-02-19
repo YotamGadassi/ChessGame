@@ -38,7 +38,7 @@ public class OnlineGameButton : BaseGameButton, IDisposable
         //TODO: show message
         try
         {
-            await m_gameRequestManager.RequestGame(gameRequest);
+            await m_gameRequestManager.SubmitGameRequest(gameRequest);
         }
         catch (Exception e)
         {
