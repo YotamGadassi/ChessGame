@@ -27,19 +27,18 @@ public class OnlineChessGamePanel : BaseGamePanel
 
     public void SetGameManager(OnlineChessGameManager gameManager)
     {
-        GameManager = gameManager;
-        GameState = gameManager.GameState;
-        GameState.StateChanged += onStateChanged;
-        m_gameViewModel         = new OnlineChessViewModel(gameManager);
-        GameControl.DataContext = null;
-        GameControl.DataContext = m_gameViewModel;
+        GameManager             =  gameManager;
+        GameState               =  gameManager.GameState;
+        GameState.StateChanged  += onStateChanged;
+        m_gameViewModel         =  new OnlineChessViewModel(gameManager);
+        GameControl.DataContext =  null;
+        GameControl.DataContext =  m_gameViewModel;
 
         s_log.Info("Game Manager Set");
     }
 
     public override void Init()
     {
-        //TODO: implement
         s_log.Info("Initialized");
     }
 
@@ -52,12 +51,13 @@ public class OnlineChessGamePanel : BaseGamePanel
         m_gameControl   = new GameControl();
         s_log.Info("Reset");
     }
+
     public override void Dispose()
     {
         disposeResources();
     }
 
-    private void onStateChanged(object?   sender
+    private void onStateChanged(object?       sender
                               , GameStateEnum newState)
     {
         s_log.InfoFormat("State Changed: {0}", newState);

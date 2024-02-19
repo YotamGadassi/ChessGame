@@ -1,6 +1,5 @@
 ﻿using Board;
 using Common;
-using Common.Chess;
 using Tools;
 
 namespace OnlineChess.Common

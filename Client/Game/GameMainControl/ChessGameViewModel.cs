@@ -22,6 +22,9 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
     private static readonly DependencyProperty MessageProperty =
         DependencyProperty.Register("Message", typeof(object), typeof(ChessGameViewModel));
 
+    private static readonly DependencyProperty BoardProperty =
+        DependencyProperty.Register("Board", typeof(BoardViewModel), typeof(ChessGameViewModel));
+
     public TeamStatusViewModel NorthTeamStatus
     {
         get => (TeamStatusViewModel)GetValue(NorthTeamStatusProperty);
@@ -33,6 +36,12 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
         get => (TeamStatusViewModel)GetValue(SouthTeamStatusProperty);
         set => SetValue(SouthTeamStatusProperty, value);
     }
+    
+    public BoardViewModel Board
+    {
+        get => (BoardViewModel)GetValue(BoardProperty);
+        private set => SetValue(BoardProperty, value);
+    }
 
     public object? Message
     {
@@ -40,21 +49,17 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
         set => SetValue(MessageProperty, value);
     }
 
-    public BoardViewModel BoardViewModel { get; }
-
     protected ChessGameViewModel(IBoardEvents boardEvents, IChessTeamManager teamsManager)
     {
-        BoardViewModel               =  new BoardViewModel(boardEvents);
-        BoardViewModel.OnSquareClick += onSquareClick;
-        
+        setBoard(new BoardViewModel(boardEvents));
         initTeams(teamsManager);
         s_log.Info("Created");
     }
 
     public virtual void Dispose()
     {
-        BoardViewModel.OnSquareClick -= onSquareClick;
-        BoardViewModel.Dispose();
+        Board.OnSquareClick -= onSquareClick;
+        Board.Dispose();
         SouthTeamStatus?.Dispose();
         NorthTeamStatus?.Dispose();
     }
@@ -102,12 +107,35 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
             }
             case PromotionResultEnum.PromotionSucceeded:
             {
-                BoardViewModel.AddTool(promotionResult.NewTool, promotionResult.PromotionPosition);
+                Board.AddTool(promotionResult.NewTool, promotionResult.PromotionPosition);
                 break;
             }
             default:
                 throw new ArgumentOutOfRangeException();
         }
+    }
+
+    private void setBoard(BoardViewModel newBoard)
+    {
+        if (null != Board)
+        {
+            Board.OnSquareClick -= onSquareClick;
+            Board.Dispose();
+        }
+        newBoard.OnSquareClick += onSquareClick;
+        Board                  =  newBoard;
+    }
+
+    private void setNorthTeam(TeamStatusViewModel teamStatusViewModel)
+    {
+        NorthTeamStatus?.Dispose();
+        NorthTeamStatus = teamStatusViewModel;
+    }
+
+    private void setSouthTeam(TeamStatusViewModel teamStatusViewModel)
+    {
+        SouthTeamStatus?.Dispose();
+        SouthTeamStatus = teamStatusViewModel;
     }
 
     private void initTeams(IChessTeamManager teamsManager)
@@ -119,13 +147,13 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
 
         if (team1.MoveDirection == GameDirection.North)
         {
-            SouthTeamStatus = new TeamStatusViewModel(team1, team1Timer);
-            NorthTeamStatus = new TeamStatusViewModel(team2, team2Timer);
+            setSouthTeam(new TeamStatusViewModel(team1, team1Timer));
+            setNorthTeam(new TeamStatusViewModel(team2, team2Timer));
         }
         else
         {
-            SouthTeamStatus = new TeamStatusViewModel(team2, team2Timer);
-            NorthTeamStatus = new TeamStatusViewModel(team1, team1Timer);
+            setSouthTeam(new TeamStatusViewModel(team2, team2Timer));
+            setNorthTeam(new TeamStatusViewModel(team1, team1Timer));
         }
     }
 }

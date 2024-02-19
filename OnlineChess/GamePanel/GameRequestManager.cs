@@ -15,12 +15,6 @@ public class OnlineGameRequestManager
         remove => m_serverAgent.StartGameEvent -= value;
     }
 
-    public event EndGameHandler EndGameEvent
-    {
-        add => m_serverAgent.EndGameEvent += value;
-        remove => m_serverAgent.EndGameEvent -= value;
-    }
-
     private readonly IChessConnectionManager m_connectionManager;
     private readonly IChessServerAgent       m_serverAgent;
 

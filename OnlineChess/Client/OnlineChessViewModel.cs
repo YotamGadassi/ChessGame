@@ -36,7 +36,7 @@ public class OnlineChessViewModel : ChessGameViewModel
         BoardState boardState = boardQuery.GetBoardState();
         foreach (KeyValuePair<BoardPosition, ITool> pair in boardState)
         {
-            BoardViewModel.AddTool(pair.Value, pair.Key);
+            Board.AddTool(pair.Value, pair.Key);
         }
     }
 
@@ -58,22 +58,22 @@ public class OnlineChessViewModel : ChessGameViewModel
         bool          isToolBelongsToTeam = null != tool && m_teamManager.GetTeamId(tool.ToolId).Equals(localMachineTeamId);
         if (isToolBelongsToTeam)
         {
-            BoardViewModel.ClearSelectedAndHintedBoardPositions();
-            BoardViewModel.SelectedBoardPosition = position;
+            Board.ClearSelectedAndHintedBoardPositions();
+            Board.SelectedBoardPosition = position;
             BoardPosition[] availablePositionsToMove = m_availableMovesHelper.GetAvailablePositionToMove(position);
-            BoardViewModel.SetHintedBoardPosition(availablePositionsToMove);
+            Board.SetHintedBoardPosition(availablePositionsToMove);
             return;
         }
 
-        if (false == BoardViewModel.SelectedBoardPosition.IsEmpty())
+        if (false == Board.SelectedBoardPosition.IsEmpty())
         {
-            BoardPosition start      = BoardViewModel.SelectedBoardPosition;
+            BoardPosition start      = Board.SelectedBoardPosition;
             BoardPosition end        = position;
             MoveResult    moveResult = await m_gameBoard.Move(start, end);
             handleMoveResult(moveResult);
         }
 
-        BoardViewModel.ClearSelectedAndHintedBoardPositions();
+        Board.ClearSelectedAndHintedBoardPositions();
     }
 
     protected override async void onPromotion(BoardPosition position

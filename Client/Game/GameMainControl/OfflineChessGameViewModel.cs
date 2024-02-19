@@ -49,22 +49,22 @@ namespace Client.Game
             bool isToolBelongsToTeam = null != tool && m_chessGameManager.TeamsManager.GetTeamId(tool.ToolId).Equals(teamTurnId);
             if (isToolBelongsToTeam)
             {
-                BoardViewModel.ClearSelectedAndHintedBoardPositions();
-                BoardViewModel.SelectedBoardPosition = position;
+                Board.ClearSelectedAndHintedBoardPositions();
+                Board.SelectedBoardPosition = position;
                 BoardPosition[] availablePositionsToMove = m_availableMovesHelper.GetAvailablePositionToMove(position);
-                BoardViewModel.SetHintedBoardPosition(availablePositionsToMove);
+                Board.SetHintedBoardPosition(availablePositionsToMove);
                 return;
             }
 
-            if (false == BoardViewModel.SelectedBoardPosition.IsEmpty())
+            if (false == Board.SelectedBoardPosition.IsEmpty())
             {
-                BoardPosition start      = BoardViewModel.SelectedBoardPosition;
+                BoardPosition start      = Board.SelectedBoardPosition;
                 BoardPosition end        = position;
                 MoveResult    moveResult = m_chessGameManager.ChessBoardProxy.Move(start, end);
                 handleMoveResult(moveResult);
             }
 
-            BoardViewModel.ClearSelectedAndHintedBoardPositions();
+            Board.ClearSelectedAndHintedBoardPositions();
         }
 
         protected override async void onPromotion(BoardPosition position
