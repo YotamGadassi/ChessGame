@@ -6,23 +6,23 @@ using OnlineChess.Common;
 using OnlineChess.ConnectionManager;
 using OnlineChess.Game;
 
-namespace OnlineChess.GamePanel;
+namespace OnlineChess.UI;
 
 public class OnlineGameButton : BaseGameButton, IDisposable
 {
-    private static readonly ILog   s_log = LogManager.GetLogger(typeof(OnlineGameButton));
-    public override         string PanelGameName => "OnlineChessGame";
-    public override         string CommandName   => "Online Chess Game";
+    private static readonly ILog s_log = LogManager.GetLogger(typeof(OnlineGameButton));
+    public override string PanelGameName => "OnlineChessGame";
+    public override string CommandName => "Online Chess Game";
 
     private readonly OnlineGameRequestManager m_gameRequestManager;
-    private readonly IChessServerAgent        m_serverAgent;
+    private readonly IChessServerAgent m_serverAgent;
 
-    public OnlineGameButton(Dispatcher               dispatcer
-                          , IGamePanelManager        panelManager
+    public OnlineGameButton(Dispatcher dispatcer
+                          , IGamePanelManager panelManager
                           , IChessConnectionManager connectionManager) : base(dispatcer, panelManager)
     {
         m_gameRequestManager = new OnlineGameRequestManager(connectionManager);
-        m_serverAgent        = connectionManager.ServerAgent;
+        m_serverAgent = connectionManager.ServerAgent;
         registerToEvents();
     }
 
@@ -33,7 +33,7 @@ public class OnlineGameButton : BaseGameButton, IDisposable
 
     protected override async void playCommandExecute(object parameter)
     {
-        string      userName    = "A"; //TODO: use parameter as object name
+        string userName = "A"; //TODO: use parameter as object name
         GameRequest gameRequest = new GameRequest(userName);
         //TODO: show message
         try
@@ -75,13 +75,13 @@ public class OnlineGameButton : BaseGameButton, IDisposable
 
     private OnlineChessGameManager createOnlineGameManager(OnlineChessGameConfiguration gameConfiguration)
     {
-        OnlineChessTeam localTeam     = gameConfiguration.LocalTeam;
-        OnlineChessTeam remoteTeam    = gameConfiguration.RemoteTeam;
-        Team            firstTeamTurn = gameConfiguration.FirstTeamTurn;
+        OnlineChessTeam localTeam = gameConfiguration.LocalTeam;
+        OnlineChessTeam remoteTeam = gameConfiguration.RemoteTeam;
+        Team firstTeamTurn = gameConfiguration.FirstTeamTurn;
 
-        OnlineGameBoard        gameBoard              = new(m_serverAgent, gameConfiguration.BoardState);
-        OnlineChessTeamManager teamManager            = new(localTeam, remoteTeam, firstTeamTurn, m_serverAgent);
-        OnlineGameState        gameState              = new OnlineGameState(m_serverAgent);
+        OnlineGameBoard gameBoard = new(m_serverAgent, gameConfiguration.BoardState);
+        OnlineChessTeamManager teamManager = new(localTeam, remoteTeam, firstTeamTurn, m_serverAgent);
+        OnlineGameState gameState = new OnlineGameState(m_serverAgent);
         OnlineChessGameManager onlineChessGameManager = new(gameBoard, teamManager, gameState);
         return onlineChessGameManager;
     }

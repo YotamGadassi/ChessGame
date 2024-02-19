@@ -10,8 +10,8 @@ namespace OnlineChess
         private static readonly ILog s_log = LogManager.GetLogger(typeof(OnlineChessTeamManager));
 
         public event EventHandler<TeamId>? TeamSwitchedEvent;
-        public TeamId                      CurrentTeamTurnId { get; private set; }
-        public Team[]                      Teams             => m_teams.Values.Cast<Team>().ToArray();
+        public TeamId CurrentTeamTurnId { get; private set; }
+        public Team[] Teams => m_teams.Values.Cast<Team>().ToArray();
 
         public TeamId LocalMachineTeamId { get; }
 
@@ -20,13 +20,13 @@ namespace OnlineChess
 
         private readonly IChessServerAgent m_serverAgent;
 
-        public OnlineChessTeamManager(OnlineChessTeam   localTeam
-                                    , OnlineChessTeam   remoteTeam
-                                    , Team              currentTeamTurn
+        public OnlineChessTeamManager(OnlineChessTeam localTeam
+                                    , OnlineChessTeam remoteTeam
+                                    , Team currentTeamTurn
                                     , IChessServerAgent serverAgent)
         {
-            m_serverAgent     = serverAgent;
-            m_teams           = new Dictionary<TeamId, OnlineChessTeam>();
+            m_serverAgent = serverAgent;
+            m_teams = new Dictionary<TeamId, OnlineChessTeam>();
             m_toolIdToTeamId = new Dictionary<ToolId, TeamId>();
             CurrentTeamTurnId = currentTeamTurn.Id;
             initTeamsDict(localTeam, remoteTeam);
@@ -69,7 +69,7 @@ namespace OnlineChess
         private void initTeamsDict(OnlineChessTeam firstTeam
                                  , OnlineChessTeam secondTeam)
         {
-            m_teams[firstTeam.Id]  = firstTeam;
+            m_teams[firstTeam.Id] = firstTeam;
             m_teams[secondTeam.Id] = secondTeam;
         }
 

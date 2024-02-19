@@ -5,21 +5,21 @@ using log4net;
 using OnlineChess.Common;
 using Tools;
 
-namespace OnlineChess.GamePanel;
+namespace OnlineChess.Game;
 
 public class OnlineGameBoard : IBoardEvents, IBoardQuery, IDisposable
 {
     private static readonly ILog s_log = LogManager.GetLogger(typeof(OnlineGameBoard));
 
     public event Action<ITool, BoardPosition>? ToolAddEvent;
-    public event Action<BoardPosition>?        ToolRemoved;
+    public event Action<BoardPosition>? ToolRemoved;
 
     private readonly IChessServerAgent m_serverAgent;
-    private readonly BasicBoard        m_board;
+    private readonly BasicBoard m_board;
 
     public OnlineGameBoard(IChessServerAgent serverAgent, BoardState? boardState)
     {
-        m_board       = new BasicBoard();
+        m_board = new BasicBoard();
         m_serverAgent = serverAgent;
         registerToEvents();
         if (null != boardState)
@@ -29,12 +29,12 @@ public class OnlineGameBoard : IBoardEvents, IBoardQuery, IDisposable
     }
 
     public bool TryGetTool(BoardPosition position
-                         , out ITool     tool)
+                         , out ITool tool)
     {
         return m_board.TryGetTool(position, out tool);
     }
 
-    public bool TryGetPosition(ITool             tool
+    public bool TryGetPosition(ITool tool
                              , out BoardPosition position)
     {
         return m_board.TryGetPosition(tool, out position);
@@ -53,7 +53,7 @@ public class OnlineGameBoard : IBoardEvents, IBoardQuery, IDisposable
     }
 
     public Task<PromotionResult> PromoteTool(BoardPosition position
-                                           , ITool         tool)
+                                           , ITool tool)
     {
         s_log.DebugFormat("Promote: [{0} | {1}]", position, tool);
 
@@ -69,7 +69,7 @@ public class OnlineGameBoard : IBoardEvents, IBoardQuery, IDisposable
     private void setBoardState(BoardState boardState)
     {
         s_log.DebugFormat("Set Boared State: [{0}]", boardState);
-        
+
         foreach (KeyValuePair<BoardPosition, ITool> pair in boardState)
         {
             BoardPosition position = pair.Key;
@@ -103,25 +103,25 @@ public class OnlineGameBoard : IBoardEvents, IBoardQuery, IDisposable
         switch (boardCommand.Type)
         {
             case BoardCommandType.Add:
-            {
-                addTool(boardCommand.Position, boardCommand.Tool);
-            }
+                {
+                    addTool(boardCommand.Position, boardCommand.Tool);
+                }
                 break;
             case BoardCommandType.Remove:
-            {
-                removeTool(boardCommand.Position);
-            }
+                {
+                    removeTool(boardCommand.Position);
+                }
                 break;
             default:
-            {
-                s_log.ErrorFormat("Unknown Command Type Arrived: {0}", boardCommand);
-            }
+                {
+                    s_log.ErrorFormat("Unknown Command Type Arrived: {0}", boardCommand);
+                }
                 break;
         }
     }
 
     private void addTool(BoardPosition position
-                       , ITool         tool)
+                       , ITool tool)
     {
         m_board.Add(position, tool);
         ToolAddEvent?.Invoke(tool, position);

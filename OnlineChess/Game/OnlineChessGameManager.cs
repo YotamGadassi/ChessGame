@@ -1,7 +1,6 @@
 ﻿using Board;
 using Common;
 using log4net;
-using OnlineChess.GamePanel;
 
 namespace OnlineChess.Game;
 

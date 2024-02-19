@@ -3,7 +3,7 @@ using log4net;
 using OnlineChess.Common;
 using OnlineChess.ConnectionManager;
 
-namespace OnlineChess.GamePanel;
+namespace OnlineChess.Game;
 
 public class OnlineGameRequestManager
 {
@@ -16,18 +16,18 @@ public class OnlineGameRequestManager
     }
 
     private readonly IChessConnectionManager m_connectionManager;
-    private readonly IChessServerAgent       m_serverAgent;
+    private readonly IChessServerAgent m_serverAgent;
 
     public OnlineGameRequestManager(IChessConnectionManager connectionManager)
     {
         m_connectionManager = connectionManager;
-        m_serverAgent      = connectionManager.ServerAgent;
+        m_serverAgent = connectionManager.ServerAgent;
         s_log.Debug("Created");
     }
 
     public async Task SubmitGameRequest(GameRequest gameRequest)
     {
-        s_log.DebugFormat("Request Game: {0}",gameRequest);
+        s_log.DebugFormat("Request Game: {0}", gameRequest);
         if (m_connectionManager.ConnectionStatus == ConnectionStatus.Disconnected)
         {
             bool isConnectedSuccessfully = await m_connectionManager.Connect();

@@ -8,10 +8,9 @@ using Common;
 using Common.Chess;
 using log4net;
 using OnlineChess.Game;
-using OnlineChess.GamePanel;
 using Tools;
 
-namespace OnlineChess.Client;
+namespace OnlineChess.UI;
 
 public class OnlineChessViewModel : ChessGameViewModel
 {

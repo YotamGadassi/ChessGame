@@ -9,7 +9,7 @@ using FrontCommon.Facade;
 using log4net;
 using log4net.Config;
 using OnlineChess.ConnectionManager;
-using OnlineChess.GamePanel;
+using OnlineChess.UI;
 
 namespace Host
 {
