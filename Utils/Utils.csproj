@@ -4,6 +4,7 @@
     <OutputType>Library</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
+	  <UseWpf>true</UseWpf>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 

@@ -26,17 +26,7 @@ namespace Tools
                         break;
                     case "Color":
                     {
-                        reader.Read();
-                        reader.Read();
-                        byte A = (byte)reader.GetInt32();
-                        reader.Read();
-                        byte B = reader.GetByte();
-                        reader.Read();
-                        byte G = reader.GetByte();
-                        reader.Read();
-                        byte R = reader.GetByte();
-                        color = Color.FromArgb(A, B, G, R);
-                        reader.Read(); // End array
+                        color = JsonSerializer.Deserialize<Color>(ref reader, options);
                         break;
                     }
                 }
@@ -54,12 +44,8 @@ namespace Tools
             writer.WritePropertyName("ToolId");
             JsonSerializer.Serialize(writer, value.ToolId, options);
 
-            writer.WriteStartArray("Color");
-            writer.WriteNumberValue(value.Color.A);
-            writer.WriteNumberValue(value.Color.B);
-            writer.WriteNumberValue(value.Color.G);
-            writer.WriteNumberValue(value.Color.R);
-            writer.WriteEndArray();
+            writer.WritePropertyName("Color");
+            JsonSerializer.Serialize(writer, value.Color, options);
 
             writer.WriteEndObject();
         }
