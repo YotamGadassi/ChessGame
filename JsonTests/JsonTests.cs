@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Windows.Media;
 using Board;
 using Common;
@@ -38,6 +39,31 @@ namespace JsonTests
             Assert.AreEqual(toolSerialized.Type,   toolSerialized.Type);
             Assert.AreEqual(toolSerialized.ToolId, toolSerialized.ToolId);
 
+        }
+
+        [Test]
+        public void ToolIdTest()
+        {
+            ToolId                toolId = ToolId.NewToolId();
+            JsonSerializerOptions opt    = new() { Converters = { new ToolIdConverter() } };
+            SimpleSerializeTest(toolId, opt);
+        }
+
+        [Test]
+        public void TeamIdTest()
+        {
+            TeamId                toolId = TeamId.NewTeamId();;
+            JsonSerializerOptions opt    = new() { Converters = { new TeamIdConverter() } };
+            SimpleSerializeTest(toolId, opt);
+        }
+
+
+        public void SimpleSerializeTest<T>(T obj, JsonSerializerOptions opt)
+        {
+            string                jsonStr = JsonSerializer.Serialize(obj, opt);
+
+            T serializedObj = (T)JsonSerializer.Deserialize(jsonStr, typeof(T), opt);
+            Assert.AreEqual(obj, serializedObj);
         }
 
         [Test]
