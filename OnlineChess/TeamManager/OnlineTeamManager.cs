@@ -3,7 +3,7 @@ using log4net;
 using OnlineChess.Common;
 using Tools;
 
-namespace OnlineChess
+namespace OnlineChess.TeamManager
 {
     public class OnlineChessTeamManager : IChessTeamManager, IDisposable
     {
@@ -22,13 +22,13 @@ namespace OnlineChess
 
         public OnlineChessTeamManager(OnlineChessTeam localTeam
                                     , OnlineChessTeam remoteTeam
-                                    , Team currentTeamTurn
+                                    , TeamId firstTeamId
                                     , IChessServerAgent serverAgent)
         {
             m_serverAgent = serverAgent;
             m_teams = new Dictionary<TeamId, OnlineChessTeam>();
             m_toolIdToTeamId = new Dictionary<ToolId, TeamId>();
-            CurrentTeamTurnId = currentTeamTurn.Id;
+            CurrentTeamTurnId = firstTeamId;
             initTeamsDict(localTeam, remoteTeam);
             LocalMachineTeamId = localTeam.Id;
             registerToEvents();

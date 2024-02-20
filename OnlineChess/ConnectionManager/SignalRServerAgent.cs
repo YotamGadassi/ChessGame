@@ -77,7 +77,7 @@ namespace OnlineChess.ConnectionManager
 
         private void registerToEvents()
         {
-            m_connection.On<OnlineChessGameConfiguration>("StartGame", handleStartGame);
+            m_connection.On<GameConfig>("StartGame", handleStartGame);
             m_connection.On<EndGameReason>("EndGame", handleEndGame);
             m_connection.On<TeamId, TimeSpan>("UpdateTime", handleUpdateTime);
             m_connection.On<BoardPosition, ITool>("AskPromotion", handleAskPromotion);
@@ -123,7 +123,7 @@ namespace OnlineChess.ConnectionManager
             EndGameEvent?.Invoke(reason);
         }
 
-        private void handleStartGame(OnlineChessGameConfiguration gameConfiguration)
+        private void handleStartGame(GameConfig gameConfiguration)
         {
             s_log.DebugFormat("Start Game Arrived: [Game Configuration: {0}]", gameConfiguration);
             StartGameEvent?.Invoke(gameConfiguration);

@@ -1,7 +1,7 @@
 ﻿using Common;
 using OnlineChess.Common;
 
-namespace OnlineChess
+namespace OnlineChess.TeamManager
 {
     internal class OnlineTeamTimer : ITeamTimer, IDisposable
     {

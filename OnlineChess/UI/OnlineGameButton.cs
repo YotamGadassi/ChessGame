@@ -5,6 +5,7 @@ using log4net;
 using OnlineChess.Common;
 using OnlineChess.ConnectionManager;
 using OnlineChess.Game;
+using OnlineChess.TeamManager;
 
 namespace OnlineChess.UI;
 
@@ -58,7 +59,7 @@ public class OnlineGameButton : BaseGameButton, IDisposable
         m_gameRequestManager.StartGameEvent -= onGameStart;
     }
 
-    private void onGameStart(OnlineChessGameConfiguration gameConfiguration)
+    private void onGameStart(GameConfig gameConfiguration)
     {
         OnlineChessGameManager onlineGameManager = createOnlineGameManager(gameConfiguration);
 
@@ -73,15 +74,24 @@ public class OnlineGameButton : BaseGameButton, IDisposable
         m_panelManager.Show(panel);
     }
 
-    private OnlineChessGameManager createOnlineGameManager(OnlineChessGameConfiguration gameConfiguration)
+    private OnlineChessGameManager createOnlineGameManager(GameConfig gameConfiguration)
     {
-        OnlineChessTeam localTeam = gameConfiguration.LocalTeam;
-        OnlineChessTeam remoteTeam = gameConfiguration.RemoteTeam;
-        Team firstTeamTurn = gameConfiguration.FirstTeamTurn;
+        TeamConfig[]    teamConfigArr   = gameConfiguration.TeamConfigs;
+        OnlineChessTeam localTeam = teamConfigArr.FirstOrDefault((teamConfig) => teamConfig.IsLocal)
+                                                       .ToOnlineChessTeam(m_serverAgent);
+        OnlineChessTeam remoteTeam = teamConfigArr.FirstOrDefault((teamConfig) => false == teamConfig.IsLocal)
+                                                  .ToOnlineChessTeam(m_serverAgent);
+        if (null == localTeam || null == remoteTeam)
+        {
+            s_log.ErrorFormat("One of the teams could not be created");
+            return null;
+        }
 
-        OnlineGameBoard gameBoard = new(m_serverAgent, gameConfiguration.BoardState);
-        OnlineChessTeamManager teamManager = new(localTeam, remoteTeam, firstTeamTurn, m_serverAgent);
-        OnlineGameState gameState = new OnlineGameState(m_serverAgent);
+        TeamId firstTeamTurnId = teamConfigArr.First((teamConfig) => teamConfig.IsFirst).Id;
+
+        OnlineGameBoard        gameBoard              = new(m_serverAgent, null);
+        OnlineChessTeamManager teamManager            = new(localTeam, remoteTeam, firstTeamTurnId, m_serverAgent);
+        OnlineGameState        gameState              = new(m_serverAgent);
         OnlineChessGameManager onlineChessGameManager = new(gameBoard, teamManager, gameState);
         return onlineChessGameManager;
     }

@@ -49,9 +49,9 @@ public class GameUnit : IDisposable
         GameToken = Guid.NewGuid();
 
         m_gameManager.GameStateController.StartResumeGame();
-        WhitePlayer1.PlayersTeam = new Team(WhitePlayer1.Name, Colors.White, GameDirection.North);
+        WhitePlayer1.PlayersTeam = new Team(WhitePlayer1.Name, Colors.White, GameDirection.North, TeamId.NewTeamId());
         WhitePlayer1.GameUnit    = this;
-        BlackPlayer2.PlayersTeam = new Team(BlackPlayer2.Name, Colors.Black, GameDirection.South);
+        BlackPlayer2.PlayersTeam = new Team(BlackPlayer2.Name, Colors.Black, GameDirection.South, TeamId.NewTeamId());
         BlackPlayer2.GameUnit    = this;
 
         WhitePlayer1.StartTimer();

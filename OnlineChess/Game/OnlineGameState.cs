@@ -40,7 +40,7 @@ namespace OnlineChess.Game
             StateChanged?.Invoke(this, State);
         }
 
-        private void onGameStarted(OnlineChessGameConfiguration gameConfig)
+        private void onGameStarted(GameConfig gameConfig)
         {
             State = GameStateEnum.Running;
             StateChanged?.Invoke(this, State);

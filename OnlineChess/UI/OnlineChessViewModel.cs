@@ -8,6 +8,7 @@ using Common;
 using Common.Chess;
 using log4net;
 using OnlineChess.Game;
+using OnlineChess.TeamManager;
 using Tools;
 
 namespace OnlineChess.UI;

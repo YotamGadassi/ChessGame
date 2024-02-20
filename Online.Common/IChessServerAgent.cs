@@ -6,7 +6,7 @@ namespace OnlineChess.Common
 {
     public delegate void BoardCommandsHandler(BoardCommand[] commands);
 
-    public delegate void StartGameHandler(OnlineChessGameConfiguration gameConfiguration);
+    public delegate void StartGameHandler(GameConfig gameConfiguration);
 
     public delegate void EndGameHandler(EndGameReason reason);
 

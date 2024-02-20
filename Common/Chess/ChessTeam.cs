@@ -9,7 +9,7 @@ namespace Common.Chess
         public ChessTeam(string        name
                        , Color         color
                        , GameDirection moveDirection
-                       , TeamTimer     teamTimer) : base(name, color, moveDirection)
+                       , TeamTimer     teamTimer) : base(name, color, moveDirection, TeamId.NewTeamId())
         {
             TeamTimer = teamTimer;
         }
