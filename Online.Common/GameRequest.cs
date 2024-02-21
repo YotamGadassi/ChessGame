@@ -1,6 +1,4 @@
-﻿using Utils;
-
-namespace OnlineChess.Common;
+﻿namespace OnlineChess.Common;
 
 public class GameRequest
 {
@@ -11,24 +9,9 @@ public class GameRequest
         UserName = userName;
     }
 
-    public override string ToString()
+    protected bool Equals(GameRequest other)
     {
-        return $"{nameof(UserName)}: {UserName}";
-    }
-}
-
-public class GameRequestId : BaseId
-{
-    public static GameRequestId NewGameRequestId()
-    {
-        return new GameRequestId(Guid.NewGuid());
-    }
-
-    private GameRequestId(Guid id) : base(id) { }
-
-    protected bool Equals(GameRequestId other)
-    {
-        return base.Equals(other);
+        return UserName == other.UserName;
     }
 
     public override bool Equals(object? obj)
@@ -48,7 +31,17 @@ public class GameRequestId : BaseId
             return false;
         }
 
-        return Equals((GameRequestId)obj);
+        return Equals((GameRequest)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return UserName.GetHashCode();
+    }
+
+    public override string ToString()
+    {
+        return $"{nameof(UserName)}: {UserName}";
     }
 }
 
@@ -62,6 +55,36 @@ public class GameRequestResult
     {
         IsError       = isError;
         GameRequestId = gameRequestId;
+    }
+
+    protected bool Equals(GameRequestResult other)
+    {
+        return IsError == other.IsError && GameRequestId.Equals(other.GameRequestId);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj))
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+
+        if (obj.GetType() != this.GetType())
+        {
+            return false;
+        }
+
+        return Equals((GameRequestResult)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(IsError, GameRequestId);
     }
 
     public override string ToString()

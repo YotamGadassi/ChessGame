@@ -75,22 +75,6 @@ namespace JsonTests
             SimpleSerializeTest(gameConfig, new JsonSerializerOptions(){Converters = { new TeamIdConverter() }});
         }
 
-        public void SimpleSerializeTest<T>(T obj, JsonSerializerOptions opt)
-        {
-            string                jsonStr = JsonSerializer.Serialize(obj, opt);
-
-            T serializedObj = (T)JsonSerializer.Deserialize(jsonStr, typeof(T), opt);
-            Assert.AreEqual(obj, serializedObj);
-        }
-
-        public void ArraySerializeTest<T>(T[] obj, JsonSerializerOptions opt)
-        {
-            string jsonStr = JsonSerializer.Serialize(obj, opt);
-
-            T[] serializedObj = (T[])JsonSerializer.Deserialize(jsonStr, typeof(T[]), opt);
-            Assert.IsTrue(serializedObj.SequenceEqual(obj));
-        }
-
         [Test]
         public void BoardStateTest()
         {
@@ -141,5 +125,41 @@ namespace JsonTests
             ArraySerializeTest(commands, opt);
 
         }
+
+        [Test]
+        public void GameRequestTest()
+        {
+            GameRequest gameRequest = new GameRequest("ABC");
+
+            JsonSerializerOptions opt = new JsonSerializerOptions();
+            SimpleSerializeTest(gameRequest, opt);
+        }
+
+        [Test]
+        public void GameRequestResultTest()
+        {
+            GameRequestResult gameRequestResult = new GameRequestResult(true, GameRequestId.NewGameRequestId());
+
+            JsonSerializerOptions opt = new JsonSerializerOptions();
+            SimpleSerializeTest(gameRequestResult, opt);
+        }
+
+
+        public void SimpleSerializeTest<T>(T obj, JsonSerializerOptions opt)
+        {
+            string jsonStr = JsonSerializer.Serialize(obj, opt);
+
+            T serializedObj = (T)JsonSerializer.Deserialize(jsonStr, typeof(T), opt);
+            Assert.AreEqual(obj, serializedObj);
+        }
+
+        public void ArraySerializeTest<T>(T[] obj, JsonSerializerOptions opt)
+        {
+            string jsonStr = JsonSerializer.Serialize(obj, opt);
+
+            T[] serializedObj = (T[])JsonSerializer.Deserialize(jsonStr, typeof(T[]), opt);
+            Assert.IsTrue(serializedObj.SequenceEqual(obj));
+        }
+
     }
 }
