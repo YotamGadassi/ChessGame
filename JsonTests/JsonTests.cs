@@ -17,6 +17,10 @@ namespace JsonTests
         [Test]
         public void ToolsTest()
         {
+            ITool tool = null;
+            JsonSerializerOptions options = new JsonSerializerOptions(){Converters = { new IToolConverter() } };
+            SimpleSerializeTest(tool, options);
+
             ToolTest<Pawn>();
             ToolTest<Bishop>();
             ToolTest<King>();
@@ -79,6 +83,14 @@ namespace JsonTests
             Assert.AreEqual(obj, serializedObj);
         }
 
+        public void ArraySerializeTest<T>(T[] obj, JsonSerializerOptions opt)
+        {
+            string jsonStr = JsonSerializer.Serialize(obj, opt);
+
+            T[] serializedObj = (T[])JsonSerializer.Deserialize(jsonStr, typeof(T[]), opt);
+            Assert.IsTrue(serializedObj.SequenceEqual(obj));
+        }
+
         [Test]
         public void BoardStateTest()
         {
@@ -105,7 +117,6 @@ namespace JsonTests
             KeyValuePair<BoardPosition, ITool>[] serializedPairs = serializedBoardState.ToArray();
             KeyValuePair<BoardPosition, ITool>[] pairs = boardState.ToArray();
 
-
             for (int i=0; i < serializedPairs.Length; ++i)
             {
                 Assert.AreEqual(pairs[i].Key,         serializedPairs[i].Key);
@@ -114,6 +125,21 @@ namespace JsonTests
                 Assert.AreEqual(pairs[i].Value.ToolId,  serializedPairs[i].Value.ToolId);
 
             }
+        }
+
+        [Test]
+        public void BoardCommandTest()
+        {
+            BoardCommand[] commands = new BoardCommand[]
+                                      {
+                                          new BoardCommand(BoardCommandType.Remove, new BoardPosition(1, 1))
+                                        , new BoardCommand(BoardCommandType.Add, new BoardPosition(1, 1)
+                                                         , new Bishop(Colors.White))
+                                      };
+
+            JsonSerializerOptions opt = new JsonSerializerOptions(){Converters = { new IToolConverter() }};
+            ArraySerializeTest(commands, opt);
+
         }
     }
 }

@@ -31,6 +31,35 @@ namespace Tools
             return newKnight;
         }
 
+        protected bool Equals(Knight other)
+        {
+            return ToolId.Equals(other.ToolId) && Color.Equals(other.Color);
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+
+            return Equals((Knight)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(ToolId, Color);
+        }
     }
 
     public class KnightConverter : JsonConverter<Knight>

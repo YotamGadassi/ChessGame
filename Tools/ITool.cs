@@ -25,7 +25,15 @@ public class IToolConverter : JsonConverter<ITool>
                               , Type                  typeToConvert
                               , JsonSerializerOptions options)
     {
-        while (reader.Read() && reader.TokenType != JsonTokenType.PropertyName) { }
+        if (reader.TokenType != JsonTokenType.StartObject)
+            reader.Read(); // Start Object
+
+        if (reader.TokenType != JsonTokenType.StartObject)
+        {
+            throw new SerializationException($"Serialization Error for type: {typeToConvert}");
+        }
+
+        reader.Read(); // First Property Name
         string propertyName = reader.GetString();
         if (propertyName != "Type")
         {
@@ -54,21 +62,23 @@ public class IToolConverter : JsonConverter<ITool>
                              , ITool                 value
                              , JsonSerializerOptions options)
     {
+        writer.WriteStartObject();
+
         if (null == value)
         {
             s_log.Warn("Writing a null value!");
             JsonSerializer.Serialize(writer, (ITool)null, options);
-            return;
         }
+        else
+        {
+            Type type = value.GetType();
 
-        Type type = value.GetType();
-        writer.WriteStartObject();
+            writer.WritePropertyName("Type");
+            writer.WriteStringValue(type.AssemblyQualifiedName);
 
-        writer.WritePropertyName("Type");
-        writer.WriteStringValue(type.AssemblyQualifiedName);
-
-        writer.WritePropertyName("ConcreteType");
-        JsonSerializer.Serialize(writer, value, type, options);
+            writer.WritePropertyName("ConcreteType");
+            JsonSerializer.Serialize(writer, value, type, options);
+        }
 
         writer.WriteEndObject();
 

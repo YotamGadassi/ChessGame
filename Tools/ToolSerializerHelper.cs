@@ -1,4 +1,5 @@
-﻿using System.Windows.Media;
+﻿using System.Runtime.Serialization;
+using System.Windows.Media;
 using System.Text.Json;
 
 namespace Tools
@@ -8,12 +9,22 @@ namespace Tools
         public static (Color color, ToolId? toolId) Read(ref Utf8JsonReader     reader
                                                        , JsonSerializerOptions? options)
         {
-            ToolId? toolId = null;
-            Color   color  = default;
-            while (reader.Read())
+            Color  color  = default(Color);
+            ToolId toolId = default(ToolId);
+
+            if (reader.TokenType != JsonTokenType.StartObject)
+                reader.Read(); // Start Object
+
+            if (reader.TokenType != JsonTokenType.StartObject)
+            {
+                throw new SerializationException("Serialization Error for type: Tool");
+            }
+
+            while (reader.TokenType != JsonTokenType.EndObject)
             {
                 if (reader.TokenType != JsonTokenType.PropertyName)
                 {
+                    reader.Read();
                     continue;
                 }
 
@@ -21,17 +32,21 @@ namespace Tools
                 switch (propertyName)
                 {
                     case "ToolId":
-                        reader.Read();
+                        reader.Read(); // Start Object
                         toolId = JsonSerializer.Deserialize<ToolId>(ref reader, options);
+                        reader.Read(); // End Object
                         break;
                     case "Color":
                     {
+                        reader.Read(); // Start Object
                         color = JsonSerializer.Deserialize<Color>(ref reader, options);
+                        reader.Read(); // End Object
                         break;
                     }
                 }
             }
 
+            reader.Read();
             return (color, toolId);
         }
 

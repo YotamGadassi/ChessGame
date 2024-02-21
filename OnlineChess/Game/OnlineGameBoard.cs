@@ -17,7 +17,7 @@ public class OnlineGameBoard : IBoardEvents, IBoardQuery, IDisposable
     private readonly IChessServerAgent m_serverAgent;
     private readonly BasicBoard m_board;
 
-    public OnlineGameBoard(IChessServerAgent serverAgent, BoardState? boardState)
+    public OnlineGameBoard(IChessServerAgent serverAgent, BoardState? boardState = null)
     {
         m_board = new BasicBoard();
         m_serverAgent = serverAgent;

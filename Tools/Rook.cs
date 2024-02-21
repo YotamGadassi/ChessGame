@@ -28,6 +28,36 @@ namespace Tools
         {
             return new Rook(Color);
         }
+
+        protected bool Equals(Rook other)
+        {
+            return ToolId.Equals(other.ToolId) && Color.Equals(other.Color);
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+
+            return Equals((Rook)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(ToolId, Color);
+        }
     }
 
     public class RookConverter : JsonConverter<Rook>

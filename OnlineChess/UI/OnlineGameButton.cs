@@ -64,12 +64,12 @@ public class OnlineGameButton : BaseGameButton, IDisposable
         OnlineChessGameManager onlineGameManager = createOnlineGameManager(gameConfiguration);
 
         BaseGamePanel panel = getPanel();
+        panel.Init();
         if (panel is OnlineChessGamePanel onlineGamePanel)
         {
             onlineGamePanel.SetGameManager(onlineGameManager);
         }
 
-        panel.Init();
         //TODO: Remove Waiting For Connection Panel\Message
         m_panelManager.Show(panel);
     }
