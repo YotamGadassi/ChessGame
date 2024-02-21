@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Windows.Media;
 using Board;
 using Common;
+using Common.Chess;
 using OnlineChess.Common;
 using Tools;
 
@@ -144,6 +145,25 @@ namespace JsonTests
             SimpleSerializeTest(gameRequestResult, opt);
         }
 
+        [Test]
+        public void MoveResultTest()
+        {
+            MoveResult moveResult = new MoveResult(MoveResultEnum.ToolKilled, new BoardPosition(3, 4)
+                                                 , new BoardPosition(5, 6), new Pawn(Colors.Black)
+                                                 , new King(Colors.White));
+
+            JsonSerializerOptions opt = new JsonSerializerOptions(){Converters = { new IToolConverter() }};
+            SimpleSerializeTest(moveResult, opt);
+        }
+
+        [Test]
+        public void PromotionResultTest()
+        {
+            PromotionResult promotionResult = new PromotionResult(new Pawn(Colors.Black), new Knight( Colors.Black), new BoardPosition(1,3), PromotionResultEnum.PromotionSucceeded);
+
+            JsonSerializerOptions opt = new JsonSerializerOptions() { Converters = { new IToolConverter() } };
+            SimpleSerializeTest(promotionResult, opt);
+        }
 
         public void SimpleSerializeTest<T>(T obj, JsonSerializerOptions opt)
         {
