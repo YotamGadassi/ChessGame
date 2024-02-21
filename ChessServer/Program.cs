@@ -1,4 +1,4 @@
-using ChessServer3._0;
+using ChessServer;
 using Common;
 using Tools;
 

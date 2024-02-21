@@ -1,12 +1,11 @@
 ﻿using Board;
-using Common;
 using Common.Chess;
 using Microsoft.AspNetCore.SignalR;
 using Tools;
 
-namespace ChessServer3._0;
+namespace ChessServer;
 
-public class ChessHub : Hub
+public class ChessHub : Hub<>
 {
     private readonly IServerState      m_serverState;
     private readonly ILogger<ChessHub> m_log;

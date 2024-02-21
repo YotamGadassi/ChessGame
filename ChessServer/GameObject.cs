@@ -6,7 +6,7 @@ using Common.Chess;
 using Microsoft.AspNetCore.SignalR;
 using Tools;
 
-namespace ChessServer3._0;
+namespace ChessServer;
 
 public delegate void PlayerTimeChanged(PlayerObject player
                                      , TimeSpan     timeLeft);

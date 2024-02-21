@@ -2,7 +2,7 @@
 using Utils.DataStructures;
 using Microsoft.AspNetCore.SignalR;
 
-namespace ChessServer3._0
+namespace ChessServer
 {
     public enum GameRequestResult
     {

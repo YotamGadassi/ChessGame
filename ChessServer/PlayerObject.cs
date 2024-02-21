@@ -2,7 +2,7 @@
 using Common;
 using Timer = System.Timers.Timer;
 
-namespace ChessServer3._0
+namespace ChessServer
 {
     public class PlayerObject
     {
