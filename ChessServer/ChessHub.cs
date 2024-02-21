@@ -5,7 +5,7 @@ using Tools;
 
 namespace ChessServer;
 
-public class ChessHub : Hub<>
+public class ChessHub : Hub
 {
     private readonly IServerState      m_serverState;
     private readonly ILogger<ChessHub> m_log;

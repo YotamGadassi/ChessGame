@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChessServer", "ChessServer3.0\ChessServer.csproj", "{ABB7D914-7357-425D-9FA1-D8C2607D5DF0}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Host", "Host\Host.csproj", "{A4F5E622-609C-4C2A-9310-C9A765041FFC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonTests", "JsonTests\JsonTests.csproj", "{8EE22F50-066F-46BB-A715-35B61B0F7B29}"
@@ -33,7 +31,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FrontCommon", "FrontCommon\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineChess", "OnlineChess\OnlineChess.csproj", "{3AEC70C5-BFB1-4448-B086-05E8D8D44E2A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineChess.Common", "Online.Common\OnlineChess.Common.csproj", "{A0A6583F-1184-4888-90F6-681E8688100E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineChess.Common", "Online.Common\OnlineChess.Common.csproj", "{A0A6583F-1184-4888-90F6-681E8688100E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChessServer", "ChessServer\ChessServer.csproj", "{CA10BFE8-7D84-4D1B-8F71-DA100DCD8B53}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +41,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{ABB7D914-7357-425D-9FA1-D8C2607D5DF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ABB7D914-7357-425D-9FA1-D8C2607D5DF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ABB7D914-7357-425D-9FA1-D8C2607D5DF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ABB7D914-7357-425D-9FA1-D8C2607D5DF0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A4F5E622-609C-4C2A-9310-C9A765041FFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A4F5E622-609C-4C2A-9310-C9A765041FFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4F5E622-609C-4C2A-9310-C9A765041FFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -93,12 +89,15 @@ Global
 		{A0A6583F-1184-4888-90F6-681E8688100E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0A6583F-1184-4888-90F6-681E8688100E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0A6583F-1184-4888-90F6-681E8688100E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA10BFE8-7D84-4D1B-8F71-DA100DCD8B53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA10BFE8-7D84-4D1B-8F71-DA100DCD8B53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA10BFE8-7D84-4D1B-8F71-DA100DCD8B53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA10BFE8-7D84-4D1B-8F71-DA100DCD8B53}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{ABB7D914-7357-425D-9FA1-D8C2607D5DF0} = {8BAFF0AE-864A-4296-9ACD-E2F72C5933CE}
 		{A4F5E622-609C-4C2A-9310-C9A765041FFC} = {5FF0BA73-A919-4750-B4E0-16A98AAF1F64}
 		{8EE22F50-066F-46BB-A715-35B61B0F7B29} = {6D977F08-C7CC-435F-B4BE-11530A4E4024}
 		{09B6413B-AEB1-4261-B525-AFFF49F9B550} = {6D977F08-C7CC-435F-B4BE-11530A4E4024}
@@ -111,6 +110,7 @@ Global
 		{6EC74ECF-9175-4D44-B7A5-D56262A1A219} = {5FF0BA73-A919-4750-B4E0-16A98AAF1F64}
 		{3AEC70C5-BFB1-4448-B086-05E8D8D44E2A} = {5FF0BA73-A919-4750-B4E0-16A98AAF1F64}
 		{A0A6583F-1184-4888-90F6-681E8688100E} = {6D977F08-C7CC-435F-B4BE-11530A4E4024}
+		{CA10BFE8-7D84-4D1B-8F71-DA100DCD8B53} = {8BAFF0AE-864A-4296-9ACD-E2F72C5933CE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AC36476D-C476-450C-AD3E-4FB09D99FE01}
