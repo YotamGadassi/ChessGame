@@ -93,10 +93,9 @@ public class ChessHub : Hub
     }
 
     public async Task<bool> PromoteRequest(BoardPosition position
-                                         , IToolWrapperForServer         toolWrapper
+                                         , ITool         tool
                                          , Guid          gameVersion)
     {
-        ITool  tool         = toolWrapper.Tool;
         string connectionId = Context.ConnectionId;
         if (false == m_serverState.TryGetGame(connectionId, out GameUnit game))
         {
@@ -118,7 +117,7 @@ public class ChessHub : Hub
             return false;
         }
 
-        await Clients.Client(otherPlayer.ConnectionId).SendAsync("PromoteTool", position, new IToolWrapperForServer(tool));
+        await Clients.Client(otherPlayer.ConnectionId).SendAsync("PromoteTool", position, tool);
 
         return true;
     }

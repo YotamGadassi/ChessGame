@@ -54,8 +54,8 @@ namespace OnlineChess.ConnectionManager
             return await m_connection.InvokeAsync<MoveResult>("SubmitMove", start, end);
         }
 
-        public async Task<PromotionResult> SubmitPromote(BoardPosition         positionToPromote
-                                                       , IToolWrapperForServer tool)
+        public async Task<PromotionResult> SubmitPromote(BoardPosition positionToPromote
+                                                       , ITool         tool)
         {
             s_log.Info($"Submit Promote sent to server: [Position: {positionToPromote} | Tool: {tool}]");
             return await m_connection.InvokeAsync<PromotionResult>("SubmitPromote"

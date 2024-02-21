@@ -17,7 +17,7 @@ public interface IChessServerApi
                               , BoardPosition end);
 
     Task<PromotionResult> SubmitPromote(BoardPosition         positionToPromote
-                                      , IToolWrapperForServer tool);
+                                      , ITool tool);
 
     Task<TeamId> GetCurrentTeamTurn();
 

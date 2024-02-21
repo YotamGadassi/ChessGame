@@ -57,8 +57,7 @@ public class OnlineGameBoard : IBoardEvents, IBoardQuery, IDisposable
     {
         s_log.DebugFormat("Promote: [{0} | {1}]", position, tool);
 
-        IToolWrapperForServer toolWrapper = new(tool);
-        return m_serverAgent.SubmitPromote(position, toolWrapper);
+        return m_serverAgent.SubmitPromote(position, tool);
     }
 
     public void Dispose()
