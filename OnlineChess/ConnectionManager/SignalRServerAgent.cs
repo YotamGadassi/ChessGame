@@ -63,10 +63,10 @@ namespace OnlineChess.ConnectionManager
                                                                  , tool);
         }
 
-        public Task<bool> IsMyTurn()
+        public Task<TeamId> GetCurrentTeamTurn()
         {
             //TODO: consider remove
-            return m_connection.InvokeAsync<bool>("IsMyTurn");
+            return m_connection.InvokeAsync<TeamId>("GetCurrentTeamTurn");
         }
 
         public Task SendMessage(string msg)

@@ -1,4 +1,5 @@
 ﻿using Board;
+using Common;
 using Common.Chess;
 using Tools;
 
@@ -18,7 +19,7 @@ public interface IChessServerApi
     Task<PromotionResult> SubmitPromote(BoardPosition         positionToPromote
                                       , IToolWrapperForServer tool);
 
-    Task<bool> IsMyTurn();
+    Task<TeamId> GetCurrentTeamTurn();
 
     Task SendMessage(string msg);
 }
