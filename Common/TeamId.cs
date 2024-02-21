@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Common;
 using Utils;
 
 namespace Common;
@@ -44,25 +47,37 @@ public class TeamId : BaseId
 
 public class TeamIdConverter : JsonConverter<TeamId>
 {
+    
+    private readonly string m_idFieldName = "m_id";
+
     public override TeamId? Read(ref Utf8JsonReader    reader
                                , Type                  typeToConvert
                                , JsonSerializerOptions options)
     {
-        Guid? id = null;
-        while (reader.Read())
+        if (reader.TokenType != JsonTokenType.StartObject)
+            reader.Read(); // Property Name
+        
+        if (reader.TokenType != JsonTokenType.StartObject)
         {
-            if (reader.TokenType   == JsonTokenType.PropertyName
-             && reader.GetString() == "m_id")
-            {
-                reader.Read();
-                byte[] bytes = reader.GetBytesFromBase64();
-                id = new Guid(bytes);
-            }
+            throw new SerializationException(string.Format("Serialization Error: ObjectType: {0}", typeToConvert));
         }
 
+        reader.Read(); // Property Value
+        if (reader.GetString() != m_idFieldName)
+        {
+            throw new Exception(""); // TODO: throw meaningful exception
+        }
+        
+        reader.Read(); // Property itself
+        byte[] bytes = reader.GetBytesFromBase64();
+        Guid? id    = new Guid(bytes);
+        
         ConstructorInfo? ctor =
             typeof(TeamId).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, new Type[1] { typeof(Guid) });
-        return (TeamId)ctor.Invoke(new object?[1] { id });
+        TeamId item = (TeamId)ctor.Invoke(new object?[1] { id });
+
+        reader.Read(); // End Object
+        return item;
     }
 
     public override void Write(Utf8JsonWriter        writer
@@ -70,11 +85,11 @@ public class TeamIdConverter : JsonConverter<TeamId>
                              , JsonSerializerOptions options)
     {
         writer.WriteStartObject();
-
-        writer.WritePropertyName("m_id");
-        FieldInfo? idField = value.GetType().BaseType.GetField("m_id", BindingFlags.NonPublic | BindingFlags.Instance);
+        
+        FieldInfo? idField = value.GetType().BaseType.GetField(m_idFieldName, BindingFlags.NonPublic | BindingFlags.Instance);
         Guid       id      = (Guid)idField.GetValue(value);
-        writer.WriteBase64StringValue(id.ToByteArray());
+        writer.WriteBase64String(m_idFieldName, id.ToByteArray());
+        
         writer.WriteEndObject();
     }
 }

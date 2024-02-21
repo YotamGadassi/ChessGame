@@ -1,8 +1,8 @@
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Windows.Media;
 using Board;
 using Common;
+using OnlineChess.Common;
 using Tools;
 
 namespace JsonTests
@@ -30,7 +30,7 @@ namespace JsonTests
             TOOL_TYPE tool          = (TOOL_TYPE)Activator.CreateInstance(typeof(TOOL_TYPE), Colors.White);
             ITool     toolInterface = tool;
 
-            JsonSerializerOptions opt                     = new() { Converters = { new IToolConverter() } };
+            JsonSerializerOptions opt                     = new() { Converters = { new IToolConverter()} };
             string                str                     = JsonSerializer.Serialize(toolInterface, opt);
             ITool                 toolInterfaceSerialized = (ITool)JsonSerializer.Deserialize(str, typeof(ITool), opt);
             TOOL_TYPE             toolSerialized          = toolInterfaceSerialized as TOOL_TYPE;
@@ -57,6 +57,19 @@ namespace JsonTests
             SimpleSerializeTest(toolId, opt);
         }
 
+        [Test]
+        public void GameConfigTests()
+        {
+            GameConfig gameConfig = new GameConfig(new[]
+                                                   {
+                                                       new TeamConfig(true, true, GameDirection.North, "A", Colors.White
+                                                                    , TeamId.NewTeamId(), TimeSpan.FromMinutes(60))
+                                                     , new TeamConfig(false, false, GameDirection.South, "B"
+                                                                    , Colors.Black, TeamId.NewTeamId()
+                                                                    , TimeSpan.FromMinutes(60))
+                                                   });
+            SimpleSerializeTest(gameConfig, new JsonSerializerOptions(){Converters = { new TeamIdConverter() }});
+        }
 
         public void SimpleSerializeTest<T>(T obj, JsonSerializerOptions opt)
         {
