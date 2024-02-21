@@ -1,10 +1,11 @@
 ﻿using System.Collections.Concurrent;
+using ChessServer.Game;
 using Utils.DataStructures;
 using Microsoft.AspNetCore.SignalR;
 
 namespace ChessServer
 {
-    public enum GameRequestResult
+    public enum GameRequestResultEnum
     {
         GameStarted = 1,
         CannotStartGame = 2,
@@ -14,7 +15,7 @@ namespace ChessServer
     
     public interface IServerState
     {
-        System.Threading.Tasks.Task<GameRequestResult> OnGameRequest(string connectionId);
+        Task<GameRequestResultEnum> OnGameRequest(string connectionId);
         bool                    OnConnection(string  name,         string       connectionId);
         bool                    TryGetGame(string    connectionId, out GameUnit game);
         void                    EndGame(GameUnit     game);
@@ -38,7 +39,7 @@ namespace ChessServer
             m_log.LogInformation($"Server state has been created");
         }
 
-        public async Task<GameRequestResult> OnGameRequest(string connectionId)
+        public async Task<GameRequestResultEnum> OnGameRequest(string connectionId)
         {
             // TODO: handle error
             m_connectionIdToPlayer.TryGetValue(connectionId, out PlayerObject? player);
@@ -54,13 +55,13 @@ namespace ChessServer
                     await Task.WhenAll(m_hubContext.Groups.AddToGroupAsync(newGame.WhitePlayer1.ConnectionId, newGame.GroupName),
                                        m_hubContext.Groups.AddToGroupAsync(newGame.BlackPlayer2.ConnectionId, newGame.GroupName));
                 }
-                return isGameStarted ? GameRequestResult.GameStarted : GameRequestResult.CannotStartGame;
+                return isGameStarted ? GameRequestResultEnum.GameStarted : GameRequestResultEnum.CannotStartGame;
             }
 
             bool isEnqueued = m_pendingPlayers.TryEnqueue(player);
             return isEnqueued
-                       ? GameRequestResult.PlayerAddedToPendingList
-                       : GameRequestResult.CannotAddPlayerToPendingList;
+                       ? GameRequestResultEnum.PlayerAddedToPendingList
+                       : GameRequestResultEnum.CannotAddPlayerToPendingList;
         }
 
         public bool OnConnection(string name, string connectionId)

@@ -1,4 +1,5 @@
 using ChessServer;
+using ChessServer.ServerManager;
 using Common;
 using Tools;
 
@@ -11,7 +12,7 @@ builder.Services.AddSignalR()
 
 builder.Logging.AddLog4Net("loggingConfiguration.xml");
 
-builder.Services.Add(new ServiceDescriptor(typeof(IServerState), typeof(ServerState), ServiceLifetime.Singleton));
+builder.Services.Add(new ServiceDescriptor(typeof(IServerManager<string>), typeof(SignalRServerManager), ServiceLifetime.Singleton));
 WebApplication                       app = builder.Build();
 
 app.MapGet("/", () => "Hello World!");
