@@ -5,7 +5,7 @@ using Tools;
 
 namespace ChessServer.ChessPlayer;
 
-public class ChessPlayer : IChessClientApi
+public class ServerChessPlayer : IChessClientApi
 {
     public PlayerId PlayerId { get; }
 

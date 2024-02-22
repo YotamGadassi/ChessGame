@@ -9,7 +9,8 @@ namespace ChessServer.Game
 {
     public interface IGameUnit
     {
-        public GameId Id { get; }
+        public ServerChessPlayer[] ChessPlayers { get; }
+        public GameId                    Id           { get; }
 
         public TeamId CurrentTeamId { get; }
 
