@@ -1,19 +1,20 @@
 ﻿using ChessServer.ChessPlayer;
+using OnlineChess.Common;
 
 namespace ChessServer.Game;
 
 public interface IGamesManager
 {
-    public GameRequestId SubmitGame(PlayerData playerData);
+    public Task<GameRequestId> SubmitGameAsync(PlayerData playerData);
 
-    public void CancelGameRequest(GameRequestId requestId);
+    public Task CancelGameRequestAsync(GameRequestId requestId);
 
-    public GameId GetGameId(PlayerId playerId);
+    public Task<GameId> GetGameIdAsync(PlayerId playerId);
 
-    public PlayerId[] GetPlayersId(GameId gameId);
+    public Task<PlayerId[]> GetPlayersIdAsync(GameId gameId);
 
-    public GameUnit GetGameUnit(GameId gameId);
+    public Task<IGameUnit> GetGameUnitAsync(GameId gameId);
 
-    public GameUnit RemoveGame(GameId gameId);
+    public Task<IGameUnit> RemoveGameAsync(GameId gameId);
 
 }

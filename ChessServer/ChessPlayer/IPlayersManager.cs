@@ -4,12 +4,12 @@ namespace ChessServer.ChessPlayer
 {
     public interface IPlayersManager
     {
-        public void AddNewPlayer(UserUniqueId userId
+        public Task AddNewPlayerAsync(UserUniqueId userId
                                , PlayerData   playerData);
 
-        public PlayerData RemovePlayer(UserUniqueId playerId);
+        public Task<PlayerData> RemovePlayerAsync(UserUniqueId playerId);
 
-        public PlayerData GetPlayerData(UserUniqueId playerId);
+        public Task<PlayerData> GetPlayerDataAsync(UserUniqueId playerId);
 
     }
 }

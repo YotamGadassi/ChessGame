@@ -8,18 +8,16 @@ using Common.Chess;
 using Microsoft.AspNetCore.SignalR;
 using OnlineChess.Common;
 using Tools;
-using GameRequestId = OnlineChess.Common.GameRequestId;
-using GameRequestResult = OnlineChess.Common.GameRequestResult;
 
 namespace ChessServer;
 
 public class ChessHub : Hub<IChessClientApi>, IChessServerApi
 {
-    private readonly IServerManager<string>      m_serverState;
-    private readonly ILogger<ChessHub> m_log;
+    private readonly IServerManager<string> m_serverState;
+    private readonly ILogger<ChessHub>      m_log;
 
-    public ChessHub(IServerManager<string>      serverState
-                  , ILogger<ChessHub> logger)
+    public ChessHub(IServerManager<string> serverState
+                  , ILogger<ChessHub>      logger)
     {
         m_serverState = serverState;
         m_log         = logger;
@@ -30,94 +28,128 @@ public class ChessHub : Hub<IChessClientApi>, IChessServerApi
         string connectionId = Context.ConnectionId;
 
         m_log.LogInformation($"Connected established: {connectionId}");
-        UserData userData = getUserDataForConnection();
-        m_serverState.UsersManager.AddNewUser(connectionId, userData);
+
+        UserData userData = createUserDataForConnection();
+        m_serverState.UsersManager.AddNewUserAsync(connectionId, userData);
         await base.OnConnectedAsync();
     }
-    
+
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         string connectionId = Context.ConnectionId;
 
-        m_log.LogInformation( $"Disconnected established {connectionId}");
-        UserData userData = m_serverState.UsersManager.RemoveUser(connectionId);
-        if (null != userData)
+        m_log.LogInformation($"Disconnected established {connectionId}");
+
+        try
         {
-            PlayerData playerData = m_serverState.PlayersManager.RemovePlayer(userData.UserId);
-            if (null != playerData)
-            {
-                GameId gameId = m_serverState.GamesManager.GetGameId(playerData.PlayerId);
-                if (null != gameId)
-                {
-                    GameUnit gameUnit = m_serverState.GamesManager.RemoveGame(gameId);
-                    //TODO: End Game!
-                }
-            }
+            await SubmitGameWithdraw();
         }
+        catch (KeyNotFoundException e)
+        {
+            m_log.LogError("");
+        }
+
         await base.OnDisconnectedAsync(exception);
     }
 
-    private UserData getUserDataForConnection()
+    public async Task<GameRequestResult> SubmitGameRequest(GameRequest gameRequest)
     {
-        //TODO: implement
-        throw new NotImplementedException();
-    }
+        UserData   userData   = await getUserData();
+     
+        PlayerData playerData = createPlayerData(userData);
 
-    private bool tryGetGameUnit(string       connectionId
-                              , out GameUnit gameUnit)
-    {
-        gameUnit = null;
-        UserData userData = m_serverState.UsersManager.GetUserData(connectionId);
-        if (null != userData)
-        {
-            PlayerData playerData = m_serverState.PlayersManager.GetPlayerData(userData.UserId);
-            if (null != playerData)
-            {
-                GameId gameId = m_serverState.GamesManager.GetGameId(playerData.PlayerId);
-                if (null != gameId)
-                {
-                    gameUnit = m_serverState.GamesManager.GetGameUnit(gameId);
-                }
-            }
-        }
-
-        return gameUnit != null;
-    }
-
-    public Task<GameRequestResult> SubmitGameRequest(GameRequest   gameRequest)
-    {
-        throw new NotImplementedException();
+        GameRequestId gameRequestId = await m_serverState.GamesManager.SubmitGameAsync(playerData);
+        return new GameRequestResult(false, gameRequestId);
     }
 
     public Task CancelGameRequest(GameRequestId gameRequestId)
     {
-        throw new NotImplementedException();
+        return m_serverState.GamesManager.CancelGameRequestAsync(gameRequestId);
     }
 
-    public Task SubmitGameWithdraw()
+    public async Task SubmitGameWithdraw()
     {
-        throw new NotImplementedException();
+        UserData   userData   = await getUserData();
+        PlayerData playerData = await getPlayerData(userData);
+        IGameUnit gameUnit   = await getGameUnit(playerData);
+        gameUnit.EndGame(playerData.PlayerId, EndGameReason.Withdraw);
+        await m_serverState.GamesManager.RemoveGameAsync(gameUnit.Id);
     }
 
-    public Task<MoveResult> SubmitMove(BoardPosition start
+    public async Task<MoveResult> SubmitMove(BoardPosition start
                                      , BoardPosition end)
     {
-        throw new NotImplementedException();
+        UserData   userData   = await getUserData();
+        PlayerData playerData = await getPlayerData(userData);
+        IGameUnit  gameUnit   = await getGameUnit(playerData);
+        return gameUnit.Move(start, end);
     }
 
-    public Task<PromotionResult> SubmitPromote(BoardPosition positionToPromote
+    public async Task<PromotionResult> SubmitPromote(BoardPosition positionToPromote
                                              , ITool         tool)
     {
-        throw new NotImplementedException();
+        UserData   userData   = await getUserData();
+        PlayerData playerData = await getPlayerData(userData);
+        IGameUnit  gameUnit   = await getGameUnit(playerData);
+        return gameUnit.Promote(positionToPromote, tool);
     }
 
-    public Task<TeamId> GetCurrentTeamTurn()
+    public async Task<TeamId> GetCurrentTeamTurn()
     {
-        throw new NotImplementedException();
+        UserData   userData   = await getUserData();
+        PlayerData playerData = await getPlayerData(userData);
+        IGameUnit  gameUnit   = await getGameUnit(playerData);
+        return gameUnit.CurrentTeamId;
     }
 
     public Task SendMessage(string msg)
     {
         throw new NotImplementedException();
+    }
+
+    private UserData createUserDataForConnection()
+    {
+        //TODO: implement
+        throw new NotImplementedException();
+    }
+
+    private PlayerData createPlayerData(UserData userData)
+    {
+        //TODO: implement
+        throw new NotImplementedException();
+    }
+
+    private async Task<UserData> getUserData()
+    {
+        string conncetionId = Context.ConnectionId;
+
+        UserData userData = await m_serverState.UsersManager.GetUserDataAsync(conncetionId);
+        if (null == userData)
+        {
+            throw new KeyNotFoundException(string.Format("User Data does not exist for connection id: {0}", conncetionId));
+        }
+
+        return userData;
+    }
+    private async Task<PlayerData> getPlayerData(UserData userData)
+    {
+        PlayerData playerData = await m_serverState.PlayersManager.GetPlayerDataAsync(userData.UserId);
+        if (null == playerData)
+        {
+            throw new KeyNotFoundException(string.Format("Player Data does not exist for User Data: {0}", userData));
+        }
+
+        return playerData;
+    }
+    private async Task<IGameUnit> getGameUnit(PlayerData playerData)
+    {
+        GameId    gameId   = await m_serverState.GamesManager.GetGameIdAsync(playerData.PlayerId);
+        IGameUnit gameUnit = await m_serverState.GamesManager.GetGameUnitAsync(gameId);
+        if (null == gameUnit)
+        {
+            throw new KeyNotFoundException(string.Format("Game Unit does not exist for Player Data: {0}", playerData));
+        }
+
+        return gameUnit;
     }
 }
