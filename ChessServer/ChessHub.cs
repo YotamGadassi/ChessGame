@@ -30,7 +30,7 @@ public class ChessHub : Hub<IChessClientApi>, IChessServerApi
         m_log.LogInformation($"Connected established: {connectionId}");
 
         UserData userData = createUserDataForConnection();
-        m_serverState.UsersManager.AddNewUserAsync(connectionId, userData);
+        await m_serverState.UsersManager.AddNewUserAsync(connectionId, userData);
         await base.OnConnectedAsync();
     }
 
@@ -55,7 +55,6 @@ public class ChessHub : Hub<IChessClientApi>, IChessServerApi
     public async Task<GameRequestResult> SubmitGameRequest(GameRequest gameRequest)
     {
         UserData   userData   = await getUserData();
-     
         PlayerData playerData = createPlayerData(userData);
 
         GameRequestId gameRequestId = await m_serverState.GamesManager.SubmitGameAsync(playerData);
@@ -109,14 +108,15 @@ public class ChessHub : Hub<IChessClientApi>, IChessServerApi
 
     private UserData createUserDataForConnection()
     {
-        //TODO: implement
-        throw new NotImplementedException();
+        UserUniqueId userUniqueId = UserUniqueId.NewUniqueId();
+        //TODO: implement name mechanisem
+        return new UserData(userUniqueId, string.Empty);
     }
 
     private PlayerData createPlayerData(UserData userData)
     {
-        //TODO: implement
-        throw new NotImplementedException();
+        PlayerId playerId = PlayerId.NewPlayerId();
+        return new PlayerData(playerId, userData.UserName);
     }
 
     private async Task<UserData> getUserData()
