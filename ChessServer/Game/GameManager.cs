@@ -62,9 +62,10 @@ public class GameManager : IGamesManager, IDisposable
         return Task.FromResult(game);
     }
 
-    public Task<IGameUnit> RemoveGameAsync(GameId gameId)
+    public Task<IGameUnit?> RemoveGameAsync(GameId gameId)
     {
-        removeGame(gameId);
+        removeGame(gameId, out IGameUnit? gameUnit);
+        return Task.FromResult(gameUnit);
     }
     
     public void Dispose()
@@ -85,22 +86,23 @@ public class GameManager : IGamesManager, IDisposable
         }
     }
 
-    private void removeGame(GameId gameId)
+    private bool removeGame(GameId gameId, out IGameUnit? gameUnit)
     {
         m_log.LogInformation("Game Removed: [Game Id:{0}]", gameId);
         lock (m_gameLock)
         {
-            if (false == m_games.TryRemove(gameId, out IGameUnit? game))
+            if (false == m_games.TryRemove(gameId, out gameUnit))
             {
                 m_log.LogError("Game Unit with id: {0} already removed", gameId);
-                return;
+                return false;
             }
 
-            foreach (ServerChessPlayer player in game.ChessPlayers)
+            foreach (ServerChessPlayer player in gameUnit.ChessPlayers)
             {
                 m_PlayerToGame.TryRemove(player.PlayerId,out _);
             }
         }
 
+        return true;
     }
 }

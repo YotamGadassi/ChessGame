@@ -11,6 +11,6 @@ public interface IGamesManager
 
     public Task<IGameUnit?> GetGameAsync(PlayerId playerId);
 
-    public Task<IGameUnit> RemoveGameAsync(GameId gameId);
+    public Task<IGameUnit?> RemoveGameAsync(GameId gameId);
 
 }
