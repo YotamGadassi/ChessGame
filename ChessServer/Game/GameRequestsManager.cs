@@ -12,12 +12,13 @@ namespace ChessServer.Game
         private readonly Dictionary<GameRequestId, GameRequestData> m_requestsDict;
         private readonly ILogger                                    m_log;
         private readonly object                                     m_gameRequestLock = new();
-
         public GameRequestsManager(ILogger log)
         {
             m_log           = log;
             m_requestsQueue = new UniqueQueue<GameRequestId>();
             m_requestsDict  = new Dictionary<GameRequestId, GameRequestData>();
+
+            Task.Run(matchMakerCallback);
         }
 
         public Task<GameRequestId> SubmitGameRequestAsync(PlayerData playerData)
@@ -65,28 +66,39 @@ namespace ChessServer.Game
         {
             while (m_requestsDict.Count > 1)
             {
-                GameRequestId requestId1;
-                GameRequestId requestId2;
+                GameRequestData requestData1;
+                GameRequestData requestData2;
                 lock (m_gameRequestLock)
                 {
-                    if (false == m_requestsQueue.TryDequeue(out requestId1)
-                     || false == m_requestsQueue.TryDequeue(out requestId2))
+                    if (false == m_requestsQueue.TryDequeue(out GameRequestId requestId1)
+                     || false == m_requestsQueue.TryDequeue(out GameRequestId? requestId2))
                     {
                         throw new Exception("Something is wrong with the request queue");
                     }
+
+                    requestData1 = m_requestsDict[requestId1];
+                    requestData2 = m_requestsDict[requestId2];
+
                     m_requestsDict.Remove(requestId1);
                     m_requestsDict.Remove(requestId2);
                 }
-                matchTwoRequests(requestId1, requestId2);
+                matchTwoRequests(requestData1, requestData2);
             }
+
+            Task.Run(matchMakerCallback);
         }
 
-        private void matchTwoRequests(GameRequestId requestId1
-                                     , GameRequestId requestId2)
+        private void matchTwoRequests(GameRequestData requestData1
+                                    , GameRequestData requestData2)
         {
+            ServerChessPlayer player1 =
+                new ServerChessPlayer(requestData1.PlayerData.PlayerId, requestData1.PlayerData.PlayerName);
+            ServerChessPlayer player2 =
+                new ServerChessPlayer(requestData2.PlayerData.PlayerId, requestData2.PlayerData.PlayerName);
 
-
-
+            GameId   gameId   = GameId.GetGameId();
+            GameUnit gameUnit = new(new[] { player1, player2 }, gameId);
+            GameCreatedEvent?.Invoke(this, gameUnit);
         }
     }
 }
