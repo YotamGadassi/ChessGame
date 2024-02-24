@@ -6,32 +6,21 @@ using Utils.DataStructures;
 
 namespace ChessServer.Game;
 
-public class GameRequestData
-{
-    public GameRequestId GameRequestId { get; }
-
-    public PlayerData PlayerData { get; }
-
-    public GameRequestData(GameRequestId gameRequestId
-                         , PlayerData    playerData)
-    {
-        GameRequestId = gameRequestId;
-        PlayerData    = playerData;
-    }
-}
-
 public class GameManager : IGamesManager, IDisposable
 {
-    private GameRequestsManager                       m_gameRequestsManager;
-    private ConcurrentDictionary<PlayerId, IGameUnit> m_PlayerToGame;
-    private ConcurrentDictionary<GameId, IGameUnit>   m_games;
-    private ILogger                                   m_log;
-    private object                                    m_gameLock = new();
+    private readonly GameRequestsManager                       m_gameRequestsManager;
+    private readonly ConcurrentDictionary<PlayerId, IGameUnit> m_PlayerToGame;
+    private readonly ConcurrentDictionary<GameId, IGameUnit>   m_games;
+    private readonly ILogger                                   m_log;
+    private readonly object                                    m_gameLock = new();
 
 
     public GameManager(ILogger log)
     {
         m_log                 = log;
+        m_PlayerToGame        = new ConcurrentDictionary<PlayerId, IGameUnit>();
+        m_games               = new ConcurrentDictionary<GameId, IGameUnit>();
+
         m_gameRequestsManager = new GameRequestsManager(log);
         registerToEvents();
     }
@@ -84,6 +73,7 @@ public class GameManager : IGamesManager, IDisposable
                 m_PlayerToGame.TryAdd(player.PlayerId, game);
             }
         }
+        game.StartGame();
     }
 
     private bool removeGame(GameId gameId, out IGameUnit? gameUnit)
