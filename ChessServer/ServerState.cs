@@ -17,8 +17,8 @@ namespace ChessServer
     {
         Task<GameRequestResultEnum> OnGameRequest(string connectionId);
         bool                    OnConnection(string  name,         string       connectionId);
-        bool                    TryGetGame(string    connectionId, out GameUnit game);
-        void                    EndGame(GameUnit     game);
+        bool                    TryGetGame(string    connectionId, out GameUnit1 game);
+        void                    EndGame(GameUnit1     game);
         bool TryGetPlayer(string           connectionId
                         , out PlayerObject player);
 
@@ -29,7 +29,7 @@ namespace ChessServer
     {
         private readonly IHubContext<ChessHub>                       m_hubContext;
         private readonly UniqueQueue<PlayerObject>                   m_pendingPlayers       = new();
-        private readonly ConcurrentDictionary<string, GameUnit>      m_groups               = new();
+        private readonly ConcurrentDictionary<string, GameUnit1>      m_groups               = new();
         private readonly ConcurrentDictionary<string, PlayerObject?> m_connectionIdToPlayer = new();
         private readonly ILogger<ServerState>                        m_log;
         public ServerState(IHubContext<ChessHub> hubContext, ILogger<ServerState> logger)
@@ -46,7 +46,7 @@ namespace ChessServer
             
             if (m_pendingPlayers.TryDequeue(out PlayerObject otherPlayer))
             {
-                GameUnit newGame = new(player, otherPlayer);
+                GameUnit1 newGame = new(player, otherPlayer);
                 m_groups[newGame.GroupName]    =  newGame;
                 newGame.PlayerTimeChangedEvent += onPlayerOneSecElapsed;
                 bool isGameStarted = await newGame.StartGame();
@@ -76,7 +76,7 @@ namespace ChessServer
             m_hubContext.Clients.Client(player.ConnectionId).SendAsync("EnteredWaitingList");
         }
 
-        public bool TryGetGame(string connectionId, out GameUnit game)
+        public bool TryGetGame(string connectionId, out GameUnit1 game)
         {
             bool isConnected = TryGetPlayer(connectionId, out PlayerObject player);
             game = null;
@@ -110,7 +110,7 @@ namespace ChessServer
                 return;
             }
 
-            GameUnit game           = player.GameUnit;
+            GameUnit1 game           = player.GameUnit;
             bool     isPlayerInGame = null != game;
             if (false == isPlayerInGame)
             {
@@ -123,7 +123,7 @@ namespace ChessServer
             await sendEndGame(otherPlayer);
         }
 
-        public void EndGame(GameUnit game)
+        public void EndGame(GameUnit1 game)
         {
             PlayerObject player1 = game.WhitePlayer1;
             PlayerObject player2 = game.BlackPlayer2;

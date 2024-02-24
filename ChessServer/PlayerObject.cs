@@ -6,7 +6,7 @@ namespace ChessServer
 {
     public class PlayerObject
     {
-        public GameUnit GameUnit     { get; set; }
+        public GameUnit1 GameUnit     { get; set; }
         public string   ConnectionId { get; }
         public string   Name         { get; }
         public Team     PlayersTeam  { get; set; }

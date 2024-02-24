@@ -12,7 +12,7 @@ namespace ChessServer.Users
         }
 
         public Task AddNewUserAsync(string   userIdentifier
-                                        , UserData userData)
+                                  , UserData userData)
         {
             if (false == m_concurrentDictionary.TryAdd(userIdentifier, userData))
             {
@@ -30,7 +30,12 @@ namespace ChessServer.Users
 
         public Task<UserData> GetUserDataAsync(string userIdentifier)
         {
-            throw new NotImplementedException();
+            if (false == m_concurrentDictionary.TryGetValue(userIdentifier, out UserData? userData))
+            {
+                throw new ArgumentException($"UserIdentifier: [{userIdentifier}] does not exist in manager");
+            }
+
+            return Task.FromResult(userData);
         }
     }
 }

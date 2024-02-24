@@ -14,6 +14,8 @@ namespace ChessServer.Game
 
         public TeamId CurrentTeamId { get; }
 
+        public void StartGame();
+
         public PromotionResult Promote(BoardPosition position
                                                 , ITool         tool);
 

@@ -30,6 +30,46 @@ namespace ChessServer.Game
             m_teamToTimerEvent = new Dictionary<TeamId, Action<TimeSpan>>();
         }
 
+        public void StartGame()
+        {
+            OfflineTeamsManager teamsManager = createTeamManager();
+            m_gameManager = new OfflineChessGameManager(teamsManager);
+            registerToEvents();
+
+            m_gameManager.Init();
+
+
+            foreach (ServerChessPlayer player in ChessPlayers)
+            {
+                PlayerId playerId = player.PlayerId;
+                Team[]   teams    = m_gameManager.TeamsManager.Teams;
+                TeamConfig[] teamConfigs = teams.Select(team => new TeamConfig(team.MoveDirection == GameDirection.North
+                                                                             , Equals(m_teamToPlayers[team.Id].PlayerId
+                                                                                 , playerId)
+                                                                             , team.MoveDirection
+                                                                             , team.Name
+                                                                             , team.Color
+                                                                             , team.Id
+                                                                             , m_gameManager.TeamsManager
+                                                                                  .GetTeamTimer(team.Id)
+                                                                                  .TimeLeft))
+                                                .ToArray();
+
+                GameConfig config = new(teamConfigs);
+                player.StartGame(config);
+            }
+        }
+
+        public void EndGame(PlayerId      playerId
+                          , EndGameReason reason)
+        {
+            unRegisterFromEvents();
+            foreach (ServerChessPlayer player in ChessPlayers)
+            {
+                player.EndGame(reason);
+            }
+        }
+
         public PromotionResult Promote(BoardPosition position
                                      , ITool         tool)
         {
@@ -56,45 +96,25 @@ namespace ChessServer.Game
                                      , BoardPosition     position)
         {
             PromotionResult promotionResult = PromotionResult.NoPromotionOccured;
-            while (promotionResult.Result != PromotionResultEnum.PromotionSucceeded)
-            {
-                ITool tool = await player.AskPromote(position);
-                promotionResult = Promote(position, tool);
-                switch (promotionResult.Result)
-                {
-                    case PromotionResultEnum.PositionIsEmpty:
-                    case PromotionResultEnum.NoPromotionOccured:
-                    {
-                        throw new Exception(string.Format("Error with promotion. Promotion Result: {0}"
-                                                        , promotionResult));
-                    }
-                    case PromotionResultEnum.ToolIsNotValidForPromotion:
-                    case PromotionResultEnum.PromotionSucceeded:
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-        }
-
-        public void StartGame()
-        {
-            OfflineTeamsManager teamsManager = createTeamManager();
-            m_gameManager = new OfflineChessGameManager(teamsManager);
-            registerToEvents();
-
-
-            m_gameManager.Init();
-        }
-
-        public void EndGame(PlayerId      playerId
-                          , EndGameReason reason)
-        {
-            unRegisterFromEvents();
-            foreach (ServerChessPlayer player in ChessPlayers)
-            {
-                player.EndGame(reason);
-            }
+            //while (promotionResult.Result != PromotionResultEnum.PromotionSucceeded)
+            //{
+            //    ITool tool = await player.AskPromote(position);
+            //    promotionResult = Promote(position, tool);
+            //    switch (promotionResult.Result)
+            //    {
+            //        case PromotionResultEnum.PositionIsEmpty:
+            //        case PromotionResultEnum.NoPromotionOccured:
+            //        {
+            //            throw new Exception(string.Format("Error with promotion. Promotion Result: {0}"
+            //                                            , promotionResult));
+            //        }
+            //        case PromotionResultEnum.ToolIsNotValidForPromotion:
+            //        case PromotionResultEnum.PromotionSucceeded:
+            //            break;
+            //        default:
+            //            throw new ArgumentOutOfRangeException();
+            //    }
+            //}
         }
 
         private void registerToEvents()

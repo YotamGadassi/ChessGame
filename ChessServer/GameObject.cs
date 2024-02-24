@@ -11,9 +11,9 @@ namespace ChessServer;
 public delegate void PlayerTimeChanged(PlayerObject player
                                      , TimeSpan     timeLeft);
 
-public class GameUnit : IDisposable
+public class GameUnit1 : IDisposable
 {
-    public GameUnit(PlayerObject player1
+    public GameUnit1(PlayerObject player1
                   , PlayerObject player2)
     {
         GroupName                     =  Guid.NewGuid().ToString();

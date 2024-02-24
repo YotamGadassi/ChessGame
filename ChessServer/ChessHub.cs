@@ -109,7 +109,7 @@ public class ChessHub : Hub<IChessClientApi>, IChessServerApi
     private UserData createUserDataForConnection()
     {
         UserUniqueId userUniqueId = UserUniqueId.NewUniqueId();
-        //TODO: implement name mechanisem
+        //TODO: implement name mechanism
         return new UserData(userUniqueId, string.Empty);
     }
 
