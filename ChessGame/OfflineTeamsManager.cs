@@ -6,7 +6,8 @@ namespace ChessGame;
 
 public class OfflineTeamsManager : IChessTeamManager, IDisposable
 {
-    public event EventHandler<TeamId> TeamSwitchedEvent;
+    public event EventHandler<TeamId>                    TeamSwitchedEvent;
+    public event EventHandler<TeamAndToolPairEventArgs>? TeamAndToolPairEvent;
 
     private static readonly int    s_teamsAmount = 2;
     public                  TeamId CurrentTeamTurnId      => getCurrentTeam().Id;
@@ -36,6 +37,11 @@ public class OfflineTeamsManager : IChessTeamManager, IDisposable
         return m_toolIdToTeam[toolId];
     }
 
+    public ToolId[] GetToolsId(TeamId teamId)
+    {
+        return m_teamIdToTools[teamId].ToArray();
+    }
+
     public ITeamTimer GetTeamTimer(TeamId teamId)
     {
         return m_teamIdToTeams[teamId].TeamTimer;
@@ -46,6 +52,7 @@ public class OfflineTeamsManager : IChessTeamManager, IDisposable
     {
         m_teamIdToTools[teamId].Add(toolId);
         m_toolIdToTeam[toolId] = teamId;
+        TeamAndToolPairEvent?.Invoke(this, new TeamAndToolPairEventArgs(teamId, toolId));
     }
 
     public void SwitchCurrentTeam()
