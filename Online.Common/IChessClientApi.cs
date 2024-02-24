@@ -10,7 +10,7 @@ namespace OnlineChess.Common
 
         public void EndGame(EndGameReason endGameReason);
 
-        public void BoardCommandsHandler(BoardCommand[] boardCommands);
+        public void BoardCommands(BoardCommand[] boardCommands);
 
         public Task<ITool> AskPromote(BoardPosition positionToPromote);
 
