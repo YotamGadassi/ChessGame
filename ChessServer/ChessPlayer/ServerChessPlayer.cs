@@ -14,38 +14,45 @@ public class ServerChessPlayer : IChessClientApi
 
     public ChessTeam ChessTeam { get; set; }
 
-    public void        StartGame(GameConfig                gameConfig)
+    public ServerChessPlayer(PlayerId   playerId
+                            , string    name)
+    {
+        PlayerId  = playerId;
+        Name      = name;
+    }
+
+    public Task        StartGame(GameConfig                gameConfig)
     {
         throw new NotImplementedException();
     }
 
-    public void        EndGame(EndGameReason               endGameReason)
+    public Task EndGame(EndGameReason endGameReason)
     {
         throw new NotImplementedException();
     }
 
-    public void        BoardCommands(BoardCommand[] boardCommands)
+    public Task BoardCommands(BoardCommand[] boardCommands)
     {
         throw new NotImplementedException();
     }
 
-    public Task<ITool> AskPromote(BoardPosition positionToPromote)
+    public Task AskPromote(BoardPosition positionToPromote)
     {
         throw new NotImplementedException();
     }
 
-    public void UpdateTime(TeamId   teamId
+    public Task UpdateTime(TeamId   teamId
                          , TimeSpan timeSpan)
     {
         throw new NotImplementedException();
     }
 
-    public void UpdatePlayingTeam(TeamId teamId)
+    public Task UpdatePlayingTeam(TeamId teamId)
     {
         throw new NotImplementedException();
     }
 
-    public void UpdateToolsAndTeams(ToolAndTeamPair[] pairs)
+    public Task UpdateToolsAndTeams(ToolAndTeamPair[] pairs)
     {
         throw new NotImplementedException();
     }

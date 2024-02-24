@@ -6,19 +6,19 @@ namespace OnlineChess.Common
 {
     public interface IChessClientApi
     {
-        public void StartGame(GameConfig gameConfig);
+        public Task StartGame(GameConfig gameConfig);
 
-        public void EndGame(EndGameReason endGameReason);
+        public Task EndGame(EndGameReason endGameReason);
 
-        public void BoardCommands(BoardCommand[] boardCommands);
+        public Task BoardCommands(BoardCommand[] boardCommands);
 
-        public Task<ITool> AskPromote(BoardPosition positionToPromote);
+        public Task AskPromote(BoardPosition positionToPromote);
 
-        public void UpdateTime(TeamId   teamId
+        public Task UpdateTime(TeamId   teamId
                              , TimeSpan timeSpan);
 
-        public void UpdatePlayingTeam(TeamId teamId);
+        public Task UpdatePlayingTeam(TeamId teamId);
 
-        public void UpdateToolsAndTeams(ToolAndTeamPair[] pairs);
+        public Task UpdateToolsAndTeams(ToolAndTeamPair[] pairs);
     }
 }
