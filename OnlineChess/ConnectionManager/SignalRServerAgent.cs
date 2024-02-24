@@ -16,7 +16,7 @@ namespace OnlineChess.ConnectionManager
         public event StartGameHandler?           StartGameEvent;
         public event EndGameHandler?             EndGameEvent;
         public event BoardCommandsHandler?       BoardCommandsEvent;
-        public event PromotionHandler?           PromotionEvent;
+        public event AskPromotionHandler?        AskPromotionEvent;
         public event UpdateTimerHandler?         UpdateTimeEvent;
         public event UpdatePlayingTeamHandler?   UpdatePlayingTeamEvent;
         public event UpdateToolsAndTeamsHandler? UpdateToolsAndTeamsEvent;
@@ -32,7 +32,7 @@ namespace OnlineChess.ConnectionManager
         public async Task<GameRequestResult> SubmitGameRequest(GameRequest gameRequest)
         {
             s_log.InfoFormat("Game request sent to server: {0}", gameRequest);
-            return await m_connection.InvokeAsync<GameRequestResult>("SubmitGameRequest", gameRequest.UserName);
+            return await m_connection.InvokeAsync<GameRequestResult>("SubmitGameRequest", gameRequest);
         }
 
         public Task CancelGameRequest(GameRequestId gameRequestId)
@@ -80,7 +80,7 @@ namespace OnlineChess.ConnectionManager
             m_connection.On<GameConfig>("StartGame", handleStartGame);
             m_connection.On<EndGameReason>("EndGame", handleEndGame);
             m_connection.On<TeamId, TimeSpan>("UpdateTime", handleUpdateTime);
-            m_connection.On<BoardPosition, ITool>("AskPromotion", handleAskPromotion);
+            m_connection.On<BoardPosition>("AskPromotion", handleAskPromotion);
             m_connection.On<BoardCommand[]>("ApplyBoardCommands", handleApplyBoardCommands);
             m_connection.On<TeamId>("UpdatePlayingTeam", handleUpdatePlayingTeam);
             m_connection.On<ToolAndTeamPair[]>("UpdateToolsAndTeams", handleUpdateToolsAndTeams);
@@ -104,10 +104,10 @@ namespace OnlineChess.ConnectionManager
             BoardCommandsEvent?.Invoke(commands);
         }
 
-        private Task<ITool> handleAskPromotion(BoardPosition positionToPromote)
+        private void handleAskPromotion(BoardPosition positionToPromote)
         {
             s_log.DebugFormat("AskPromotion Arrived: [position: {0}]", positionToPromote);
-            return PromotionEvent?.Invoke(positionToPromote);
+            AskPromotionEvent?.Invoke(positionToPromote);
         }
 
         private void handleUpdateTime(TeamId   teamId

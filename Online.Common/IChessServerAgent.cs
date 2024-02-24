@@ -10,7 +10,7 @@ namespace OnlineChess.Common
 
     public delegate void EndGameHandler(EndGameReason reason);
 
-    public delegate Task<ITool> PromotionHandler(BoardPosition positionToPromote);
+    public delegate void AskPromotionHandler(BoardPosition positionToPromote);
 
     public delegate void UpdateTimerHandler(TeamId   teamId
                                           , TimeSpan timeLeft);
@@ -24,7 +24,7 @@ namespace OnlineChess.Common
         event StartGameHandler           StartGameEvent;
         event EndGameHandler             EndGameEvent;
         event BoardCommandsHandler       BoardCommandsEvent;
-        event PromotionHandler           PromotionEvent;
+        event AskPromotionHandler           AskPromotionEvent;
         event UpdateTimerHandler         UpdateTimeEvent;
         event UpdatePlayingTeamHandler   UpdatePlayingTeamEvent;
         event UpdateToolsAndTeamsHandler UpdateToolsAndTeamsEvent;
