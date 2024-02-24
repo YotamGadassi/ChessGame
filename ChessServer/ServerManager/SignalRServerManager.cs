@@ -12,12 +12,10 @@ public class SignalRServerManager : IServerManager<string>
     private readonly ILogger<SignalRServerManager> m_log;
 
     public SignalRServerManager(IHubContext<ChessHub, IChessClientApi> hubContext
-                              , ILogger<SignalRServerManager> logger
-                              , IUsersManager<string> usersManager
-                              , IGamesManager gamesManager)
+                              , ILogger<SignalRServerManager> logger)
     {
-        UsersManager = usersManager;
-        GamesManager = gamesManager;
+        UsersManager = new SignalRUsersManager();
+        GamesManager = new GameManager(logger);
         m_hubContext = hubContext;
         m_log = logger;
         m_log.LogInformation($"Server state has been created");
