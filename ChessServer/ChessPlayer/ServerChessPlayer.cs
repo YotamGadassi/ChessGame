@@ -1,5 +1,6 @@
 ﻿using Board;
 using Common;
+using Common.Chess;
 using OnlineChess.Common;
 using Tools;
 
@@ -8,6 +9,10 @@ namespace ChessServer.ChessPlayer;
 public class ServerChessPlayer : IChessClientApi
 {
     public PlayerId PlayerId { get; }
+
+    public string Name { get; }
+
+    public ChessTeam ChessTeam { get; set; }
 
     public void        StartGame(GameConfig                gameConfig)
     {
@@ -19,7 +24,7 @@ public class ServerChessPlayer : IChessClientApi
         throw new NotImplementedException();
     }
 
-    public void        BoardCommandsHandler(BoardCommand[] boardCommands)
+    public void        BoardCommands(BoardCommand[] boardCommands)
     {
         throw new NotImplementedException();
     }
