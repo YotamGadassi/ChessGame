@@ -32,9 +32,5 @@ namespace ChessServer.ChessPlayer
             return Equals((PlayerId)obj);
         }
 
-        public override int GetHashCode()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
