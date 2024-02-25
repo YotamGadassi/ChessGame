@@ -7,7 +7,7 @@ using Utils;
 
 namespace Common;
 
-[JsonSerializable(typeof(TeamIdConverter))]
+[JsonConverter(typeof(TeamIdConverter))]
 public class TeamId : BaseId
 {
     public static TeamId NewTeamId()
