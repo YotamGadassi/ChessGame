@@ -71,7 +71,7 @@ namespace Host
             panelManager.Add(panelName, offlineChessGamePanel);
 
             panelName = "OnlineChessGame";
-            OnlineChessGamePanel onlineChessGamePanel = new(panelName);
+            OnlineChessGamePanel onlineChessGamePanel = new(panelName, Dispatcher.CurrentDispatcher);
             panelManager.Add(panelName, onlineChessGamePanel);
 
             return panelManager;

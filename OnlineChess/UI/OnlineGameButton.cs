@@ -16,14 +16,14 @@ public class OnlineGameButton : BaseGameButton, IDisposable
     public override string CommandName => "Online Chess Game";
 
     private readonly OnlineGameRequestManager m_gameRequestManager;
-    private readonly IChessServerAgent m_serverAgent;
-
-    public OnlineGameButton(Dispatcher dispatcer
+    private readonly IChessServerAgent        m_serverAgent;
+    private readonly Dispatcher               m_dispatcher;
+    public OnlineGameButton(Dispatcher dispatcher
                           , IGamePanelManager panelManager
-                          , IChessConnectionManager connectionManager) : base(dispatcer, panelManager)
+                          , IChessConnectionManager connectionManager) : base(dispatcher, panelManager)
     {
         m_gameRequestManager = new OnlineGameRequestManager(connectionManager);
-        m_serverAgent = connectionManager.ServerAgent;
+        m_serverAgent        = connectionManager.ServerAgent;
         registerToEvents();
     }
 
