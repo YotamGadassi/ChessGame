@@ -15,14 +15,15 @@ public class ChessHub : Hub<IChessClientApi>, IChessServerApi
 {
     private readonly IServerManager<string>                 m_serverState;
     private readonly ILogger<ChessHub>                      m_log;
-    private readonly IHubContext<ChessHub, IChessClientApi> m_HubContext;
+    private readonly IHubContext<ChessHub, IChessClientApi> m_hubContext;
+
     public ChessHub(IServerManager<string>                 serverState
                   , ILogger<ChessHub>                      logger
                   , IHubContext<ChessHub, IChessClientApi> hubContext)
     {
         m_serverState = serverState;
         m_log         = logger;
-        m_HubContext = hubContext;
+        m_hubContext = hubContext;
     }
 
     public override async Task OnConnectedAsync()
@@ -118,7 +119,7 @@ public class ChessHub : Hub<IChessClientApi>, IChessServerApi
     private IServerChessPlayer createPlayer(UserData userData)
     {
         PlayerId playerId = PlayerId.NewPlayerId();
-        return new ServerChessPlayer(playerId, userData.UserName, m_HubContext, Context.ConnectionId);
+        return new ServerChessPlayer(playerId, userData.UserName, m_hubContext, Context.ConnectionId);
     }
 
     private async Task<UserData> getUserData()

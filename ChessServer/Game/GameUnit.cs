@@ -191,7 +191,7 @@ namespace ChessServer.Game
         {
             foreach (ServerChessPlayer player in ChessPlayers)
             {
-                player.BoardCommands(new[] { new BoardCommand(BoardCommandType.Remove, position) });
+                player.ApplyBoardCommands(new[] { new BoardCommand(BoardCommandType.Remove, position) });
             }
         }
 
@@ -200,7 +200,7 @@ namespace ChessServer.Game
         {
             foreach (ServerChessPlayer player in ChessPlayers)
             {
-                player.BoardCommands(new[] { new BoardCommand(BoardCommandType.Add, position, tool) });
+                player.ApplyBoardCommands(new[] { new BoardCommand(BoardCommandType.Add, position, tool) });
             }
         }
 
