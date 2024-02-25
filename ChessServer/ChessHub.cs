@@ -72,18 +72,31 @@ public class ChessHub : Hub<IChessClientApi>, IChessServerApi
     public async Task SubmitGameWithdraw()
     {
         UserData   userData   = await getUserData();
-        PlayerData playerData = await getPlayerData(userData);
-        IGameUnit? gameUnit   = await getGameUnit(playerData);
-        gameUnit.EndGame(playerData.PlayerId, EndGameReason.Withdraw);
+        IServerChessPlayer player = await getPlayer(userData.UserId);
+        IGameUnit? gameUnit   = await getGameUnit(player.PlayerId);
+        gameUnit.EndGame(player.PlayerId, EndGameReason.Withdraw);
         await m_serverState.GamesManager.RemoveGameAsync(gameUnit.Id);
     }
 
+    public async Task Init()
+    {
+        UserData           userData = await getUserData();
+        IServerChessPlayer player   = await getPlayer(userData.UserId);
+        IGameUnit?         game     = await m_serverState.GamesManager.GetGameAsync(player.PlayerId);
+        game.Init();
+    }
+
+    private async Task<IServerChessPlayer> getPlayer(UserUniqueId id)
+    {
+        return await m_serverState.PlayersManager.GetPlayerDataAsync(id);
+    }
+
     public async Task<MoveResult> SubmitMove(BoardPosition start
-                                     , BoardPosition end)
+                                           , BoardPosition end)
     {
         UserData   userData   = await getUserData();
-        PlayerData playerData = await getPlayerData(userData);
-        IGameUnit? gameUnit   = await getGameUnit(playerData);
+        IServerChessPlayer player = await getPlayer(userData.UserId);
+        IGameUnit? gameUnit   = await getGameUnit(player.PlayerId);
         return gameUnit.Move(start, end);
     }
 
@@ -91,16 +104,16 @@ public class ChessHub : Hub<IChessClientApi>, IChessServerApi
                                              , ITool         tool)
     {
         UserData   userData   = await getUserData();
-        PlayerData playerData = await getPlayerData(userData);
-        IGameUnit? gameUnit   = await getGameUnit(playerData);
+        IServerChessPlayer player = await getPlayer(userData.UserId);
+        IGameUnit? gameUnit   = await getGameUnit(player.PlayerId);
         return gameUnit.Promote(positionToPromote, tool);
     }
 
     public async Task<TeamId> GetCurrentTeamTurn()
     {
         UserData   userData   = await getUserData();
-        PlayerData playerData = await getPlayerData(userData);
-        IGameUnit? gameUnit   = await getGameUnit(playerData);
+        IServerChessPlayer player = await getPlayer(userData.UserId);
+        IGameUnit? gameUnit   = await getGameUnit(player.PlayerId);
         return gameUnit.CurrentTeamId;
     }
 
@@ -118,8 +131,10 @@ public class ChessHub : Hub<IChessClientApi>, IChessServerApi
 
     private IServerChessPlayer createPlayer(UserData userData)
     {
-        PlayerId playerId = PlayerId.NewPlayerId();
-        return new ServerChessPlayer(playerId, userData.UserName, m_hubContext, Context.ConnectionId);
+        PlayerId          playerId = PlayerId.NewPlayerId();
+        ServerChessPlayer player   = new(playerId, userData.UserName, m_hubContext, Context.ConnectionId);
+        m_serverState.PlayersManager.AddNewPlayerAsync(userData.UserId, player);
+        return player;
     }
 
     private async Task<UserData> getUserData()
@@ -134,22 +149,13 @@ public class ChessHub : Hub<IChessClientApi>, IChessServerApi
 
         return userData;
     }
-    private async Task<PlayerData> getPlayerData(UserData userData)
-    {
-        PlayerData playerData = await m_serverState.PlayersManager.GetPlayerDataAsync(userData.UserId);
-        if (null == playerData)
-        {
-            throw new KeyNotFoundException(string.Format("Player Data does not exist for User Data: {0}", userData));
-        }
 
-        return playerData;
-    }
-    private async Task<IGameUnit?> getGameUnit(PlayerData playerData)
+    private async Task<IGameUnit?> getGameUnit(PlayerId playerId)
     {
-        IGameUnit?    gameUnit   = await m_serverState.GamesManager.GetGameAsync(playerData.PlayerId);
+        IGameUnit?    gameUnit   = await m_serverState.GamesManager.GetGameAsync(playerId);
         if (null == gameUnit)
         {
-            throw new KeyNotFoundException(string.Format("Game Unit does not exist for Player Data: {0}", playerData));
+            throw new KeyNotFoundException(string.Format("Game Unit does not exist for Player Id: {0}", playerId));
         }
 
         return gameUnit;

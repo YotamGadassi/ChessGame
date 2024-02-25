@@ -47,8 +47,14 @@ namespace OnlineChess.ConnectionManager
             await m_connection.InvokeAsync("SubmitGameWithdraw");
         }
 
+        public async Task Init()
+        {
+            s_log.Info("Init sent to server");
+            await m_connection.InvokeAsync("Init");
+        }
+
         public async Task<MoveResult> SubmitMove(BoardPosition start
-                                                , BoardPosition end)
+                                               , BoardPosition end)
         {
             s_log.Info($"Submit Move sent to server: [start:{start} | end:{end}]");
             return await m_connection.InvokeAsync<MoveResult>("SubmitMove", start, end);

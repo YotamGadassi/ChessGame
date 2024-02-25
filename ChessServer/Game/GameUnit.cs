@@ -18,7 +18,7 @@ namespace ChessServer.Game
         private          OfflineChessGameManager                m_gameManager;
         private readonly Dictionary<TeamId, IServerChessPlayer> m_teamToPlayers;
         private readonly Dictionary<TeamId, Action<TimeSpan>>   m_teamToTimerEvent;
-
+        private          int                                    m_initCounter = 0;
         public GameUnit(IServerChessPlayer[] chessPlayers
                       , GameId              id)
         {
@@ -33,8 +33,6 @@ namespace ChessServer.Game
             OfflineTeamsManager teamsManager = createTeamManager();
             m_gameManager = new OfflineChessGameManager(teamsManager);
             registerToEvents();
-
-            m_gameManager.Init();
 
 
             foreach (ServerChessPlayer player in ChessPlayers)
@@ -55,6 +53,15 @@ namespace ChessServer.Game
 
                 GameConfig config = new(teamConfigs);
                 player.StartGame(config);
+            }
+        }
+
+        public void Init()
+        {
+            ++m_initCounter;
+            if (m_initCounter == 2)
+            {
+                m_gameManager.Init();
             }
         }
 
@@ -189,7 +196,7 @@ namespace ChessServer.Game
 
         private void onToolRemoved(BoardPosition position)
         {
-            foreach (ServerChessPlayer player in ChessPlayers)
+            foreach (IServerChessPlayer player in ChessPlayers)
             {
                 player.ApplyBoardCommands(new[] { new BoardCommand(BoardCommandType.Remove, position) });
             }

@@ -13,6 +13,8 @@ public interface IChessServerApi
 
     Task SubmitGameWithdraw();
 
+    Task Init();
+
     Task<MoveResult> SubmitMove(BoardPosition start
                               , BoardPosition end);
 
