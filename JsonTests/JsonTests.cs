@@ -165,6 +165,18 @@ namespace JsonTests
             SimpleSerializeTest(promotionResult, opt);
         }
 
+        [Test]
+        public void ToolAndTeamPairTest()
+        {
+            ToolAndTeamPair pair1  = new ToolAndTeamPair(ToolId.NewToolId(), TeamId.NewTeamId());
+            ToolAndTeamPair pair2  = new ToolAndTeamPair(ToolId.NewToolId(), TeamId.NewTeamId());
+
+            ToolAndTeamPair[] pairArr = new[] { pair1, pair2 };
+
+            ArraySerializeTest(pairArr, new JsonSerializerOptions(){Converters = { new ToolIdConverter(), new TeamIdConverter() }});
+
+        }
+
         public void SimpleSerializeTest<T>(T obj, JsonSerializerOptions opt)
         {
             string jsonStr = JsonSerializer.Serialize(obj, opt);
