@@ -35,7 +35,7 @@ public class OnlineChessGamePanel : BaseGamePanel
         GameState.StateChanged += onStateChanged;
         m_dispatcher.Invoke(() =>
                             {
-                                m_gameViewModel         = new OnlineChessViewModel(gameManager);
+                                m_gameViewModel         = new OnlineChessViewModel(gameManager, m_dispatcher);
                                 GameControl.DataContext = null;
                                 GameControl.DataContext = m_gameViewModel;
                             });
@@ -69,13 +69,15 @@ public class OnlineChessGamePanel : BaseGamePanel
         s_log.InfoFormat("State Changed: {0}", newState);
         if (newState == GameStateEnum.Ended)
         {
-            TimeSpan delayTime = m_gameViewModel.Message == null ? TimeSpan.Zero : TimeSpan.FromSeconds(10);
-            Task.Delay(delayTime)
-                .ContinueWith((_) =>
-                              {
-                                  onGameEnd();
-                                  Reset();
-                              });
+            m_dispatcher.Invoke(() =>
+                                {
+                                    TimeSpan delayTime =
+                                        m_gameViewModel.Message == null ? TimeSpan.Zero : TimeSpan.FromSeconds(10);
+
+                                    Task.Delay(delayTime);
+                                    onGameEnd();
+                                    Reset();
+                                });
         }
     }
 

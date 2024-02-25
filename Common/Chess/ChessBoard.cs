@@ -102,7 +102,7 @@ namespace Common.Chess
                     return new MoveResult(moveResultEnum, start, end, toolToMove, toolOnEndPosition);
                 }
 
-                m_board.Remove(end);
+                removeTool(end);
                 s_log.Info($"Killing event has occurred: tool at start: {toolToMove}, start: {start}, end: {end}, tool at end: {toolOnEndPosition}");
             }
             else

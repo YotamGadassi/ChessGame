@@ -40,7 +40,10 @@ public class BoardViewModel : DependencyObject, IDisposable
             return;
         }
 
-        squareVM.Tool = tool;
+        m_dispatcher.Invoke(() =>
+                            {
+                                squareVM.Tool = tool;
+                            });
     }
 
     public void RemoveTool(BoardPosition position
@@ -53,8 +56,13 @@ public class BoardViewModel : DependencyObject, IDisposable
             return;
         }
 
-        tool          = squareVM.Tool;
-        squareVM.Tool = null;
+        ITool removedTool = null;
+        m_dispatcher.Invoke(() =>
+                            {
+                                removedTool   = squareVM.Tool;
+                                squareVM.Tool = null;
+                            });
+        tool = removedTool;
     }
 
     public void RemoveAllTools()
@@ -91,7 +99,10 @@ public class BoardViewModel : DependencyObject, IDisposable
         {
             foreach (SquareViewModel hintedBoardPosition in m_hintedBoardPositions)
             {
-                hintedBoardPosition.State = SquareState.Regular;
+                m_dispatcher.Invoke(() =>
+                                    {
+                                        hintedBoardPosition.State = SquareState.Regular;
+                                    });
             }
 
             m_hintedBoardPositions.Clear();
@@ -104,7 +115,10 @@ public class BoardViewModel : DependencyObject, IDisposable
         {
             if (SquaresDictionary.TryGetValue(boardPosition, out SquareViewModel squareVM))
             {
-                squareVM.State = SquareState.Hinted;
+                m_dispatcher.Invoke(() =>
+                                    {
+                                        squareVM.State = SquareState.Hinted;
+                                    });
                 m_hintedBoardPositions.Add(squareVM);
             }
         }

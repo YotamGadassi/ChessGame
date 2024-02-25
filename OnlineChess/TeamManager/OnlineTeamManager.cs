@@ -111,6 +111,7 @@ namespace OnlineChess.TeamManager
 
         private void onTeamSwitch(TeamId currentTeamId)
         {
+            CurrentTeamTurnId = currentTeamId;
             TeamSwitchedEvent?.Invoke(this, CurrentTeamTurnId);
         }
     }

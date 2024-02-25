@@ -21,10 +21,12 @@ public class OnlineChessViewModel : ChessGameViewModel
     private readonly OnlineChessTeamManager m_teamManager;
     private readonly IAvailableMovesHelper  m_availableMovesHelper;
     private readonly Dispatcher             m_dispatcher;
-    public OnlineChessViewModel(OnlineChessGameManager gameManager) : base(gameManager.BoardEvents
-                                                                         , gameManager.TeamsManager)
+
+    public OnlineChessViewModel(OnlineChessGameManager gameManager
+                              , Dispatcher             dispatcher) : base(gameManager.BoardEvents
+                                                                        , gameManager.TeamsManager)
     {
-        m_dispatcher           = Dispatcher.CurrentDispatcher;
+        m_dispatcher           = dispatcher;
         m_gameBoard            = gameManager.GameBoard;
         m_teamManager          = gameManager.TeamsManager;
         m_availableMovesHelper = new AvailableMovesHelper(gameManager.BoardQuery);
@@ -33,11 +35,14 @@ public class OnlineChessViewModel : ChessGameViewModel
 
     private void initBoardState(IBoardQuery boardQuery)
     {
-        BoardState boardState = boardQuery.GetBoardState();
-        foreach (KeyValuePair<BoardPosition, ITool> pair in boardState)
-        {
-            Board.AddTool(pair.Value, pair.Key);
-        }
+        m_dispatcher.Invoke(() =>
+                            {
+                                BoardState boardState = boardQuery.GetBoardState();
+                                foreach (KeyValuePair<BoardPosition, ITool> pair in boardState)
+                                {
+                                    Board.AddTool(pair.Value, pair.Key);
+                                }
+                            });
     }
 
     protected override async void onSquareClick(object?         sender

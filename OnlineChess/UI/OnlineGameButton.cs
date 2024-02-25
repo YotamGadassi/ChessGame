@@ -17,7 +17,7 @@ public class OnlineGameButton : BaseGameButton, IDisposable
 
     private readonly OnlineGameRequestManager m_gameRequestManager;
     private readonly IChessServerAgent        m_serverAgent;
-    private readonly Dispatcher               m_dispatcher;
+
     public OnlineGameButton(Dispatcher dispatcher
                           , IGamePanelManager panelManager
                           , IChessConnectionManager connectionManager) : base(dispatcher, panelManager)
@@ -72,6 +72,7 @@ public class OnlineGameButton : BaseGameButton, IDisposable
 
         //TODO: Remove Waiting For Connection Panel\Message
         m_panelManager.Show(panel);
+        m_serverAgent.Init();
     }
 
     private OnlineChessGameManager createOnlineGameManager(GameConfig gameConfiguration)
