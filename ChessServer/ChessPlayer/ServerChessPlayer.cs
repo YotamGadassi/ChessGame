@@ -1,12 +1,13 @@
 ﻿using Board;
 using Common;
 using Common.Chess;
+using Microsoft.AspNetCore.SignalR;
 using OnlineChess.Common;
 using Tools;
 
 namespace ChessServer.ChessPlayer;
 
-public class ServerChessPlayer : IChessClientApi
+public class ServerChessPlayer : IServerChessPlayer
 {
     public PlayerId PlayerId { get; }
 
@@ -14,11 +15,18 @@ public class ServerChessPlayer : IChessClientApi
 
     public ChessTeam ChessTeam { get; set; }
 
-    public ServerChessPlayer(PlayerId   playerId
-                            , string    name)
+    private IHubContext<ChessHub, IChessClientApi> m_hubContext;
+    private string                                 m_connectionId;
+
+    public ServerChessPlayer(PlayerId                                playerId
+                           , string                                  name
+                            , IHubContext<ChessHub, IChessClientApi> hubContext
+                            , string                                 connectionId)
     {
-        PlayerId  = playerId;
-        Name      = name;
+        PlayerId       = playerId;
+        Name           = name;
+        m_hubContext   = hubContext;
+        m_connectionId = connectionId;
     }
 
     public Task        StartGame(GameConfig                gameConfig)

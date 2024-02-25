@@ -36,7 +36,7 @@ public class GameManager : IGamesManager, IDisposable
         addGame(game);
     }
 
-    public Task<GameRequestId> SubmitGameRequestAsync(PlayerData playerData) => m_gameRequestsManager.SubmitGameRequestAsync(playerData);
+    public Task<GameRequestId> SubmitGameRequestAsync(IServerChessPlayer player) => m_gameRequestsManager.SubmitGameRequestAsync(player);
 
     public Task CancelGameRequestAsync(GameRequestId requestId) => m_gameRequestsManager.CancelGameRequestAsync(requestId);
 

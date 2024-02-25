@@ -4,7 +4,7 @@ namespace ChessServer.Game
 {
     public class GameId : BaseId
     {
-        public static GameId GetGameId() => new GameId(Guid.NewGuid());
+        public static GameId NewGameId() => new(Guid.NewGuid());
         
         private GameId(Guid                id) : base(id) { }
 

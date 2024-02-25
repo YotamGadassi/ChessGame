@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 using Board;
 using ChessGame;
 using ChessServer.ChessPlayer;
@@ -7,26 +6,25 @@ using Common;
 using Common.Chess;
 using OnlineChess.Common;
 using Tools;
-using Color = System.Windows.Media.Color;
 
 namespace ChessServer.Game
 {
     public class GameUnit : IGameUnit
     {
-        public ServerChessPlayer[] ChessPlayers  { get; }
-        public GameId              Id            { get; }
-        public TeamId              CurrentTeamId => m_gameManager.TeamsManager.CurrentTeamTurnId;
+        public IServerChessPlayer[] ChessPlayers  { get; }
+        public GameId               Id            { get; }
+        public TeamId               CurrentTeamId => m_gameManager.TeamsManager.CurrentTeamTurnId;
 
-        private          OfflineChessGameManager               m_gameManager;
-        private readonly Dictionary<TeamId, ServerChessPlayer> m_teamToPlayers;
-        private readonly Dictionary<TeamId, Action<TimeSpan>>  m_teamToTimerEvent;
+        private          OfflineChessGameManager                m_gameManager;
+        private readonly Dictionary<TeamId, IServerChessPlayer> m_teamToPlayers;
+        private readonly Dictionary<TeamId, Action<TimeSpan>>   m_teamToTimerEvent;
 
-        public GameUnit(ServerChessPlayer[] chessPlayers
+        public GameUnit(IServerChessPlayer[] chessPlayers
                       , GameId              id)
         {
             ChessPlayers       = chessPlayers;
             Id                 = id;
-            m_teamToPlayers    = new Dictionary<TeamId, ServerChessPlayer>();
+            m_teamToPlayers    = new Dictionary<TeamId, IServerChessPlayer>();
             m_teamToTimerEvent = new Dictionary<TeamId, Action<TimeSpan>>();
         }
 
@@ -83,17 +81,17 @@ namespace ChessServer.Game
             MoveResultEnum resultEnum = result.Result;
             if (resultEnum == MoveResultEnum.NeedPromotion)
             {
-                ToolId            toolId = result.ToolAtInitial.ToolId;
-                TeamId            teamId = m_gameManager.TeamsManager.GetTeamId(toolId);
-                ServerChessPlayer player = m_teamToPlayers[teamId];
+                ToolId             toolId = result.ToolAtInitial.ToolId;
+                TeamId             teamId = m_gameManager.TeamsManager.GetTeamId(toolId);
+                IServerChessPlayer player = m_teamToPlayers[teamId];
                 Task.Run(() => AskPromotion(player, result.EndPosition));
             }
 
             return result;
         }
 
-        public async void AskPromotion(ServerChessPlayer player
-                                     , BoardPosition     position)
+        public async void AskPromotion(IServerChessPlayer player
+                                     , BoardPosition      position)
         {
             PromotionResult promotionResult = PromotionResult.NoPromotionOccured;
             //while (promotionResult.Result != PromotionResultEnum.PromotionSucceeded)
@@ -217,14 +215,14 @@ namespace ChessServer.Game
 
         private OfflineTeamsManager createTeamManager()
         {
-            ServerChessPlayer player1 = ChessPlayers[0];
+            IServerChessPlayer player1 = ChessPlayers[0];
             ChessTeam team1 = new(player1.Name, Colors.White, GameDirection.North
                                 , new TeamTimer(TimeSpan.FromMinutes(10), TimeSpan.FromSeconds(1)));
 
             player1.ChessTeam         = team1;
             m_teamToPlayers[team1.Id] = player1;
 
-            ServerChessPlayer player2 = ChessPlayers[1];
+            IServerChessPlayer player2 = ChessPlayers[1];
             ChessTeam team2 = new(player2.Name, Colors.Black, GameDirection.South
                                 , new TeamTimer(TimeSpan.FromMinutes(10), TimeSpan.FromSeconds(1)));
             player2.ChessTeam         = team2;

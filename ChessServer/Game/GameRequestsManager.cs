@@ -21,10 +21,10 @@ namespace ChessServer.Game
             Task.Run(matchMakerCallback);
         }
 
-        public Task<GameRequestId> SubmitGameRequestAsync(PlayerData playerData)
+        public Task<GameRequestId> SubmitGameRequestAsync(IServerChessPlayer player)
         {
             GameRequestId   requestId   = GameRequestId.NewGameRequestId();
-            GameRequestData requestData = new(requestId, playerData);
+            GameRequestData requestData = new(requestId, player);
             m_log.LogInformation("Game Request Submitted: ID: {0}, RequestData: {1}", requestId, requestData);
 
             lock (m_gameRequestLock)
@@ -91,12 +91,10 @@ namespace ChessServer.Game
         private void matchTwoRequests(GameRequestData requestData1
                                     , GameRequestData requestData2)
         {
-            ServerChessPlayer player1 =
-                new ServerChessPlayer(requestData1.PlayerData.PlayerId, requestData1.PlayerData.PlayerName);
-            ServerChessPlayer player2 =
-                new ServerChessPlayer(requestData2.PlayerData.PlayerId, requestData2.PlayerData.PlayerName);
+            IServerChessPlayer player1 = requestData1.Player;
+            IServerChessPlayer player2 = requestData2.Player;
 
-            GameId   gameId   = GameId.GetGameId();
+            GameId   gameId   = GameId.NewGameId();
             GameUnit gameUnit = new(new[] { player1, player2 }, gameId);
             GameCreatedEvent?.Invoke(this, gameUnit);
         }

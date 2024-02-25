@@ -13,14 +13,16 @@ namespace ChessServer;
 
 public class ChessHub : Hub<IChessClientApi>, IChessServerApi
 {
-    private readonly IServerManager<string> m_serverState;
-    private readonly ILogger<ChessHub>      m_log;
-
-    public ChessHub(IServerManager<string> serverState
-                  , ILogger<ChessHub>      logger)
+    private readonly IServerManager<string>                 m_serverState;
+    private readonly ILogger<ChessHub>                      m_log;
+    private readonly IHubContext<ChessHub, IChessClientApi> m_HubContext;
+    public ChessHub(IServerManager<string>                 serverState
+                  , ILogger<ChessHub>                      logger
+                  , IHubContext<ChessHub, IChessClientApi> hubContext)
     {
         m_serverState = serverState;
         m_log         = logger;
+        m_HubContext = hubContext;
     }
 
     public override async Task OnConnectedAsync()
@@ -55,9 +57,9 @@ public class ChessHub : Hub<IChessClientApi>, IChessServerApi
     public async Task<GameRequestResult> SubmitGameRequest(GameRequest gameRequest)
     {
         UserData   userData   = await getUserData();
-        PlayerData playerData = createPlayerData(userData);
+        IServerChessPlayer player = createPlayer(userData);
 
-        GameRequestId gameRequestId = await m_serverState.GamesManager.SubmitGameRequestAsync(playerData);
+        GameRequestId gameRequestId = await m_serverState.GamesManager.SubmitGameRequestAsync(player);
         return new GameRequestResult(false, gameRequestId);
     }
 
@@ -113,10 +115,10 @@ public class ChessHub : Hub<IChessClientApi>, IChessServerApi
         return new UserData(userUniqueId, string.Empty);
     }
 
-    private PlayerData createPlayerData(UserData userData)
+    private IServerChessPlayer createPlayer(UserData userData)
     {
         PlayerId playerId = PlayerId.NewPlayerId();
-        return new PlayerData(playerId, userData.UserName);
+        return new ServerChessPlayer(playerId, userData.UserName, m_HubContext, Context.ConnectionId);
     }
 
     private async Task<UserData> getUserData()

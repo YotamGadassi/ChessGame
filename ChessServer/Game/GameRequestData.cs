@@ -7,12 +7,12 @@ public class GameRequestData
 {
     public GameRequestId GameRequestId { get; }
 
-    public PlayerData PlayerData { get; }
+    public IServerChessPlayer Player { get; }
 
-    public GameRequestData(GameRequestId gameRequestId
-                         , PlayerData    playerData)
+    public GameRequestData(GameRequestId      gameRequestId
+                         , IServerChessPlayer player)
     {
         GameRequestId = gameRequestId;
-        PlayerData    = playerData;
+        Player        = player;
     }
 }
