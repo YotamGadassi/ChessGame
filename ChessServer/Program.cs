@@ -9,13 +9,7 @@ public class Program
     public static void Main(string[] args)
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-        builder.Services.AddSignalR()
-               .AddJsonProtocol(option =>
-                                {
-                                    option.PayloadSerializerOptions.Converters.Add(new IToolConverter());
-                                    option.PayloadSerializerOptions.Converters.Add(new TeamIdConverter());
-                                    option.PayloadSerializerOptions.Converters.Add(new ToolIdConverter());
-                                });
+        builder.Services.AddSignalR();
 
         builder.Logging.AddLog4Net("loggingConfiguration.xml");
 
