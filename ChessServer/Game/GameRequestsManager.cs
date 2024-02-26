@@ -95,7 +95,7 @@ namespace ChessServer.Game
             IServerChessPlayer player2 = requestData2.Player;
 
             GameId   gameId   = GameId.NewGameId();
-            GameUnit gameUnit = new(new[] { player1, player2 }, gameId);
+            GameUnit gameUnit = new(new[] { player1, player2 }, gameId, m_log);
             GameCreatedEvent?.Invoke(this, gameUnit);
         }
     }

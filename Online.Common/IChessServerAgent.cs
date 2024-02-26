@@ -1,6 +1,4 @@
-﻿using Board;
-using Common;
-using Tools;
+﻿using Common;
 
 namespace OnlineChess.Common
 {
@@ -9,8 +7,6 @@ namespace OnlineChess.Common
     public delegate void StartGameHandler(GameConfig gameConfiguration);
 
     public delegate void EndGameHandler(EndGameReason reason);
-
-    public delegate void AskPromotionHandler(BoardPosition positionToPromote);
 
     public delegate void UpdateTimerHandler(TeamId   teamId
                                           , TimeSpan timeLeft);
@@ -24,7 +20,7 @@ namespace OnlineChess.Common
         event StartGameHandler           StartGameEvent;
         event EndGameHandler             EndGameEvent;
         event BoardCommandsHandler       BoardCommandsEvent;
-        event AskPromotionHandler           AskPromotionEvent;
+        event AskPromotionEventHandler   AskPromotionEvent;
         event UpdateTimerHandler         UpdateTimeEvent;
         event UpdatePlayingTeamHandler   UpdatePlayingTeamEvent;
         event UpdateToolsAndTeamsHandler UpdateToolsAndTeamsEvent;

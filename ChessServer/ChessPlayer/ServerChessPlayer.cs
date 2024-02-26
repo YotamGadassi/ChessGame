@@ -15,9 +15,9 @@ public class ServerChessPlayer : IServerChessPlayer
 
     public ChessTeam ChessTeam { get; set; }
 
-    private IHubContext<ChessHub, IChessClientApi> m_hubContext;
-    private string                                 m_connectionId;
-    private IChessClientApi client => m_hubContext.Clients.Client(m_connectionId);
+    private readonly IHubContext<ChessHub, IChessClientApi> m_hubContext;
+    private readonly string                                 m_connectionId;
+    private          IChessClientApi                        client => m_hubContext.Clients.Client(m_connectionId);
     public ServerChessPlayer(PlayerId                                playerId
                            , string                                  name
                            , IHubContext<ChessHub, IChessClientApi> hubContext
@@ -35,7 +35,7 @@ public class ServerChessPlayer : IServerChessPlayer
 
     public Task ApplyBoardCommands(BoardCommand[] boardCommands) => client.ApplyBoardCommands(boardCommands);
 
-    public Task AskPromote(BoardPosition positionToPromote) => client.AskPromote(positionToPromote);
+    public Task AskPromote(BoardPosition positionToPromote, ITool toolToPromote) => client.AskPromote(positionToPromote, toolToPromote);
 
     public Task UpdateTime(TeamId   teamId
                          , TimeSpan timeSpan) => client.UpdateTime(teamId, timeSpan);
