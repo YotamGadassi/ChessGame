@@ -21,9 +21,9 @@ public class OnlineChessViewModel : ChessGameViewModel
     private readonly OnlineChessTeamManager m_teamManager;
     private readonly IAvailableMovesHelper  m_availableMovesHelper;
     private readonly Dispatcher             m_dispatcher;
-
     public OnlineChessViewModel(OnlineChessGameManager gameManager
-                              , Dispatcher             dispatcher) : base(gameManager.BoardEvents
+                              , Dispatcher             dispatcher) : base(gameManager, 
+                                                                          gameManager.BoardEvents
                                                                         , gameManager.TeamsManager)
     {
         m_dispatcher           = dispatcher;
@@ -74,8 +74,7 @@ public class OnlineChessViewModel : ChessGameViewModel
         {
             BoardPosition start      = Board.SelectedBoardPosition;
             BoardPosition end        = position;
-            MoveResult    moveResult = await m_gameBoard.Move(start, end);
-            handleMoveResult(moveResult);
+            await m_gameBoard.Move(start, end);
         }
 
         Board.ClearSelectedAndHintedBoardPositions();
@@ -93,7 +92,6 @@ public class OnlineChessViewModel : ChessGameViewModel
         Message = null;
 
         PromotionResult promoteResult = await m_gameBoard.PromoteTool(position, newTool);
-        handlePromotionResult(promoteResult);
     }
 
     protected override void onCheckMate(BoardPosition position

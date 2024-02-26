@@ -7,26 +7,29 @@ using Tools;
 
 namespace ChessGame
 {
-    public class OfflineChessGameManager : IDisposable
+    public class OfflineChessGameManager : IChessGameEvents, IChessBoardProxy, IDisposable
     {
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public IBoardEvents         BoardEvents         => m_gameBoard;
-        public OfflineChessBoardProxy     ChessBoardProxy     { get; }
-        public IChessTeamManager    TeamsManager        => m_teamsManager;
-        public IGameStateController GameStateController { get; }
+        public event AskPromotionEventHandler? AskPromotionEvent;
+        public event CheckMateEventHandler?    CheckMateEvent;
 
-        public  IBoardQuery BoardQuery => m_gameBoard;
-        private ChessBoard  m_gameBoard;
+        public IBoardEvents                    BoardEvents         => m_gameBoard;
+        public IChessTeamManager               TeamsManager        => m_teamsManager;
+        public IGameStateController            GameStateController { get; }
+
+        public  IBoardQuery            BoardQuery => m_gameBoard;
+        private ChessBoard             m_gameBoard;
+        private OfflineChessBoardProxy m_chessBoardProxy;
 
         private OfflineTeamsManager m_teamsManager;
 
         public OfflineChessGameManager(OfflineTeamsManager teamsManager)
         {
-            m_teamsManager                   =  teamsManager;
-            GameStateController              =  new GameStateController();
-            m_gameBoard                      =  new ChessBoard();
-            ChessBoardProxy                  =  new OfflineChessBoardProxy(m_gameBoard, teamsManager);
+            m_teamsManager      = teamsManager;
+            GameStateController = new GameStateController();
+            m_gameBoard         = new ChessBoard();
+            m_chessBoardProxy   = new OfflineChessBoardProxy(m_gameBoard, teamsManager);
             registerToEvents();
         }
 
@@ -108,5 +111,27 @@ namespace ChessGame
             }
         }
 
+        public MoveResult Move(BoardPosition start
+                             , BoardPosition end)
+        {
+            MoveResult result     = m_chessBoardProxy.Move(start, end);
+            MoveResultEnum        resultEnum = result.Result;
+            if (resultEnum.HasFlag(MoveResultEnum.CheckMate))
+            {
+                CheckMateEvent?.Invoke(result.EndPosition, result.ToolAtEnd);
+            }
+            else if (resultEnum.HasFlag(MoveResultEnum.NeedPromotion))
+            {
+                AskPromotionEvent?.Invoke(result.EndPosition, result.ToolAtInitial);
+            }
+
+            return result;
+        }
+
+        public PromotionResult Promote(BoardPosition start
+                                     , ITool         newTool) => m_chessBoardProxy.Promote(start, newTool);
+
+        public bool TryGetTool(BoardPosition position
+                             , out ITool     tool) => m_chessBoardProxy.TryGetTool(position, out tool);
     }
 }

@@ -1,28 +1,40 @@
 ﻿using Board;
 using Common;
 using log4net;
+using OnlineChess.Common;
 using OnlineChess.TeamManager;
 
 namespace OnlineChess.Game;
 
-public class OnlineChessGameManager : IDisposable
+public class OnlineChessGameManager : IChessGameEvents, IDisposable
 {
-    private static readonly ILog s_log = LogManager.GetLogger(typeof(OnlineChessGameManager));
+    private static readonly ILog           s_log = LogManager.GetLogger(typeof(OnlineChessGameManager));
+    
+    public event AskPromotionEventHandler? AskPromotionEvent
+    {
+        add => m_serverAgent.AskPromotionEvent += value;
+        remove => m_serverAgent.AskPromotionEvent -= value;
+    }
 
-    public IBoardEvents BoardEvents => GameBoard;
-    public IBoardQuery BoardQuery => GameBoard;
+    public event CheckMateEventHandler? CheckMateEvent;
+    public IBoardEvents                 BoardEvents => GameBoard;
+    public IBoardQuery                  BoardQuery  => GameBoard;
 
     public IGameState GameState { get; }
     public OnlineChessTeamManager TeamsManager { get; }
     public OnlineGameBoard GameBoard { get; }
 
-    public OnlineChessGameManager(OnlineGameBoard        gameBoard
+    private IChessServerAgent m_serverAgent;
+
+    public OnlineChessGameManager(IChessServerAgent      serverAgent
+                                , OnlineGameBoard        gameBoard
                                 , OnlineChessTeamManager teamManager
                                 , IGameState             gameState)
     {
-        GameBoard    = gameBoard;
-        TeamsManager = teamManager;
-        GameState    = gameState;
+        m_serverAgent = serverAgent;
+        GameBoard     = gameBoard;
+        TeamsManager  = teamManager;
+        GameState     = gameState;
         s_log.Info("Created");
     }
 

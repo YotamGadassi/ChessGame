@@ -18,12 +18,12 @@ namespace Client.Game
         private static readonly ILog s_log = LogManager.GetLogger(typeof(OfflineChessGameViewModel));
         public                  BaseGameControllerViewModel ControllerViewModel => m_gameControllerVM;
 
-        private OfflineChessGameManager m_chessGameManager;
-        private IAvailableMovesHelper   m_availableMovesHelper;
-        private Dispatcher              m_dispatcher;
-        private GameControllerViewModel m_gameControllerVM;
+        private readonly OfflineChessGameManager m_chessGameManager;
+        private readonly IAvailableMovesHelper   m_availableMovesHelper;
+        private readonly Dispatcher              m_dispatcher;
+        private readonly GameControllerViewModel m_gameControllerVM;
 
-        public OfflineChessGameViewModel(OfflineChessGameManager gameManager) : base(gameManager.BoardEvents, gameManager.TeamsManager)
+        public OfflineChessGameViewModel(OfflineChessGameManager gameManager) : base(gameManager, gameManager.BoardEvents, gameManager.TeamsManager)
         {
             m_dispatcher           = Dispatcher.CurrentDispatcher;
             m_chessGameManager     = gameManager;
@@ -60,8 +60,7 @@ namespace Client.Game
             {
                 BoardPosition start      = Board.SelectedBoardPosition;
                 BoardPosition end        = position;
-                MoveResult    moveResult = m_chessGameManager.ChessBoardProxy.Move(start, end);
-                handleMoveResult(moveResult);
+                m_chessGameManager.Move(start, end);
             }
 
             Board.ClearSelectedAndHintedBoardPositions();
@@ -78,8 +77,7 @@ namespace Client.Game
             ITool newTool = await promotionMessage.ToolAwaiter;
             Message = null;
 
-            PromotionResult promoteResult = m_chessGameManager.ChessBoardProxy.Promote(position, newTool);
-            handlePromotionResult(promoteResult);
+            m_chessGameManager.Promote(position, newTool);
         }
 
         protected override void onCheckMate(BoardPosition position

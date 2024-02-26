@@ -49,10 +49,13 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
         set => SetValue(MessageProperty, value);
     }
 
-    protected ChessGameViewModel(IBoardEvents boardEvents, IChessTeamManager teamsManager)
+    private readonly IChessGameEvents m_gameEvents;
+    protected ChessGameViewModel(IChessGameEvents chessGameEvents, IBoardEvents boardEvents, IChessTeamManager teamsManager)
     {
         setBoard(new BoardViewModel(boardEvents));
         initTeams(teamsManager);
+        m_gameEvents = chessGameEvents;
+        registerToEvents();
         s_log.Info("Created");
     }
 
@@ -62,6 +65,7 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
         Board.Dispose();
         SouthTeamStatus?.Dispose();
         NorthTeamStatus?.Dispose();
+        unRegisterFromEvents();
     }
 
     protected abstract void onSquareClick(object?         sender
@@ -72,48 +76,6 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
 
     protected abstract void onCheckMate(BoardPosition position
                                            , ITool         tool);
-
-    protected void handleMoveResult(MoveResult moveResult)
-    {
-        s_log.Info($"Handles move result: {moveResult}");
-
-        MoveResultEnum moveResultEnum = moveResult.Result;
-        if (moveResultEnum.HasFlag(MoveResultEnum.NoChangeOccurred))
-        {
-            return;
-        }
-
-        if (moveResultEnum.HasFlag(MoveResultEnum.NeedPromotion))
-        {
-            onPromotion(moveResult.EndPosition, moveResult.ToolAtInitial);
-        }
-
-        if (moveResultEnum.HasFlag(MoveResultEnum.CheckMate))
-        {
-            onCheckMate(moveResult.EndPosition, moveResult.ToolAtInitial);
-        }
-    }
-
-    protected void handlePromotionResult(PromotionResult promotionResult)
-    {
-        s_log.Info($"Handles promotion result: {promotionResult}");
-
-        switch (promotionResult.Result)
-        {
-            case PromotionResultEnum.PositionIsEmpty:
-            case PromotionResultEnum.ToolIsNotValidForPromotion:
-            {
-                break;
-            }
-            case PromotionResultEnum.PromotionSucceeded:
-            {
-                Board.AddTool(promotionResult.NewTool, promotionResult.PromotionPosition);
-                break;
-            }
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-    }
 
     private void setBoard(BoardViewModel newBoard)
     {
@@ -155,5 +117,17 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
             setSouthTeam(new TeamStatusViewModel(team2, team2Timer));
             setNorthTeam(new TeamStatusViewModel(team1, team1Timer));
         }
+    }
+
+    private void registerToEvents()
+    {
+        m_gameEvents.AskPromotionEvent += onPromotion;
+        m_gameEvents.CheckMateEvent    += onCheckMate;
+    }
+
+    private void unRegisterFromEvents()
+    {
+        m_gameEvents.AskPromotionEvent -= onPromotion;
+        m_gameEvents.CheckMateEvent    -= onCheckMate;
     }
 }
