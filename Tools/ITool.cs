@@ -7,6 +7,7 @@ using log4net;
 
 namespace Tools;
 
+[JsonConverter(typeof(IToolConverter))]
 public interface ITool
 {
     ToolId ToolId { get; }
@@ -73,15 +74,12 @@ public class IToolConverter : JsonConverter<ITool>
         {
             Type type = value.GetType();
 
-            writer.WritePropertyName("Type");
-            writer.WriteStringValue(type.AssemblyQualifiedName);
+            writer.WriteString("Type", type.AssemblyQualifiedName);
 
             writer.WritePropertyName("ConcreteType");
             JsonSerializer.Serialize(writer, value, type, options);
         }
 
         writer.WriteEndObject();
-
-        writer.Flush();
     }
 }

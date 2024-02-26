@@ -10,7 +10,6 @@ namespace Tools
         public string Type   => "Pawn";
         public ToolId ToolId { get; }
 
-        [JsonConverter(typeof(ColorConverter))]
         public Color Color { get; }
 
         public Pawn(Color color)
