@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "ChessServer3._0": {
+    "ChessServer": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
