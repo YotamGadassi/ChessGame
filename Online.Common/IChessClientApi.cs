@@ -12,7 +12,7 @@ namespace OnlineChess.Common
 
         public Task ApplyBoardCommands(BoardCommand[] boardCommands);
 
-        public Task AskPromote(BoardPosition positionToPromote, ITool toolToPromote);
+        public Task AskPromote(PromotionRequest promotionRequest);
 
         public Task UpdateTime(TeamId   teamId
                              , TimeSpan timeSpan);

@@ -86,7 +86,7 @@ namespace OnlineChess.ConnectionManager
             m_connection.On<GameConfig>("StartGame", handleStartGame);
             m_connection.On<EndGameReason>("EndGame", handleEndGame);
             m_connection.On<TeamId, TimeSpan>("UpdateTime", handleUpdateTime);
-            m_connection.On<BoardPosition, ITool>("AskPromote", handleAskPromotion);
+            m_connection.On<PromotionRequest>("AskPromote", handleAskPromotion);
             m_connection.On<BoardCommand[]>("ApplyBoardCommands", handleApplyBoardCommands);
             m_connection.On<TeamId>("UpdatePlayingTeam", handleUpdatePlayingTeam);
             m_connection.On<ToolAndTeamPair[]>("UpdateToolsAndTeams", handleUpdateToolsAndTeams);
@@ -110,10 +110,10 @@ namespace OnlineChess.ConnectionManager
             BoardCommandsEvent?.Invoke(commands);
         }
 
-        private void handleAskPromotion(BoardPosition positionToPromote, ITool toolToPromote)
+        private void handleAskPromotion(PromotionRequest promotionRequest)
         {
-            s_log.DebugFormat("AskPromotion Arrived: [position: {0}]", positionToPromote);
-            AskPromotionEvent?.Invoke(positionToPromote, toolToPromote);
+            s_log.DebugFormat("AskPromotion Arrived: [request: {0}]", promotionRequest);
+            AskPromotionEvent?.Invoke(promotionRequest);
         }
 
         private void handleUpdateTime(TeamId   teamId

@@ -66,9 +66,10 @@ namespace Client.Game
             Board.ClearSelectedAndHintedBoardPositions();
         }
 
-        protected override async void onPromotion(BoardPosition position
-                                                , ITool         toolToPromote)
+        protected override async void onPromotion(PromotionRequest promotionRequest)
         {
+            BoardPosition position      = promotionRequest.Position;
+            ITool toolToPromote = promotionRequest.ToolToPromote;
             s_log.Info($"Promotion event: position: {position} | tool to promote: {toolToPromote}");
 
             PromotionMessageViewModel promotionMessage = new(toolToPromote.Color, position);

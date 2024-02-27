@@ -122,7 +122,7 @@ namespace ChessGame
             }
             else if (resultEnum.HasFlag(MoveResultEnum.NeedPromotion))
             {
-                AskPromotionEvent?.Invoke(result.EndPosition, result.ToolAtInitial);
+                AskPromotionEvent?.Invoke(new PromotionRequest(result.ToolAtInitial, result.EndPosition));
             }
 
             return result;

@@ -71,8 +71,7 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
     protected abstract void onSquareClick(object?         sender
                                                , SquareViewModel squareVM);
 
-    protected abstract void onPromotion(BoardPosition position
-                                           , ITool         toolToPromote);
+    protected abstract void onPromotion(PromotionRequest promotionRequest);
 
     protected abstract void onCheckMate(BoardPosition position
                                            , ITool         tool);

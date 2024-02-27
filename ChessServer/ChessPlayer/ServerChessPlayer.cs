@@ -35,7 +35,7 @@ public class ServerChessPlayer : IServerChessPlayer
 
     public Task ApplyBoardCommands(BoardCommand[] boardCommands) => client.ApplyBoardCommands(boardCommands);
 
-    public Task AskPromote(BoardPosition positionToPromote, ITool toolToPromote) => client.AskPromote(positionToPromote, toolToPromote);
+    public Task AskPromote(PromotionRequest requst) => client.AskPromote(requst);
 
     public Task UpdateTime(TeamId   teamId
                          , TimeSpan timeSpan) => client.UpdateTime(teamId, timeSpan);

@@ -122,7 +122,7 @@ namespace ChessServer.Game
                                       , ITool              toolToPromote)
         {
             m_isWaitingForPromotion = true;
-            await player.AskPromote(position, toolToPromote);
+            await player.AskPromote(new PromotionRequest(toolToPromote, position));
         }
 
         private void registerToEvents()
