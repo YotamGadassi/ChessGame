@@ -40,8 +40,7 @@ namespace ChessServer.Game
             m_gameManager = new OfflineChessGameManager(teamsManager);
             registerToEvents();
 
-
-            foreach (ServerChessPlayer player in ChessPlayers)
+            foreach (IServerChessPlayer player in ChessPlayers)
             {
                 PlayerId playerId = player.PlayerId;
                 Team[]   teams    = m_gameManager.TeamsManager.Teams;
