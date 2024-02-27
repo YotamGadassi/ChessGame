@@ -96,20 +96,19 @@ public class OnlineChessViewModel : ChessGameViewModel
                                   });
     }
 
-    protected override void onCheckMate(BoardPosition position
-                                      , ITool         tool)
+    protected override void onCheckMate(CheckMateData checkMateData)
     {
-        s_log.Info($"Checkmate Event: Position:{position} | Tool:{tool}");
+        s_log.Info($"Checkmate Event: Position: {checkMateData}");
 
-         UserMessageViewModel checkMateMessage = new("Checkmate", "OK", () =>
-                                                                        {
-                                                                            Message = null;
-                                                                            m_dispatcher
-                                                                               .InvokeAsync(() =>
-                                                                                            {
+        UserMessageViewModel checkMateMessage = new("Checkmate", "OK", () =>
+                                                                       {
+                                                                           Message = null;
+                                                                           m_dispatcher
+                                                                              .InvokeAsync(() =>
+                                                                               {
 
-                                                                                            });
-                                                                        });
-         Message = checkMateMessage;
+                                                                               });
+                                                                       });
+        Message = checkMateMessage;
     }
 }

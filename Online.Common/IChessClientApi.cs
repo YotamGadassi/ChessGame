@@ -1,6 +1,4 @@
-﻿using Board;
-using Common;
-using Tools;
+﻿using Common;
 
 namespace OnlineChess.Common
 {
@@ -10,6 +8,7 @@ namespace OnlineChess.Common
 
         public Task EndGame(EndGameReason endGameReason);
 
+        public Task CheckMate(CheckMateData           checkMateData);
         public Task ApplyBoardCommands(BoardCommand[] boardCommands);
 
         public Task AskPromote(PromotionRequest promotionRequest);

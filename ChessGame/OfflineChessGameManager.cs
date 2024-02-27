@@ -118,7 +118,10 @@ namespace ChessGame
             MoveResultEnum        resultEnum = result.Result;
             if (resultEnum.HasFlag(MoveResultEnum.CheckMate))
             {
-                CheckMateEvent?.Invoke(result.EndPosition, result.ToolAtEnd);
+                ITool   toolOfWinningTeam = result.ToolAtInitial;
+                TeamId? winningTeamId     = m_teamsManager.GetTeamId(toolOfWinningTeam.ToolId);
+                CheckMateEvent?.Invoke(new CheckMateData(result.EndPosition, winningTeamId));
+                GameStateController.EndGame();
             }
             else if (resultEnum.HasFlag(MoveResultEnum.NeedPromotion))
             {

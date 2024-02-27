@@ -16,7 +16,12 @@ public class OnlineChessGameManager : IChessGameEvents, IDisposable
         remove => m_serverAgent.AskPromotionEvent -= value;
     }
 
-    public event CheckMateEventHandler? CheckMateEvent;
+    public event CheckMateEventHandler? CheckMateEvent
+    {
+        add => m_serverAgent.CheckMateEvent += value;
+        remove => m_serverAgent.CheckMateEvent -= value;
+    }
+
     public IBoardEvents                 BoardEvents => GameBoard;
     public IBoardQuery                  BoardQuery  => GameBoard;
 

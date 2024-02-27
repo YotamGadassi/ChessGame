@@ -5,8 +5,7 @@ namespace Common;
 
 public delegate void AskPromotionEventHandler(PromotionRequest promotionRequest);
 
-public delegate void CheckMateEventHandler(BoardPosition position
-                                         , ITool         toolToPromote);
+public delegate void CheckMateEventHandler(CheckMateData checkMateData);
 
 public interface IChessGameEvents
 {

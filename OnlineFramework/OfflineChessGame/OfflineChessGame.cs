@@ -30,12 +30,12 @@ namespace Frameworks.ChessGame
         {
             m_teamsManager = createOfflineTeamsManager();
 
-            GameManager                                  =  new OfflineChessGameManager(m_teamsManager);
-            GameManager.GameStateController.StateChanged += onGameStateChanged;
-            m_gameViewModel                              =  new OfflineChessGameViewModel(GameManager);
-            GameControl.DataContext                      =  null;
-            GameControl.DataContext                      =  m_gameViewModel;
+            GameManager             = new OfflineChessGameManager(m_teamsManager);
+            m_gameViewModel         = new OfflineChessGameViewModel(GameManager);
+            GameControl.DataContext = null;
+            GameControl.DataContext = m_gameViewModel;
             GameManager.Init();
+            m_gameViewModel.GameEnd += onGameEnd;
         }
 
         public override void Reset()
@@ -54,20 +54,10 @@ namespace Frameworks.ChessGame
         private void disposeResources()
         {
             m_gameViewModel.Dispose();
-            GameManager.GameStateController.StateChanged -= onGameStateChanged;
             GameManager.Dispose();
             m_teamsManager.Dispose();
         }
 
-        private void onGameStateChanged(object?   sender
-                                      , GameStateEnum e)
-        {
-            if (e == GameStateEnum.Ended)
-            {
-                onGameEnd();
-                Reset();
-            }
-        }
 
         private OfflineTeamsManager createOfflineTeamsManager()
         {
@@ -81,5 +71,10 @@ namespace Frameworks.ChessGame
             return teamsManager;
         }
 
+        private void onGameEnd(object?   sender
+                             , EventArgs e)
+        {
+            gameEnd();
+        }
     }
 }

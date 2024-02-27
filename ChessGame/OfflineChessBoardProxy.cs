@@ -46,8 +46,11 @@ public class OfflineChessBoardProxy : IChessBoardProxy
         MoveResult     result     = m_chessBoard.Move(start, end);
         MoveResultEnum resultEnum = result.Result;
 
+        bool isPromotionOrCheckMate = resultEnum.HasFlag(MoveResultEnum.NeedPromotion) &
+                                      resultEnum.HasFlag(MoveResultEnum.CheckMate);
+
         if (resultEnum.HasFlag(MoveResultEnum.ToolMoved)
-         && false == resultEnum.HasFlag(MoveResultEnum.NeedPromotion))
+         && false == isPromotionOrCheckMate)
         {
             m_teamsManager.SwitchCurrentTeam();
         }
@@ -57,7 +60,7 @@ public class OfflineChessBoardProxy : IChessBoardProxy
             m_isWaitingForPromotion = true;
         }
 
-        if ((resultEnum & (MoveResultEnum.CheckMate | MoveResultEnum.NeedPromotion)) != 0)
+        if (isPromotionOrCheckMate)
         {
             s_log.Info($"{resultEnum} occurred after move from {start} to {end}");
         }

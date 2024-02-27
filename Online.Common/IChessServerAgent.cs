@@ -21,6 +21,7 @@ namespace OnlineChess.Common
         event EndGameHandler             EndGameEvent;
         event BoardCommandsHandler       BoardCommandsEvent;
         event AskPromotionEventHandler   AskPromotionEvent;
+        event CheckMateEventHandler      CheckMateEvent;
         event UpdateTimerHandler         UpdateTimeEvent;
         event UpdatePlayingTeamHandler   UpdatePlayingTeamEvent;
         event UpdateToolsAndTeamsHandler UpdateToolsAndTeamsEvent;

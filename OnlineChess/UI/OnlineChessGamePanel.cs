@@ -75,8 +75,7 @@ public class OnlineChessGamePanel : BaseGamePanel
                                         m_gameViewModel.Message == null ? TimeSpan.Zero : TimeSpan.FromSeconds(10);
 
                                     Task.Delay(delayTime);
-                                    onGameEnd();
-                                    Reset();
+                                    gameEnd();
                                 });
         }
     }

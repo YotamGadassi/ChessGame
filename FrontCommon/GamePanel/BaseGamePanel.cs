@@ -20,5 +20,5 @@ public abstract class BaseGamePanel : IDisposable
         PanelName = panelName;
     }
 
-    protected void onGameEnd() => GameEnded?.Invoke(this);
+    protected void gameEnd() => GameEnded?.Invoke(this);
 }

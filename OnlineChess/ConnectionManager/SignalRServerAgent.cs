@@ -5,7 +5,6 @@ using Common.Chess;
 using log4net;
 using Microsoft.AspNetCore.SignalR.Client;
 using OnlineChess.Common;
-using Tools;
 
 namespace OnlineChess.ConnectionManager
 {
@@ -17,6 +16,7 @@ namespace OnlineChess.ConnectionManager
         public event EndGameHandler?             EndGameEvent;
         public event BoardCommandsHandler?       BoardCommandsEvent;
         public event AskPromotionEventHandler?   AskPromotionEvent;
+        public event CheckMateEventHandler?      CheckMateEvent;
         public event UpdateTimerHandler?         UpdateTimeEvent;
         public event UpdatePlayingTeamHandler?   UpdatePlayingTeamEvent;
         public event UpdateToolsAndTeamsHandler? UpdateToolsAndTeamsEvent;
@@ -85,9 +85,16 @@ namespace OnlineChess.ConnectionManager
             m_connection.On<EndGameReason>("EndGame", handleEndGame);
             m_connection.On<TeamId, TimeSpan>("UpdateTime", handleUpdateTime);
             m_connection.On<PromotionRequest>("AskPromote", handleAskPromotion);
+            m_connection.On<CheckMateData>("CheckMate", handleCheckMate);
             m_connection.On<BoardCommand[]>("ApplyBoardCommands", handleApplyBoardCommands);
             m_connection.On<TeamId>("UpdatePlayingTeam", handleUpdatePlayingTeam);
             m_connection.On<ToolAndTeamPair[]>("UpdateToolsAndTeams", handleUpdateToolsAndTeams);
+        }
+
+        private void handleCheckMate(CheckMateData checkMateData)
+        {
+            s_log.DebugFormat("CheckMate Arrived: [{0}]", checkMateData);
+            CheckMateEvent?.Invoke(checkMateData);
         }
 
         private void handleUpdateToolsAndTeams(ToolAndTeamPair[] pairs)

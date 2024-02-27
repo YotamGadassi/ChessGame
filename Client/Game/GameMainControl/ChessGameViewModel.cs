@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Windows;
-using Board;
 using Client.Board;
 using Common;
-using Common.Chess;
 using log4net;
-using Tools;
 
 namespace Client.Game.GameMainControl;
 
@@ -24,6 +21,8 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
 
     private static readonly DependencyProperty BoardProperty =
         DependencyProperty.Register("Board", typeof(BoardViewModel), typeof(ChessGameViewModel));
+
+    public event EventHandler GameEnd;
 
     public TeamStatusViewModel NorthTeamStatus
     {
@@ -73,8 +72,9 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
 
     protected abstract void onPromotion(PromotionRequest promotionRequest);
 
-    protected abstract void onCheckMate(BoardPosition position
-                                           , ITool         tool);
+    protected abstract void onCheckMate(CheckMateData checkMateData);
+
+    protected void gameEnd(object sender,EventArgs e) => GameEnd?.Invoke(sender, e);
 
     private void setBoard(BoardViewModel newBoard)
     {

@@ -6,7 +6,6 @@ using Client.Board;
 using Client.Game.GameMainControl;
 using Client.Messages;
 using Common;
-using Common.Chess;
 using FrontCommon;
 using log4net;
 using Tools;
@@ -22,19 +21,22 @@ namespace Client.Game
         private readonly IAvailableMovesHelper   m_availableMovesHelper;
         private readonly Dispatcher              m_dispatcher;
         private readonly GameControllerViewModel m_gameControllerVM;
-
+        private          bool                    m_isCheckMate;
         public OfflineChessGameViewModel(OfflineChessGameManager gameManager) : base(gameManager, gameManager.BoardEvents, gameManager.TeamsManager)
         {
+            m_isCheckMate            = false;
             m_dispatcher           = Dispatcher.CurrentDispatcher;
             m_chessGameManager     = gameManager;
             m_availableMovesHelper = new AvailableMovesHelper(gameManager.BoardQuery);
             m_gameControllerVM     = new GameControllerViewModel(gameManager.GameStateController);
+            registerToEvents();
         }
 
         public override void Dispose()
         {
             base.Dispose();
             m_gameControllerVM.Dispose();
+            unRegisterFromEvens();
         }
 
         protected override void onSquareClick(object?         sender
@@ -82,18 +84,37 @@ namespace Client.Game
             m_chessGameManager.Promote(position, newTool);
         }
 
-        protected override void onCheckMate(BoardPosition position
-                                               , ITool         tool)
+        protected override void onCheckMate(CheckMateData checkMateData)
         {
-            s_log.Info($"Checkmate Event: Position:{position} | Tool:{tool}");
+            m_isCheckMate = true;
+            s_log.Info($"Checkmate Event: [{checkMateData}");
 
-            UserMessageViewModel checkMateMessage = new UserMessageViewModel("Checkmate", "OK", () =>
-                                                                                                {
-                                                                                                    Message = null;
-                                                                                                    m_dispatcher
-                                                                                                       .InvokeAsync(() => m_chessGameManager.GameStateController.EndGame());
-                                                                                                });
+            UserMessageViewModel checkMateMessage = new("Checkmate", "OK", () =>
+                                                                           {
+                                                                               Message = null;
+                                                                               m_dispatcher
+                                                                                  .InvokeAsync(() => gameEnd(this, null));
+                                                                           });
             Message = checkMateMessage;
+        }
+
+        private void registerToEvents()
+        {
+            m_chessGameManager.GameStateController.StateChanged += onStateChanged;
+        }
+
+        private void unRegisterFromEvens()
+        {
+            m_chessGameManager.GameStateController.StateChanged -= onStateChanged;
+        }
+
+        private void onStateChanged(object?       sender
+                                  , GameStateEnum e)
+        {
+            if (e == GameStateEnum.Ended && false == m_isCheckMate)
+            {
+                gameEnd(this, null);
+            }
         }
     }
 }
