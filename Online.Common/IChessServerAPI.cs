@@ -18,8 +18,7 @@ public interface IChessServerApi
     Task<MoveResult> SubmitMove(BoardPosition start
                               , BoardPosition end);
 
-    Task<PromotionResult> SubmitPromote(BoardPosition         positionToPromote
-                                      , ITool tool);
+    Task<PromotionResult> SubmitPromote(PromotionRequest promotionRequest);
 
     Task<TeamId> GetCurrentTeamTurn();
 

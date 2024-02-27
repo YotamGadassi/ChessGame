@@ -60,13 +60,11 @@ namespace OnlineChess.ConnectionManager
             return await m_connection.InvokeAsync<MoveResult>("SubmitMove", start, end);
         }
 
-        public async Task<PromotionResult> SubmitPromote(BoardPosition positionToPromote
-                                                       , ITool         tool)
+        public async Task<PromotionResult> SubmitPromote(PromotionRequest promotionRequest)
         {
-            s_log.Info($"Submit Promote sent to server: [Position: {positionToPromote} | Tool: {tool}]");
+            s_log.Info($"Submit Promote sent to server: [{promotionRequest}]");
             return await m_connection.InvokeAsync<PromotionResult>("SubmitPromote"
-                                                                 , positionToPromote
-                                                                 , tool);
+                                                                 , promotionRequest);
         }
 
         public Task<TeamId> GetCurrentTeamTurn()

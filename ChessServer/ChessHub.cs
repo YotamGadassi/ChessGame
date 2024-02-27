@@ -100,13 +100,12 @@ public class ChessHub : Hub<IChessClientApi>, IChessServerApi
         return gameUnit.Move(start, end);
     }
 
-    public async Task<PromotionResult> SubmitPromote(BoardPosition positionToPromote
-                                             , ITool         tool)
+    public async Task<PromotionResult> SubmitPromote(PromotionRequest promotionRequest)
     {
         UserData   userData   = await getUserData();
         IServerChessPlayer player = await getPlayer(userData.UserId);
         IGameUnit? gameUnit   = await getGameUnit(player.PlayerId);
-        return gameUnit.Promote(positionToPromote, tool);
+        return gameUnit.Promote(promotionRequest.Position, promotionRequest.ToolToPromote);
     }
 
     public async Task<TeamId> GetCurrentTeamTurn()
