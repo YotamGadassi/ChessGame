@@ -5,7 +5,6 @@ using Client.Board;
 using Client.Game.GameMainControl;
 using Client.Messages;
 using Common;
-using Common.Chess;
 using log4net;
 using OnlineChess.Game;
 using OnlineChess.TeamManager;
@@ -85,14 +84,16 @@ public class OnlineChessViewModel : ChessGameViewModel
         BoardPosition position      = promotionRequest.Position;
         ITool         toolToPromote = promotionRequest.ToolToPromote;
         s_log.Info($"Promotion event: position: {position} | tool to promote: {toolToPromote}");
-
         PromotionMessageViewModel promotionMessage = new(toolToPromote.Color, position);
-        Message = promotionMessage;
-
-        ITool newTool = await promotionMessage.ToolAwaiter;
-        Message = null;
-
-        PromotionResult promoteResult = await m_gameBoard.PromoteTool(position, newTool);
+        await m_dispatcher.Invoke(
+                                  async () =>
+                                  {
+                                      promotionMessage.ToolAwaiter.Start();
+                                      Message = promotionMessage;
+                                      ITool newTool = await promotionMessage.ToolAwaiter;
+                                      Message = null;
+                                      await m_gameBoard.PromoteTool(position, newTool);
+                                  });
     }
 
     protected override void onCheckMate(BoardPosition position

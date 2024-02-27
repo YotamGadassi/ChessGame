@@ -14,11 +14,9 @@ namespace Client.Messages
 {
     public class PromotionMessageViewModel : INotifyPropertyChanged
     {
-        public  IList<ITool>     Tools { get; }
-        private ManualResetEvent m_toolChosenEvent;
-        public  Task<ITool>      ToolAwaiter       { get; }
+        public           IList<ITool>     Tools { get; }
+        public           Task<ITool>      ToolAwaiter { get; }
 
-        private ITool m_chosenTool;
         public ITool ChosenTool
         {
             get => m_chosenTool;
@@ -28,6 +26,9 @@ namespace Client.Messages
                 OnPropertyChanged();
             }
         }
+        
+        private readonly ManualResetEvent m_toolChosenEvent;
+        private ITool m_chosenTool;
 
         private string m_basicMessage = "Please choose a tool for promotion of pawn in position ";
 
@@ -44,9 +45,8 @@ namespace Client.Messages
                                               return ChosenTool;
                                           });
             initTools(promotedToolColor);
-            SelectToolCommand = new WpfCommand(ChooseToolExecute);
+            SelectToolCommand = new WpfCommand(chooseToolExecute);
             Message           = m_basicMessage + toolPosition;
-            ToolAwaiter.Start();
         }
 
         private void initTools(Color toolsColor)
@@ -57,7 +57,7 @@ namespace Client.Messages
             Tools.Add(new Knight(toolsColor));
         }
 
-        private void ChooseToolExecute(object param)
+        private void chooseToolExecute(object param)
         {
             m_toolChosenEvent.Set();
         }

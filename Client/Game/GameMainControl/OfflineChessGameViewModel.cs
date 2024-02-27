@@ -42,8 +42,8 @@ namespace Client.Game
         {
             s_log.DebugFormat("Click on square: {0}", squareVM);
 
-            ITool?        tool           = squareVM.Tool;
-            BoardPosition position       = squareVM.Position;
+            ITool?        tool       = squareVM.Tool;
+            BoardPosition position   = squareVM.Position;
             TeamId        teamTurnId = m_chessGameManager.TeamsManager.CurrentTeamTurnId;
 
             bool isToolBelongsToTeam = null != tool && m_chessGameManager.TeamsManager.GetTeamId(tool.ToolId).Equals(teamTurnId);
@@ -73,6 +73,7 @@ namespace Client.Game
             s_log.Info($"Promotion event: position: {position} | tool to promote: {toolToPromote}");
 
             PromotionMessageViewModel promotionMessage = new(toolToPromote.Color, position);
+            promotionMessage.ToolAwaiter.Start();
             Message = promotionMessage;
 
             ITool newTool = await promotionMessage.ToolAwaiter;
