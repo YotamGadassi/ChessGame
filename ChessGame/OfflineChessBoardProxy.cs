@@ -22,32 +22,44 @@ public class OfflineChessBoardProxy : IChessBoardProxy
 {
     private static readonly ILog s_log = LogManager.GetLogger(typeof(OfflineChessBoardProxy));
 
-    private ChessBoard          m_chessBoard;
-    private OfflineTeamsManager m_teamsManager;
+    private readonly ChessBoard          m_chessBoard;
+    private readonly OfflineTeamsManager m_teamsManager;
+    private          bool                m_isWaitingForPromotion;
 
     public OfflineChessBoardProxy(ChessBoard chessBoard, OfflineTeamsManager teamsManager)
     {
-        m_chessBoard = chessBoard;
-        m_teamsManager = teamsManager;
+        m_isWaitingForPromotion = false;
+        m_chessBoard            = chessBoard;
+        m_teamsManager          = teamsManager;
     }
 
     public MoveResult Move(BoardPosition start
                          , BoardPosition end)
     {
         s_log.Info($"Move - Start:{start} | End:{end}");
+        if (m_isWaitingForPromotion)
+        {
+            s_log.Warn($"Game is waiting for promotion, Can't move tool");
+            return MoveResult.NoChangeOccurredResult;
+        }
 
         MoveResult     result     = m_chessBoard.Move(start, end);
         MoveResultEnum resultEnum = result.Result;
 
-        if (resultEnum.HasFlag(MoveResultEnum.ToolMoved))
+        if (resultEnum.HasFlag(MoveResultEnum.ToolMoved)
+         && false == resultEnum.HasFlag(MoveResultEnum.NeedPromotion))
         {
             m_teamsManager.SwitchCurrentTeam();
+        }
+
+        if (resultEnum.HasFlag(MoveResultEnum.NeedPromotion))
+        {
+            m_isWaitingForPromotion = true;
         }
 
         if ((resultEnum & (MoveResultEnum.CheckMate | MoveResultEnum.NeedPromotion)) != 0)
         {
             s_log.Info($"{resultEnum} occurred after move from {start} to {end}");
-            return result;
         }
 
         return result;
@@ -57,11 +69,19 @@ public class OfflineChessBoardProxy : IChessBoardProxy
                                  , ITool         mewTool)
     {
         s_log.Info($"Promote: Position:{position} | New Tool:{mewTool}");
+        if (false == m_isWaitingForPromotion)
+        {
+            s_log.Warn($"Game is not waiting for promotion, Can't promote");
+            return PromotionResult.NoPromotionOccured;
+        }
+
         PromotionResult promotionResult = m_chessBoard.Promote(position, mewTool);
         if (promotionResult.Result == PromotionResultEnum.PromotionSucceeded)
         {
             TeamId teamId = m_teamsManager.GetTeamId(promotionResult.PromotedTool.ToolId);
             m_teamsManager.AddToolId(teamId, promotionResult.NewTool.ToolId);
+            m_teamsManager.SwitchCurrentTeam();
+            m_isWaitingForPromotion = false;
         }
         return promotionResult;
     }
