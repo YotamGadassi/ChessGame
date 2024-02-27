@@ -1,9 +1,7 @@
-﻿using Board;
-using Common;
+﻿using Common;
 using Common.Chess;
 using Microsoft.AspNetCore.SignalR;
 using OnlineChess.Common;
-using Tools;
 
 namespace ChessServer.ChessPlayer;
 
@@ -18,8 +16,9 @@ public class ServerChessPlayer : IServerChessPlayer
     private readonly IHubContext<ChessHub, IChessClientApi> m_hubContext;
     private readonly string                                 m_connectionId;
     private          IChessClientApi                        client => m_hubContext.Clients.Client(m_connectionId);
-    public ServerChessPlayer(PlayerId                                playerId
-                           , string                                  name
+
+    public ServerChessPlayer(PlayerId                               playerId
+                           , string                                 name
                            , IHubContext<ChessHub, IChessClientApi> hubContext
                            , string                                 connectionId)
     {
@@ -31,8 +30,8 @@ public class ServerChessPlayer : IServerChessPlayer
 
     public Task StartGame(GameConfig gameConfig) => client.StartGame(gameConfig);
 
-    public Task EndGame(EndGameReason endGameReason) => client.EndGame(endGameReason);
-
+    public Task EndGame(EndGameReason             endGameReason) => client.EndGame(endGameReason);
+    public Task CheckMate(CheckMateData           checkMateData) => client.CheckMate(checkMateData);
     public Task ApplyBoardCommands(BoardCommand[] boardCommands) => client.ApplyBoardCommands(boardCommands);
 
     public Task AskPromote(PromotionRequest requst) => client.AskPromote(requst);

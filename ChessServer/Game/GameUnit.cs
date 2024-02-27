@@ -115,6 +115,15 @@ namespace ChessServer.Game
 
             m_gameManager.GameStateController.StateChanged += onStateChanged;
             m_gameManager.AskPromotionEvent                += onAskPromotion;
+            m_gameManager.CheckMateEvent                   += onCheckMate;
+        }
+
+        private void onCheckMate(CheckMateData checkMateData)
+        {
+            foreach (IServerChessPlayer serverChessPlayer in ChessPlayers)
+            {
+                serverChessPlayer.CheckMate(checkMateData);
+            }
         }
 
         private void unRegisterFromEvents()
@@ -130,6 +139,8 @@ namespace ChessServer.Game
 
             m_gameManager.TeamsManager.TeamAndToolPairEvent -= onTeamAndToolPair;
             m_gameManager.GameStateController.StateChanged  -= onStateChanged;
+            m_gameManager.AskPromotionEvent                 -= onAskPromotion;
+            m_gameManager.CheckMateEvent                    -= onCheckMate;
         }
 
         private void onAskPromotion(PromotionRequest promotionRequest)
