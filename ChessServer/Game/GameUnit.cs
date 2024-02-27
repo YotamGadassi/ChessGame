@@ -20,14 +20,12 @@ namespace ChessServer.Game
         private readonly Dictionary<TeamId, IServerChessPlayer> m_teamToPlayers;
         private readonly Dictionary<TeamId, Action<TimeSpan>>   m_teamToTimerEvent;
         private          int                                    m_initCounter = 0;
-        private          bool                                   m_isWaitingForPromotion;
 
         public GameUnit(IServerChessPlayer[] chessPlayers
                       , GameId               id
                       , ILogger              log)
         {
             m_log = log;
-            m_isWaitingForPromotion = false;
             ChessPlayers            = chessPlayers;
             Id                      = id;
             m_teamToPlayers         = new Dictionary<TeamId, IServerChessPlayer>();
@@ -83,44 +81,21 @@ namespace ChessServer.Game
         public PromotionResult Promote(BoardPosition position
                                      , ITool         tool)
         {
-            if (false == m_isWaitingForPromotion)
-            {
-                m_log.LogError("Game is not waiting for promotion");
-                return PromotionResult.NoPromotionOccured;
-            }
-
             PromotionResult result = m_gameManager.Promote(position, tool);
-            if (result.Result != PromotionResultEnum.PromotionSucceeded)
-            {
-                m_isWaitingForPromotion = false;
-            }
             m_log.LogInformation("Promotion occurred: [result: {0}]", result);
-
             return result;
         }
 
         public MoveResult Move(BoardPosition start
                              , BoardPosition end)
         {
-            MoveResult     result     = m_gameManager.Move(start, end);
-            MoveResultEnum resultEnum = result.Result;
-            if (resultEnum.HasFlag(MoveResultEnum.NeedPromotion))
-            {
-                ITool              toolToPromote = result.ToolAtInitial;
-                ToolId             toolId        = toolToPromote.ToolId;
-                TeamId             teamId        = m_gameManager.TeamsManager.GetTeamId(toolId);
-                IServerChessPlayer player        = m_teamToPlayers[teamId];
-                askPromotion(player, result.EndPosition, toolToPromote);
-            }
-
-            return result;
+            return m_gameManager.Move(start, end);
         }
 
         private async void askPromotion(IServerChessPlayer player
                                       , BoardPosition      position
                                       , ITool              toolToPromote)
         {
-            m_isWaitingForPromotion = true;
             await player.AskPromote(new PromotionRequest(toolToPromote, position));
         }
 
@@ -139,6 +114,7 @@ namespace ChessServer.Game
             m_gameManager.TeamsManager.TeamAndToolPairEvent += onTeamAndToolPair;
 
             m_gameManager.GameStateController.StateChanged += onStateChanged;
+            m_gameManager.AskPromotionEvent                += onAskPromotion;
         }
 
         private void unRegisterFromEvents()
@@ -154,6 +130,14 @@ namespace ChessServer.Game
 
             m_gameManager.TeamsManager.TeamAndToolPairEvent -= onTeamAndToolPair;
             m_gameManager.GameStateController.StateChanged  -= onStateChanged;
+        }
+
+        private void onAskPromotion(PromotionRequest promotionRequest)
+        {
+            ToolId             toolId = promotionRequest.ToolToPromote.ToolId;
+            TeamId             teamId = m_gameManager.TeamsManager.GetTeamId(toolId);
+            IServerChessPlayer player = m_teamToPlayers[teamId];
+            askPromotion(player, promotionRequest.Position, promotionRequest.ToolToPromote);
         }
 
         private void onTimeLeftChange(TeamId   teamId
