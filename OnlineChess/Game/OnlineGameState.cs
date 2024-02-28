@@ -34,7 +34,7 @@ namespace OnlineChess.Game
             m_serverAgent.EndGameEvent   -= onGameEnded;
         }
 
-        private void onGameEnded(EndGameReason reason)
+        private void onGameEnded()
         {
             State = GameStateEnum.Ended;
             StateChanged?.Invoke(this, State);

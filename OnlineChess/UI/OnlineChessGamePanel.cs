@@ -15,8 +15,7 @@ public class OnlineChessGamePanel : BaseGamePanel
 
     public override  DependencyObject        GameViewModel => m_gameViewModel;
     public override  Control                 GameControl   => m_gameControl;
-    public           OnlineChessGameManager? GameManager   { get; set; }
-    public           IGameState              GameState     { get; private set; }
+
     private          GameControl             m_gameControl;
     private          OnlineChessViewModel?   m_gameViewModel;
     private readonly Dispatcher              m_dispatcher;
@@ -30,12 +29,10 @@ public class OnlineChessGamePanel : BaseGamePanel
 
     public void SetGameManager(OnlineChessGameManager gameManager)
     {
-        GameManager            =  gameManager;
-        GameState              =  gameManager.GameState;
-        GameState.StateChanged += onStateChanged;
         m_dispatcher.Invoke(() =>
                             {
                                 m_gameViewModel         = new OnlineChessViewModel(gameManager, m_dispatcher);
+                                m_gameViewModel.GameEnd += onGameEnd;
                                 GameControl.DataContext = null;
                                 GameControl.DataContext = m_gameViewModel;
                             });
@@ -51,9 +48,7 @@ public class OnlineChessGamePanel : BaseGamePanel
     public override void Reset()
     {
         disposeResources();
-        GameManager     = null;
         m_gameViewModel = null;
-        GameState       = null;
         m_gameControl   = new GameControl();
         s_log.Info("Reset");
     }
@@ -63,27 +58,16 @@ public class OnlineChessGamePanel : BaseGamePanel
         disposeResources();
     }
 
-    private void onStateChanged(object?       sender
-                              , GameStateEnum newState)
+    private async void onGameEnd(object?   sender
+                               , EventArgs e)
     {
-        s_log.InfoFormat("State Changed: {0}", newState);
-        if (newState == GameStateEnum.Ended)
-        {
-            m_dispatcher.Invoke(() =>
-                                {
-                                    TimeSpan delayTime =
-                                        m_gameViewModel.Message == null ? TimeSpan.Zero : TimeSpan.FromSeconds(10);
-
-                                    Task.Delay(delayTime);
-                                    gameEnd();
-                                });
-        }
+        s_log.Info("Game Ended");
+        gameEnd();
     }
 
     private void disposeResources()
     {
-        GameManager.Dispose();
+        m_gameViewModel.GameEnd -= onGameEnd;
         m_gameViewModel.Dispose();
-        GameState.StateChanged -= onStateChanged;
     }
 }

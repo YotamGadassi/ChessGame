@@ -6,7 +6,7 @@ namespace OnlineChess.Common
 
     public delegate void StartGameHandler(GameConfig gameConfiguration);
 
-    public delegate void EndGameHandler(EndGameReason reason);
+    public delegate void EndGameHandler();
 
     public delegate void UpdateTimerHandler(TeamId   teamId
                                           , TimeSpan timeLeft);

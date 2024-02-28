@@ -57,11 +57,11 @@ public class GamePanelManager : IGamePanelManager
     public void ResetCurrentPanel()
     {
         BaseGamePanel oldPanel = CurrentPanel;
-        oldPanel.Reset();
         CurrentPanel = null;
         GamePanelChanged?.Invoke(this, new GamePanelChangedEventArgs(oldPanel.PanelName, CurrentPanel));
         m_dispatcher.Invoke(() =>
                             {
+                                oldPanel.Reset();
                                 BaseGameFacade.Instance.MainWindowViewModel.CurrentViewModel = null;
                             });
     }

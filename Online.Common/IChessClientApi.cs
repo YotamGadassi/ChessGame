@@ -6,7 +6,7 @@ namespace OnlineChess.Common
     {
         public Task StartGame(GameConfig gameConfig);
 
-        public Task EndGame(EndGameReason endGameReason);
+        public Task EndGame();
 
         public Task CheckMate(CheckMateData           checkMateData);
         public Task ApplyBoardCommands(BoardCommand[] boardCommands);

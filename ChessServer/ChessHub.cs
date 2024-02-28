@@ -1,4 +1,5 @@
-﻿using Board;
+﻿using Accessibility;
+using Board;
 using ChessServer.ChessPlayer;
 using ChessServer.Game;
 using ChessServer.ServerManager;
@@ -7,7 +8,6 @@ using Common;
 using Common.Chess;
 using Microsoft.AspNetCore.SignalR;
 using OnlineChess.Common;
-using Tools;
 
 namespace ChessServer;
 
@@ -46,6 +46,9 @@ public class ChessHub : Hub<IChessClientApi>, IChessServerApi
         try
         {
             await SubmitGameWithdraw();
+            UserData           userData = await getUserData();
+            m_serverState.UsersManager.RemoveUserAsync(connectionId);
+            m_serverState.PlayersManager.RemovePlayerAsync(userData.UserId);
         }
         catch (KeyNotFoundException e)
         {
@@ -74,7 +77,7 @@ public class ChessHub : Hub<IChessClientApi>, IChessServerApi
         UserData   userData   = await getUserData();
         IServerChessPlayer player = await getPlayer(userData.UserId);
         IGameUnit? gameUnit   = await getGameUnit(player.PlayerId);
-        gameUnit.EndGame(player.PlayerId, EndGameReason.Withdraw);
+        gameUnit.EndGame();
         await m_serverState.GamesManager.RemoveGameAsync(gameUnit.Id);
     }
 

@@ -20,16 +20,37 @@ public class OnlineChessViewModel : ChessGameViewModel
     private readonly OnlineChessTeamManager m_teamManager;
     private readonly IAvailableMovesHelper  m_availableMovesHelper;
     private readonly Dispatcher             m_dispatcher;
+    private readonly OnlineChessGameManager m_gameManager;
+    private readonly ManualResetEvent m_resetEvent;
+
     public OnlineChessViewModel(OnlineChessGameManager gameManager
                               , Dispatcher             dispatcher) : base(gameManager, 
                                                                           gameManager.BoardEvents
                                                                         , gameManager.TeamsManager)
     {
         m_dispatcher           = dispatcher;
+        m_resetEvent            = new ManualResetEvent(false);
+        m_gameManager          = gameManager;
         m_gameBoard            = gameManager.GameBoard;
         m_teamManager          = gameManager.TeamsManager;
         m_availableMovesHelper = new AvailableMovesHelper(gameManager.BoardQuery);
         initBoardState(gameManager.BoardQuery);
+        regiterToEvents();
+    }
+
+    private void regiterToEvents()
+    {
+        m_gameManager.GameState.StateChanged += onStateChanged;
+    }
+
+    private void onStateChanged(object?       sender
+                              , GameStateEnum e)
+    {
+        if (e == GameStateEnum.Ended)
+        {
+            m_resetEvent.WaitOne(TimeSpan.FromSeconds(10));
+            Task.Run(()=> gameEnd(this, null));
+        }
     }
 
     private void initBoardState(IBoardQuery boardQuery)
@@ -99,16 +120,17 @@ public class OnlineChessViewModel : ChessGameViewModel
     protected override void onCheckMate(CheckMateData checkMateData)
     {
         s_log.Info($"Checkmate Event: Position: {checkMateData}");
+        m_resetEvent.Reset();
 
         UserMessageViewModel checkMateMessage = new("Checkmate", "OK", () =>
                                                                        {
                                                                            Message = null;
-                                                                           m_dispatcher
-                                                                              .InvokeAsync(() =>
-                                                                               {
-
-                                                                               });
+                                                                           m_resetEvent.Set();
                                                                        });
-        Message = checkMateMessage;
+        m_dispatcher.Invoke(
+                            () =>
+                            {
+                                Message = checkMateMessage;
+                            });
     }
 }

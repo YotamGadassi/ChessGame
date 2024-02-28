@@ -2,28 +2,28 @@
 using ChessServer.ChessPlayer;
 using Common;
 using Common.Chess;
-using OnlineChess.Common;
 using Tools;
 
 namespace ChessServer.Game
 {
     public interface IGameUnit
     {
-        public IServerChessPlayer[] ChessPlayers { get; }
-        public GameId               Id           { get; }
+        public event EventHandler<GameEndedEventArgs> GameEndedEvent;
+        public IServerChessPlayer[]                   ChessPlayers { get; }
+        public GameId                                 Id           { get; }
 
         public TeamId CurrentTeamId { get; }
 
         public void StartGame();
         
         public void Init();
-        
+
         public PromotionResult Promote(BoardPosition position
-                                                , ITool         tool);
+                                     , ITool         tool);
 
         public MoveResult Move(BoardPosition start
-                                        , BoardPosition end);
+                             , BoardPosition end);
 
-        public void EndGame(PlayerId playerId, EndGameReason reason);
+        public void EndGame();
     }
 }

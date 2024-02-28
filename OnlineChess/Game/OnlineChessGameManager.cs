@@ -25,16 +25,16 @@ public class OnlineChessGameManager : IChessGameEvents, IDisposable
     public IBoardEvents                 BoardEvents => GameBoard;
     public IBoardQuery                  BoardQuery  => GameBoard;
 
-    public IGameState GameState { get; }
+    public IGameState?            GameState    { get; }
     public OnlineChessTeamManager TeamsManager { get; }
-    public OnlineGameBoard GameBoard { get; }
+    public OnlineGameBoard        GameBoard    { get; }
 
     private IChessServerAgent m_serverAgent;
 
     public OnlineChessGameManager(IChessServerAgent      serverAgent
                                 , OnlineGameBoard        gameBoard
                                 , OnlineChessTeamManager teamManager
-                                , IGameState             gameState)
+                                , IGameState?            gameState)
     {
         m_serverAgent = serverAgent;
         GameBoard     = gameBoard;

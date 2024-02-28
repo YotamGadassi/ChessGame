@@ -82,7 +82,7 @@ namespace OnlineChess.ConnectionManager
         private void registerToEvents()
         {
             m_connection.On<GameConfig>("StartGame", handleStartGame);
-            m_connection.On<EndGameReason>("EndGame", handleEndGame);
+            m_connection.On("EndGame", handleEndGame);
             m_connection.On<TeamId, TimeSpan>("UpdateTime", handleUpdateTime);
             m_connection.On<PromotionRequest>("AskPromote", handleAskPromotion);
             m_connection.On<CheckMateData>("CheckMate", handleCheckMate);
@@ -128,10 +128,10 @@ namespace OnlineChess.ConnectionManager
             UpdateTimeEvent?.Invoke(teamId, timeLeft);
         }
 
-        private void handleEndGame(EndGameReason reason)
+        private void handleEndGame()
         {
-            s_log.DebugFormat("End Game Arrived: [End Game Reason: {0}]", reason);
-            EndGameEvent?.Invoke(reason);
+            s_log.DebugFormat("End Game Arrived");
+            EndGameEvent?.Invoke();
         }
 
         private void handleStartGame(GameConfig gameConfiguration)

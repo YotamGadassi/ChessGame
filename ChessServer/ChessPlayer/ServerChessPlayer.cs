@@ -30,7 +30,7 @@ public class ServerChessPlayer : IServerChessPlayer
 
     public Task StartGame(GameConfig gameConfig) => client.StartGame(gameConfig);
 
-    public Task EndGame(EndGameReason             endGameReason) => client.EndGame(endGameReason);
+    public Task EndGame() => client.EndGame();
     public Task CheckMate(CheckMateData           checkMateData) => client.CheckMate(checkMateData);
     public Task ApplyBoardCommands(BoardCommand[] boardCommands) => client.ApplyBoardCommands(boardCommands);
 

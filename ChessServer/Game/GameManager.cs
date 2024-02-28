@@ -9,7 +9,7 @@ namespace ChessServer.Game;
 public class GameManager : IGamesManager, IDisposable
 {
     private readonly GameRequestsManager                       m_gameRequestsManager;
-    private readonly ConcurrentDictionary<PlayerId, IGameUnit> m_PlayerToGame;
+    private readonly ConcurrentDictionary<PlayerId, IGameUnit> m_playerToGame;
     private readonly ConcurrentDictionary<GameId, IGameUnit>   m_games;
     private readonly ILogger                                   m_log;
     private readonly object                                    m_gameLock = new();
@@ -18,22 +18,11 @@ public class GameManager : IGamesManager, IDisposable
     public GameManager(ILogger log)
     {
         m_log                 = log;
-        m_PlayerToGame        = new ConcurrentDictionary<PlayerId, IGameUnit>();
+        m_playerToGame        = new ConcurrentDictionary<PlayerId, IGameUnit>();
         m_games               = new ConcurrentDictionary<GameId, IGameUnit>();
 
         m_gameRequestsManager = new GameRequestsManager(log);
         registerToEvents();
-    }
-
-    private void registerToEvents()
-    {
-        m_gameRequestsManager.GameCreatedEvent += onGameCreated;
-    }
-
-    private void onGameCreated(object?   sender
-                             , IGameUnit game)
-    {
-        addGame(game);
     }
 
     public Task<GameRequestId> SubmitGameRequestAsync(IServerChessPlayer player) => m_gameRequestsManager.SubmitGameRequestAsync(player);
@@ -43,7 +32,7 @@ public class GameManager : IGamesManager, IDisposable
     public Task<IGameUnit?> GetGameAsync(PlayerId playerId)
     {
         m_log.LogDebug("Get Game Id Called for player id: {0}", playerId);
-        if (false == m_PlayerToGame.TryGetValue(playerId, out IGameUnit? game))
+        if (false == m_playerToGame.TryGetValue(playerId, out IGameUnit? game))
         {
             m_log.LogError("No game unit for Player Id: {0}", playerId);
         }
@@ -59,40 +48,74 @@ public class GameManager : IGamesManager, IDisposable
     
     public void Dispose()
     {
-        m_gameRequestsManager.GameCreatedEvent -= onGameCreated;
+        unRegitesrFromEvents();
     }
 
     private void addGame(IGameUnit game)
     {
         m_log.LogInformation("Game Added: [Game Id:{0}]", game.Id);
+        game.GameEndedEvent += onGameEndedEvent;
         lock (m_gameLock)
         {
             m_games.TryAdd(game.Id, game);
-            foreach (ServerChessPlayer player in game.ChessPlayers)
+            foreach (IServerChessPlayer player in game.ChessPlayers)
             {
-                m_PlayerToGame.TryAdd(player.PlayerId, game);
+                m_playerToGame.TryAdd(player.PlayerId, game);
             }
         }
         game.StartGame();
     }
 
+    private void onGameEndedEvent(object sender, GameEndedEventArgs args)
+    {
+        IGameUnit game = args.GameUnit;
+        if (game is IDisposable disposableGame)
+        {
+            disposableGame.Dispose();
+        }
+        removeGame(args.GameUnit.Id, out _);
+    }
+
     private bool removeGame(GameId gameId, out IGameUnit? gameUnit)
     {
         m_log.LogInformation("Game Removed: [Game Id:{0}]", gameId);
+
         lock (m_gameLock)
         {
             if (false == m_games.TryRemove(gameId, out gameUnit))
             {
-                m_log.LogError("Game Unit with id: {0} already removed", gameId);
+                m_log.LogError("Game Unit with id: {0} cannot be removed", gameId);
                 return false;
             }
 
-            foreach (ServerChessPlayer player in gameUnit.ChessPlayers)
+            gameUnit.GameEndedEvent -= onGameEndedEvent;
+
+            foreach (IServerChessPlayer player in gameUnit.ChessPlayers)
             {
-                m_PlayerToGame.TryRemove(player.PlayerId,out _);
+                if (false == m_playerToGame.TryRemove(player.PlayerId, out _))
+                {
+                    m_log.LogError("Player id: {0} cannot be removed dictionary", player.PlayerId);
+                }
             }
         }
 
         return true;
     }
+
+    private void registerToEvents()
+    {
+        m_gameRequestsManager.GameCreatedEvent += onGameCreated;
+    }
+
+    private void unRegitesrFromEvents()
+    {
+        m_gameRequestsManager.GameCreatedEvent -= onGameCreated;
+    }
+
+    private void onGameCreated(object?   sender
+                             , IGameUnit game)
+    {
+        addGame(game);
+    }
+
 }

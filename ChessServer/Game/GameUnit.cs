@@ -9,12 +9,15 @@ using Tools;
 
 namespace ChessServer.Game
 {
-    public class GameUnit : IGameUnit
+    public class GameUnit : IGameUnit, IDisposable
     {
-        private readonly ILogger              m_log;
-        public           IServerChessPlayer[] ChessPlayers  { get; }
-        public           GameId               Id            { get; }
-        public           TeamId               CurrentTeamId => m_gameManager.TeamsManager.CurrentTeamTurnId;
+        private readonly ILogger    m_log;
+
+        public event EventHandler<GameEndedEventArgs>        GameEndedEvent;
+
+        public IServerChessPlayer[] ChessPlayers  { get; }
+        public GameId               Id            { get; }
+        public TeamId               CurrentTeamId => m_gameManager.TeamsManager.CurrentTeamTurnId;
 
         private          OfflineChessGameManager                m_gameManager;
         private readonly Dictionary<TeamId, IServerChessPlayer> m_teamToPlayers;
@@ -68,14 +71,9 @@ namespace ChessServer.Game
             }
         }
 
-        public void EndGame(PlayerId      playerId
-                          , EndGameReason reason)
+        public void EndGame()
         {
-            unRegisterFromEvents();
-            foreach (ServerChessPlayer player in ChessPlayers)
-            {
-                player.EndGame(reason);
-            }
+            m_gameManager.GameStateController.EndGame();
         }
 
         public PromotionResult Promote(BoardPosition position
@@ -92,11 +90,10 @@ namespace ChessServer.Game
             return m_gameManager.Move(start, end);
         }
 
-        private async void askPromotion(IServerChessPlayer player
-                                      , BoardPosition      position
-                                      , ITool              toolToPromote)
+        public void Dispose()
         {
-            await player.AskPromote(new PromotionRequest(toolToPromote, position));
+            unRegisterFromEvents();
+            m_gameManager.Dispose();
         }
 
         private void registerToEvents()
@@ -118,14 +115,7 @@ namespace ChessServer.Game
             m_gameManager.CheckMateEvent                   += onCheckMate;
         }
 
-        private void onCheckMate(CheckMateData checkMateData)
-        {
-            foreach (IServerChessPlayer serverChessPlayer in ChessPlayers)
-            {
-                serverChessPlayer.CheckMate(checkMateData);
-            }
-        }
-
+        
         private void unRegisterFromEvents()
         {
             m_gameManager.BoardEvents.ToolAddEvent       -= onToolAdd;
@@ -141,6 +131,14 @@ namespace ChessServer.Game
             m_gameManager.GameStateController.StateChanged  -= onStateChanged;
             m_gameManager.AskPromotionEvent                 -= onAskPromotion;
             m_gameManager.CheckMateEvent                    -= onCheckMate;
+        }
+
+        private void onCheckMate(CheckMateData checkMateData)
+        {
+            foreach (IServerChessPlayer serverChessPlayer in ChessPlayers)
+            {
+                serverChessPlayer.CheckMate(checkMateData);
+            }
         }
 
         private void onAskPromotion(PromotionRequest promotionRequest)
@@ -160,7 +158,7 @@ namespace ChessServer.Game
             }
         }
 
-        private void onStateChanged(object?       sender
+        private async void onStateChanged(object?       sender
                                   , GameStateEnum newState)
         {
             switch (newState)
@@ -171,10 +169,11 @@ namespace ChessServer.Game
                     break;
                 case GameStateEnum.Ended:
                 {
-                    foreach (ServerChessPlayer player in ChessPlayers)
+                    foreach (IServerChessPlayer player in ChessPlayers)
                     {
-                        player.EndGame(EndGameReason.Withdraw);
+                        await player.EndGame();
                     }
+                    GameEndedEvent?.Invoke(this, new GameEndedEventArgs(this));
                 }
                     break;
                 default:
@@ -234,5 +233,13 @@ namespace ChessServer.Game
 
             return new OfflineTeamsManager(new[] { team1, team2 });
         }
+
+        private async void askPromotion(IServerChessPlayer player
+                                      , BoardPosition      position
+                                      , ITool              toolToPromote)
+        {
+            await player.AskPromote(new PromotionRequest(toolToPromote, position));
+        }
+
     }
 }
