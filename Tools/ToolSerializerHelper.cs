@@ -19,34 +19,20 @@ namespace Tools
             {
                 throw new SerializationException("Serialization Error for type: Tool");
             }
+            
+            reader.Read(); // Property Name
 
-            while (reader.TokenType != JsonTokenType.EndObject)
-            {
-                if (reader.TokenType != JsonTokenType.PropertyName)
-                {
-                    reader.Read();
-                    continue;
-                }
+            reader.Read(); // Start Object - Tool Id
+            toolId = JsonSerializer.Deserialize<ToolId>(ref reader, options);
+            reader.Read(); // End Object
 
-                string? propertyName = reader.GetString();
-                switch (propertyName)
-                {
-                    case "ToolId":
-                        reader.Read(); // Start Object
-                        toolId = JsonSerializer.Deserialize<ToolId>(ref reader, options);
-                        reader.Read(); // End Object
-                        break;
-                    case "Color":
-                    {
-                        reader.Read(); // Start Object
-                        color = JsonSerializer.Deserialize<Color>(ref reader, options);
-                        reader.Read(); // End Object
-                        break;
-                    }
-                }
-            }
+            reader.Read(); // Start Object - Color
+            color = JsonSerializer.Deserialize<Color>(ref reader, options);
+            reader.Read(); // End Object
 
+            reader.Read(); // End Object
             reader.Read();
+
             return (color, toolId);
         }
 
