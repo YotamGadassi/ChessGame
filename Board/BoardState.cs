@@ -9,7 +9,7 @@ namespace Board
     [JsonConverter(typeof(BoardStateJsonConverter))]
     public class BoardState : IDictionary<BoardPosition, ITool>
     {
-        private IDictionary<BoardPosition, ITool> m_boardState;
+        private readonly IDictionary<BoardPosition, ITool> m_boardState;
 
         public BoardState()
         {
@@ -106,42 +106,36 @@ namespace Board
                                        , Type                  typeToConvert
                                        , JsonSerializerOptions options)
         {
-            int        arrayLength;
-            BoardState boardState = new();
-            // reader.Read();
-            reader.Read();
-            if (reader.TokenType != JsonTokenType.PropertyName || reader.GetString() != "ArrayLength")
+            if (reader.TokenType != JsonTokenType.StartObject)
+                reader.Read();
+
+            if (reader.TokenType != JsonTokenType.StartObject)
             {
-                throw new SerializationException("Array length value did not serialized");
+                throw new JsonException("object did not start with StartObject token");
             }
 
-            reader.Read();
-            arrayLength = reader.GetInt32();
+            BoardState result = new();
 
-            reader.Read();
-            if (reader.TokenType != JsonTokenType.PropertyName || reader.GetString() != "PositionAndToolArray")
-            {
-                {
-                    throw new SerializationException("Array length value did not serialized");
-                }
-            }
+            reader.Read(); // Property Name
+            reader.Read(); // Array Start
+            reader.Read(); // Start Object or End Array
 
-            reader.Read(); // Array start
-            for (int i = 0; i < arrayLength; ++i)
+            while (reader.TokenType == JsonTokenType.StartObject)
             {
-                reader.Read(); // Start Object
                 reader.Read(); // Property Name
                 BoardPosition position = (BoardPosition)JsonSerializer.Deserialize(ref reader, typeof(BoardPosition));
                 reader.Read(); // Property Name
                 ITool tool = (ITool)JsonSerializer.Deserialize(ref reader, typeof(ITool), options);
-                boardState.Add(position, tool);
+                result.Add(position, tool);
                 reader.Read(); // End object
+                reader.Read(); // Start Object or End Array
             }
 
-            reader.Read(); // End Array
-            reader.Read(); // End Object
 
-            return boardState;
+            reader.Read(); // End Object
+            reader.Read();
+
+            return result;
         }
 
         public override void Write(Utf8JsonWriter        writer
@@ -149,23 +143,23 @@ namespace Board
                                  , JsonSerializerOptions options)
         {
             writer.WriteStartObject();
-            writer.WriteNumber("ArrayLength", value.Count);
 
             writer.WriteStartArray("PositionAndToolArray");
-            foreach (KeyValuePair<BoardPosition, ITool> keyValuePair in value)
+            foreach ((BoardPosition key, ITool? tool) in value)
             {
                 writer.WriteStartObject();
+
                 writer.WritePropertyName("Position");
-                JsonSerializer.Serialize(writer, keyValuePair.Key, options);
+                JsonSerializer.Serialize(writer, key, options);
                 writer.WritePropertyName("Tool");
-                JsonSerializer.Serialize(writer, keyValuePair.Value, options);
+                JsonSerializer.Serialize(writer, tool, typeof(ITool), options);
+
                 writer.WriteEndObject();
             }
 
             writer.WriteEndArray();
-            writer.WriteEndObject();
 
-            writer.Flush();
+            writer.WriteEndObject();
         }
     }
 }
