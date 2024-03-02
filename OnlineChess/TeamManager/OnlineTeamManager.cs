@@ -72,7 +72,7 @@ namespace OnlineChess.TeamManager
 
         private void addToolId(ToolAndTeamPair pair)
         {
-            s_log.InfoFormat("Tool Id - Team Id pair added:[Tool Id:{0} | Team id:{1}]");
+            s_log.InfoFormat("Tool Id - Team Id pair added:[{0}]", pair);
 
             m_toolIdToTeamId[pair.ToolId] = pair.TeamId;
             m_teamIdToToolId[pair.TeamId].Add(pair.ToolId);
