@@ -93,7 +93,7 @@ namespace Client.Messages
             ButtonPressed = ButtonPressed.Left;
             if (null != m_leftButtonAction)
             {
-                m_dispatcher.Invoke(m_leftButtonAction);
+                m_leftButtonAction.Invoke();
             }
         }
 
@@ -102,7 +102,7 @@ namespace Client.Messages
             ButtonPressed = ButtonPressed.Right;
             if (null != m_rightButtonAction)
             {
-                m_dispatcher.Invoke(m_rightButtonAction);
+                m_rightButtonAction.Invoke();
             }
         }
         
