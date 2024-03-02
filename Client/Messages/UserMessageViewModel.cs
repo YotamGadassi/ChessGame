@@ -91,19 +91,13 @@ namespace Client.Messages
         private void onLeftButtonClick(object param)
         {
             ButtonPressed = ButtonPressed.Left;
-            if (null != m_leftButtonAction)
-            {
-                m_leftButtonAction.Invoke();
-            }
+            m_leftButtonAction?.Invoke();
         }
 
         private void onRightButtonClick(object param)
         {
             ButtonPressed = ButtonPressed.Right;
-            if (null != m_rightButtonAction)
-            {
-                m_rightButtonAction.Invoke();
-            }
+            m_rightButtonAction?.Invoke();
         }
         
         public event PropertyChangedEventHandler? PropertyChanged;
