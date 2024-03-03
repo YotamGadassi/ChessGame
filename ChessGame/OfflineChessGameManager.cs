@@ -17,12 +17,11 @@ namespace ChessGame
         public IBoardEvents                    BoardEvents         => m_gameBoard;
         public IChessTeamManager               TeamsManager        => m_teamsManager;
         public IGameStateController            GameStateController { get; }
+        public           IBoardQuery            BoardQuery => m_gameBoard;
 
-        public  IBoardQuery            BoardQuery => m_gameBoard;
-        private ChessBoard             m_gameBoard;
-        private OfflineChessBoardProxy m_chessBoardProxy;
-
-        private OfflineTeamsManager m_teamsManager;
+        private readonly ChessBoard             m_gameBoard;
+        private readonly OfflineChessBoardProxy m_chessBoardProxy;
+        private readonly OfflineTeamsManager    m_teamsManager;
 
         public OfflineChessGameManager(OfflineTeamsManager teamsManager)
         {
@@ -41,9 +40,9 @@ namespace ChessGame
             Team team2 = TeamsManager.Teams[1];
 
             KeyValuePair<BoardPosition, ITool>[] team1BoardArrangement =
-                GameInitHelper.GenerateInitialArrangement(team1.MoveDirection, team1.Color);
+                GameInitHelper.GenerateInitialArrangementForDebug(team1.MoveDirection, team1.Color);
             KeyValuePair<BoardPosition, ITool>[] team2BoardArrangement =
-                GameInitHelper.GenerateInitialArrangement(team2.MoveDirection, team2.Color);
+                GameInitHelper.GenerateInitialArrangementForDebug(team2.MoveDirection, team2.Color);
 
             foreach (KeyValuePair<BoardPosition, ITool> pair in team1BoardArrangement)
             {
@@ -98,7 +97,7 @@ namespace ChessGame
                 case GameStateEnum.Ended:
                 {
                     s_log.Info("End Game");
-                    m_gameBoard.Clear();
+                    m_teamsManager.StopTimer(m_teamsManager.CurrentTeamTurnId);
                 }
                     break;
                 case GameStateEnum.NotStarted:
