@@ -46,7 +46,7 @@ public class OfflineChessBoardProxy : IChessBoardProxy
         MoveResult     result     = m_chessBoard.Move(start, end);
         MoveResultEnum resultEnum = result.Result;
 
-        bool isPromotionOrCheckMate = resultEnum.HasFlag(MoveResultEnum.NeedPromotion) &
+        bool isPromotionOrCheckMate = resultEnum.HasFlag(MoveResultEnum.NeedPromotion) |
                                       resultEnum.HasFlag(MoveResultEnum.CheckMate);
 
         if (resultEnum.HasFlag(MoveResultEnum.ToolMoved)
