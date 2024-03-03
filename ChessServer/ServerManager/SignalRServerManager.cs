@@ -1,18 +1,23 @@
 ﻿using ChessServer.ChessPlayer;
 using ChessServer.Game;
 using ChessServer.Users;
+using Microsoft.AspNetCore.SignalR;
+using OnlineChess.Common;
 
 namespace ChessServer.ServerManager;
 
-public class SignalRServerFacade : IServerFacade<string>
+public class SignalRServerManager : IServerManager<string>
 {
-    private readonly ILogger<SignalRServerFacade> m_log;
+    private readonly IHubContext<ChessHub, IChessClientApi> m_hubContext;
+    private readonly ILogger<SignalRServerManager> m_log;
 
-    public SignalRServerFacade(ILogger<SignalRServerFacade> logger)
+    public SignalRServerManager(IHubContext<ChessHub, IChessClientApi> hubContext
+                              , ILogger<SignalRServerManager> logger)
     {
         UsersManager   = new SignalRUsersManager();
         GamesManager   = new GameManager(logger);
         PlayersManager = new PlayersManager();
+        m_hubContext   = hubContext;
         m_log          = logger;
         m_log.LogInformation($"Server state has been created");
     }

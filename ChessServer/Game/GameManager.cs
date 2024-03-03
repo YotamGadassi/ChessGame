@@ -1,18 +1,19 @@
 ﻿using System.Collections.Concurrent;
 using ChessServer.ChessPlayer;
+using log4net;
 using OnlineChess.Common;
+using Utils.DataStructures;
 
 namespace ChessServer.Game;
 
 public class GameManager : IGamesManager, IDisposable
 {
-    public event EventHandler<IGameUnit>? GameEndedEvent;
-    
     private readonly GameRequestsManager                       m_gameRequestsManager;
     private readonly ConcurrentDictionary<PlayerId, IGameUnit> m_playerToGame;
     private readonly ConcurrentDictionary<GameId, IGameUnit>   m_games;
     private readonly ILogger                                   m_log;
     private readonly object                                    m_gameLock = new();
+
 
     public GameManager(ILogger log)
     {
@@ -24,7 +25,7 @@ public class GameManager : IGamesManager, IDisposable
         registerToEvents();
     }
 
-    public Task<GameRequestId>            SubmitGameRequestAsync(IServerChessPlayer player) => m_gameRequestsManager.SubmitGameRequestAsync(player);
+    public Task<GameRequestId> SubmitGameRequestAsync(IServerChessPlayer player) => m_gameRequestsManager.SubmitGameRequestAsync(player);
 
     public Task CancelGameRequestAsync(GameRequestId requestId) => m_gameRequestsManager.CancelGameRequestAsync(requestId);
 
@@ -73,7 +74,6 @@ public class GameManager : IGamesManager, IDisposable
             disposableGame.Dispose();
         }
         removeGame(args.GameUnit.Id, out _);
-        GameEndedEvent?.Invoke(this, args.GameUnit);
     }
 
     private bool removeGame(GameId gameId, out IGameUnit? gameUnit)
