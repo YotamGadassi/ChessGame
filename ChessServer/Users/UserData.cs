@@ -1,16 +1,20 @@
 ﻿namespace ChessServer.Users
 {
-    public class UserData
+    public class UserData<T>
     {
         public UserUniqueId UserId { get; }
 
         public string UserName { get; }
 
-        public UserData(UserUniqueId userId
-                       , string      userName)
+        public T ConnectionId { get; }
+
+        public UserData(T            conncetionId
+                      , UserUniqueId userId
+                      , string       userName)
         {
-            UserId   = userId;
-            UserName = userName;
+            ConnectionId = conncetionId;
+            UserId       = userId;
+            UserName     = userName;
         }
 
         public override string ToString()

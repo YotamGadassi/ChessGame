@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using ChessServer.Users;
+using Common;
 using Common.Chess;
 using Microsoft.AspNetCore.SignalR;
 using OnlineChess.Common;
@@ -7,7 +8,8 @@ namespace ChessServer.ChessPlayer;
 
 public class ServerChessPlayer : IServerChessPlayer
 {
-    public PlayerId PlayerId { get; }
+    public UserUniqueId UserUniqueId { get; }
+    public PlayerId     PlayerId     { get; }
 
     public string Name { get; }
 
@@ -17,11 +19,13 @@ public class ServerChessPlayer : IServerChessPlayer
     private readonly string                                 m_connectionId;
     private          IChessClientApi                        client => m_hubContext.Clients.Client(m_connectionId);
 
-    public ServerChessPlayer(PlayerId                               playerId
+    public ServerChessPlayer(UserUniqueId                           userId
+                           , PlayerId                               playerId
                            , string                                 name
                            , IHubContext<ChessHub, IChessClientApi> hubContext
                            , string                                 connectionId)
     {
+        UserUniqueId   = userId;
         PlayerId       = playerId;
         Name           = name;
         m_hubContext   = hubContext;
