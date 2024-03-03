@@ -60,6 +60,7 @@ namespace ChessServer.Game
                 GameConfig config = new(teamConfigs);
                 player.StartGame(config);
             }
+            m_gameManager.GameStateController.StartResumeGame();
         }
 
         public void Init()
