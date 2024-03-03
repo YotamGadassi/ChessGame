@@ -26,7 +26,28 @@ namespace ChessGame
 
             return toolsList.ToArray();
         }
-        
+
+        public static KeyValuePair<BoardPosition, ITool>[] GenerateInitialArrangementForDebug(GameDirection direction
+                                                                                    , Color         color)
+        {
+            KeyValuePair<BoardPosition, ITool>[]? result = GenerateInitialArrangement(direction, color);
+            
+            BoardPosition positionToSwap = new(6, 7);
+
+            if (color == Colors.White)
+            {
+                 List<KeyValuePair<BoardPosition, ITool>> list = result.ToList();
+                 list.Add(new KeyValuePair<BoardPosition, ITool>(positionToSwap, new Pawn(Colors.White)));
+                 result = list.ToArray();
+            }
+            else
+            {
+                result = result.Where(pair => !pair.Key.Equals(positionToSwap)).ToArray();
+            }
+
+            return result;
+        }
+
         private static IList<KeyValuePair<BoardPosition, ITool>> concatanateLists(params IList<KeyValuePair<BoardPosition, ITool>>[] lists)
         {
             IList<KeyValuePair<BoardPosition, ITool>> toolsList = new List<KeyValuePair<BoardPosition, ITool>>();

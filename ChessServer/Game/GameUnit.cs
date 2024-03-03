@@ -28,11 +28,11 @@ namespace ChessServer.Game
                       , GameId               id
                       , ILogger              log)
         {
-            m_log = log;
-            ChessPlayers            = chessPlayers;
-            Id                      = id;
-            m_teamToPlayers         = new Dictionary<TeamId, IServerChessPlayer>();
-            m_teamToTimerEvent      = new Dictionary<TeamId, Action<TimeSpan>>();
+            m_log              = log;
+            ChessPlayers       = chessPlayers;
+            Id                 = id;
+            m_teamToPlayers    = new Dictionary<TeamId, IServerChessPlayer>();
+            m_teamToTimerEvent = new Dictionary<TeamId, Action<TimeSpan>>();
         }
 
         public void StartGame()
@@ -47,19 +47,20 @@ namespace ChessServer.Game
                 Team[]   teams    = m_gameManager.TeamsManager.Teams;
                 TeamConfig[] teamConfigs = teams.Select(team => new TeamConfig(team.MoveDirection == GameDirection.North
                                                                              , Equals(m_teamToPlayers[team.Id].PlayerId
-                                                                                 , playerId)
+                                                                                    , playerId)
                                                                              , team.MoveDirection
                                                                              , team.Name
                                                                              , team.Color
                                                                              , team.Id
                                                                              , m_gameManager.TeamsManager
-                                                                                  .GetTeamTimer(team.Id)
-                                                                                  .TimeLeft))
+                                                                                            .GetTeamTimer(team.Id)
+                                                                                            .TimeLeft))
                                                 .ToArray();
 
                 GameConfig config = new(teamConfigs);
                 player.StartGame(config);
             }
+            m_gameManager.GameStateController.StartResumeGame();
         }
 
         public void Init()
@@ -115,7 +116,6 @@ namespace ChessServer.Game
             m_gameManager.CheckMateEvent                   += onCheckMate;
         }
 
-        
         private void unRegisterFromEvents()
         {
             m_gameManager.BoardEvents.ToolAddEvent       -= onToolAdd;
