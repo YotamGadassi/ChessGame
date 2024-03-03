@@ -99,7 +99,6 @@ namespace Common.Chess
                 if (toolOnEndPosition is King)
                 {
                     moveResultEnum |= MoveResultEnum.CheckMate;
-                    return new MoveResult(moveResultEnum, start, end, toolToMove, toolOnEndPosition);
                 }
 
                 removeTool(end);
