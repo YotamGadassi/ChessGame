@@ -4,7 +4,7 @@ using ChessServer.Users;
 
 namespace ChessServer.ServerManager
 {
-    public interface IServerManager<in T>
+    public interface IServerFacade<in T>
     {
         public IUsersManager<T> UsersManager { get; }
 

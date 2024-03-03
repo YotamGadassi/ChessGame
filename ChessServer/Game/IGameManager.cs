@@ -5,7 +5,8 @@ namespace ChessServer.Game;
 
 public interface IGamesManager
 {
-    public Task<GameRequestId> SubmitGameRequestAsync(IServerChessPlayer player);
+    public event EventHandler<IGameUnit> GameEndedEvent; 
+    public Task<GameRequestId>           SubmitGameRequestAsync(IServerChessPlayer player);
 
     public Task CancelGameRequestAsync(GameRequestId requestId);
 

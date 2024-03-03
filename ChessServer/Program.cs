@@ -13,7 +13,7 @@ public class Program
 
         builder.Logging.AddLog4Net("loggingConfiguration.xml");
 
-        builder.Services.Add(new ServiceDescriptor(typeof(IServerManager<string>), typeof(SignalRServerManager)
+        builder.Services.Add(new ServiceDescriptor(typeof(IServerFacade<string>), typeof(SignalRServerFacade)
                                                  , ServiceLifetime.Singleton));
         WebApplication app = builder.Build();
 
