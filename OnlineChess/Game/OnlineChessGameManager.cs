@@ -1,4 +1,5 @@
 ﻿using Board;
+using ChessGame;
 using Common;
 using log4net;
 using OnlineChess.Common;
@@ -6,47 +7,37 @@ using OnlineChess.TeamManager;
 
 namespace OnlineChess.Game;
 
-public class OnlineChessGameManager : IChessGameEvents, IDisposable
+public class OnlineChessGameManager : IChessGameManager, IDisposable
 {
-    private static readonly ILog           s_log = LogManager.GetLogger(typeof(OnlineChessGameManager));
-    
-    public event AskPromotionEventHandler? AskPromotionEvent
-    {
-        add => m_serverAgent.AskPromotionEvent += value;
-        remove => m_serverAgent.AskPromotionEvent -= value;
-    }
+    private static readonly ILog s_log = LogManager.GetLogger(typeof(OnlineChessGameManager));
 
-    public event CheckMateEventHandler? CheckMateEvent
-    {
-        add => m_serverAgent.CheckMateEvent += value;
-        remove => m_serverAgent.CheckMateEvent -= value;
-    }
+    public IGameEvents  GameEvents  { get; }
+    public IBoardEvents BoardEvents => GameBoard;
+    public IBoardQuery  BoardQuery  => GameBoard;
 
-    public IBoardEvents                 BoardEvents => GameBoard;
-    public IBoardQuery                  BoardQuery  => GameBoard;
+    public IGameState?            GameState          { get; }
+    public IChessTeamManager      TeamsManager       => m_teamManager;
+    public OnlineChessTeamManager OnlineTeamsManager => m_teamManager;
+    public OnlineGameBoard        GameBoard          { get; }
 
-    public IGameState?            GameState    { get; }
-    public OnlineChessTeamManager TeamsManager { get; }
-    public OnlineGameBoard        GameBoard    { get; }
+    private readonly OnlineChessTeamManager m_teamManager;
 
-    private IChessServerAgent m_serverAgent;
-
-    public OnlineChessGameManager(IChessServerAgent      serverAgent
-                                , OnlineGameBoard        gameBoard
+    public OnlineChessGameManager(OnlineGameBoard        gameBoard
                                 , OnlineChessTeamManager teamManager
+                                , OnlineGameEvents       gameEvents
                                 , IGameState?            gameState)
     {
-        m_serverAgent = serverAgent;
         GameBoard     = gameBoard;
-        TeamsManager  = teamManager;
+        m_teamManager = teamManager;
         GameState     = gameState;
+        GameEvents    = gameEvents;
         s_log.Info("Created");
     }
 
     public void Dispose()
     {
         GameBoard.Dispose();
-        TeamsManager.Dispose();
+        m_teamManager.Dispose();
         GameState.Dispose();
     }
 }

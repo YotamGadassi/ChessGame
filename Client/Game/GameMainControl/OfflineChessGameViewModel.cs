@@ -22,7 +22,7 @@ namespace Client.Game
         private readonly Dispatcher              m_dispatcher;
         private readonly GameControllerViewModel m_gameControllerVM;
         private          bool                    m_isCheckMate;
-        public OfflineChessGameViewModel(OfflineChessGameManager gameManager) : base(gameManager, gameManager.BoardEvents, gameManager.TeamsManager)
+        public OfflineChessGameViewModel(OfflineChessGameManager gameManager) : base(gameManager)
         {
             m_isCheckMate            = false;
             m_dispatcher           = Dispatcher.CurrentDispatcher;
@@ -40,7 +40,7 @@ namespace Client.Game
         }
 
         protected override void onSquareClick(object?         sender
-                                                   , SquareViewModel squareVM)
+                                            , SquareViewModel squareVM)
         {
             s_log.DebugFormat("Click on square: {0}", squareVM);
 
@@ -48,7 +48,8 @@ namespace Client.Game
             BoardPosition position   = squareVM.Position;
             TeamId        teamTurnId = m_chessGameManager.TeamsManager.CurrentTeamTurnId;
 
-            bool isToolBelongsToTeam = null != tool && m_chessGameManager.TeamsManager.GetTeamId(tool.ToolId).Equals(teamTurnId);
+            bool isToolBelongsToTeam = null != tool 
+                                    && m_chessGameManager.TeamsManager.GetTeamId(tool.ToolId).Equals(teamTurnId);
             if (isToolBelongsToTeam)
             {
                 Board.ClearSelectedAndHintedBoardPositions();
@@ -60,8 +61,8 @@ namespace Client.Game
 
             if (false == Board.SelectedBoardPosition.IsEmpty())
             {
-                BoardPosition start      = Board.SelectedBoardPosition;
-                BoardPosition end        = position;
+                BoardPosition start = Board.SelectedBoardPosition;
+                BoardPosition end   = position;
                 m_chessGameManager.Move(start, end);
             }
 
@@ -71,7 +72,7 @@ namespace Client.Game
         protected override async void onPromotion(PromotionRequest promotionRequest)
         {
             BoardPosition position      = promotionRequest.Position;
-            ITool toolToPromote = promotionRequest.ToolToPromote;
+            ITool         toolToPromote = promotionRequest.ToolToPromote;
             s_log.Info($"Promotion event: position: {position} | tool to promote: {toolToPromote}");
 
             PromotionMessageViewModel promotionMessage = new(toolToPromote.Color, position);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using ChessGame;
 using Client.Board;
 using Common;
 using log4net;
@@ -11,17 +12,26 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
     private static readonly ILog s_log = LogManager.GetLogger(typeof(ChessGameViewModel));
 
     private static readonly DependencyProperty NorthTeamStatusProperty =
-        DependencyProperty.Register("NorthTeamStatus", typeof(TeamStatusViewModel), typeof(ChessGameViewModel));
+        DependencyProperty.Register("NorthTeamStatus"
+                                  , typeof(TeamStatusViewModel)
+                                  , typeof(ChessGameViewModel));
 
     private static readonly DependencyProperty SouthTeamStatusProperty =
-        DependencyProperty.Register("SouthTeamStatus", typeof(TeamStatusViewModel), typeof(ChessGameViewModel));
+        DependencyProperty.Register("SouthTeamStatus"
+                                  , typeof(TeamStatusViewModel)
+                                  , typeof(ChessGameViewModel));
 
     private static readonly DependencyProperty MessageProperty =
-        DependencyProperty.Register("Message", typeof(object), typeof(ChessGameViewModel));
+        DependencyProperty.Register("Message"
+                                  , typeof(object)
+                                  , typeof(ChessGameViewModel));
 
     private static readonly DependencyProperty BoardProperty =
-        DependencyProperty.Register("Board", typeof(BoardViewModel), typeof(ChessGameViewModel));
+        DependencyProperty.Register("Board"
+                                  , typeof(BoardViewModel)
+                                  , typeof(ChessGameViewModel));
 
+    
     public event EventHandler GameEnd;
 
     public TeamStatusViewModel NorthTeamStatus
@@ -45,15 +55,20 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
     public object? Message
     {
         get => GetValue(MessageProperty);
-        set => SetValue(MessageProperty, value);
+        set
+        {
+            Board.IsEnabled = value == null;
+            SetValue(MessageProperty, value);
+        }
     }
 
-    private readonly IChessGameEvents m_gameEvents;
-    protected ChessGameViewModel(IChessGameEvents chessGameEvents, IBoardEvents boardEvents, IChessTeamManager teamsManager)
+    private readonly IGameEvents m_gameEvents;
+
+    protected ChessGameViewModel(IChessGameManager gameManager)
     {
-        setBoard(new BoardViewModel(boardEvents));
-        initTeams(teamsManager);
-        m_gameEvents = chessGameEvents;
+        setBoard(new BoardViewModel(gameManager.BoardEvents));
+        initTeams(gameManager.TeamsManager);
+        m_gameEvents = gameManager.GameEvents;
         registerToEvents();
         s_log.Info("Created");
     }
@@ -68,7 +83,7 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
     }
 
     protected abstract void onSquareClick(object?         sender
-                                               , SquareViewModel squareVM);
+                                        , SquareViewModel squareVM);
 
     protected abstract void onPromotion(PromotionRequest promotionRequest);
 

@@ -7,25 +7,25 @@ using Tools;
 
 namespace ChessGame
 {
-    public class OfflineChessGameManager : IChessGameEvents, IChessBoardProxy, IDisposable
+    public class OfflineChessGameManager : IChessGameManager, IChessBoardProxy, IDisposable
     {
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public event AskPromotionEventHandler? AskPromotionEvent;
-        public event CheckMateEventHandler?    CheckMateEvent;
+        public IGameEvents          GameEvents          => m_gameEvents;
+        public IBoardEvents         BoardEvents         => m_gameBoard;
+        public IChessTeamManager    TeamsManager        => m_teamsManager;
+        public IGameStateController GameStateController { get; }
 
-        public IBoardEvents                    BoardEvents         => m_gameBoard;
-        public IChessTeamManager               TeamsManager        => m_teamsManager;
-        public IGameStateController            GameStateController { get; }
-        public           IBoardQuery            BoardQuery => m_gameBoard;
+        public  IBoardQuery            BoardQuery => m_gameBoard;
 
         private readonly ChessBoard             m_gameBoard;
         private readonly OfflineChessBoardProxy m_chessBoardProxy;
         private readonly OfflineTeamsManager    m_teamsManager;
-
-        public OfflineChessGameManager(OfflineTeamsManager teamsManager)
+        private readonly OfflineGameEvents      m_gameEvents;
+        public OfflineChessGameManager(OfflineTeamsManager teamsManager, OfflineGameEvents gameEvents)
         {
             m_teamsManager      = teamsManager;
+            m_gameEvents        = gameEvents;
             GameStateController = new GameStateController();
             m_gameBoard         = new ChessBoard();
             m_chessBoardProxy   = new OfflineChessBoardProxy(m_gameBoard, teamsManager);
@@ -40,9 +40,9 @@ namespace ChessGame
             Team team2 = TeamsManager.Teams[1];
 
             KeyValuePair<BoardPosition, ITool>[] team1BoardArrangement =
-                GameInitHelper.GenerateInitialArrangement(team1.MoveDirection, team1.Color);
+                GameInitHelper.GenerateArrangementForDebug(team1.MoveDirection, team1.Color);
             KeyValuePair<BoardPosition, ITool>[] team2BoardArrangement =
-                GameInitHelper.GenerateInitialArrangement(team2.MoveDirection, team2.Color);
+                GameInitHelper.GenerateArrangementForDebug(team2.MoveDirection, team2.Color);
 
             foreach (KeyValuePair<BoardPosition, ITool> pair in team1BoardArrangement)
             {
@@ -113,18 +113,18 @@ namespace ChessGame
         public MoveResult Move(BoardPosition start
                              , BoardPosition end)
         {
-            MoveResult result     = m_chessBoardProxy.Move(start, end);
-            MoveResultEnum        resultEnum = result.Result;
+            MoveResult     result     = m_chessBoardProxy.Move(start, end);
+            MoveResultEnum resultEnum = result.Result;
             if (resultEnum.HasFlag(MoveResultEnum.CheckMate))
             {
                 ITool   toolOfWinningTeam = result.ToolAtInitial;
                 TeamId? winningTeamId     = m_teamsManager.GetTeamId(toolOfWinningTeam.ToolId);
-                CheckMateEvent?.Invoke(new CheckMateData(result.EndPosition, winningTeamId));
+                m_gameEvents.RaiseCheckMateEvent(new CheckMateData(result.EndPosition, winningTeamId));
                 GameStateController.EndGame();
             }
             else if (resultEnum.HasFlag(MoveResultEnum.NeedPromotion))
             {
-                AskPromotionEvent?.Invoke(new PromotionRequest(result.ToolAtInitial, result.EndPosition));
+                m_gameEvents?.RaiseAskPromotionEvent(new PromotionRequest(result.ToolAtInitial, result.EndPosition));
             }
 
             return result;

@@ -30,7 +30,7 @@ namespace Frameworks.ChessGame
         {
             m_teamsManager = createOfflineTeamsManager();
 
-            GameManager             = new OfflineChessGameManager(m_teamsManager);
+            GameManager             = new OfflineChessGameManager(m_teamsManager, new OfflineGameEvents());
             m_gameViewModel         = new OfflineChessGameViewModel(GameManager);
             GameControl.DataContext = null;
             GameControl.DataContext = m_gameViewModel;

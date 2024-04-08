@@ -38,7 +38,7 @@ namespace ChessServer.Game
         public void StartGame()
         {
             OfflineTeamsManager teamsManager = createTeamManager();
-            m_gameManager = new OfflineChessGameManager(teamsManager);
+            m_gameManager = new OfflineChessGameManager(teamsManager, new OfflineGameEvents());
             registerToEvents();
 
             foreach (IServerChessPlayer player in ChessPlayers)
@@ -112,8 +112,8 @@ namespace ChessServer.Game
             m_gameManager.TeamsManager.TeamAndToolPairEvent += onTeamAndToolPair;
 
             m_gameManager.GameStateController.StateChanged += onStateChanged;
-            m_gameManager.AskPromotionEvent                += onAskPromotion;
-            m_gameManager.CheckMateEvent                   += onCheckMate;
+            m_gameManager.GameEvents.AskPromotionEvent     += onAskPromotion;
+            m_gameManager.GameEvents.CheckMateEvent         += onCheckMate;
         }
 
         
@@ -130,8 +130,8 @@ namespace ChessServer.Game
 
             m_gameManager.TeamsManager.TeamAndToolPairEvent -= onTeamAndToolPair;
             m_gameManager.GameStateController.StateChanged  -= onStateChanged;
-            m_gameManager.AskPromotionEvent                 -= onAskPromotion;
-            m_gameManager.CheckMateEvent                    -= onCheckMate;
+            m_gameManager.GameEvents.AskPromotionEvent      -= onAskPromotion;
+            m_gameManager.GameEvents.CheckMateEvent         -= onCheckMate;
         }
 
         private void onCheckMate(CheckMateData checkMateData)

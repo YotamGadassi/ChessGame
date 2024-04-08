@@ -11,15 +11,25 @@ namespace Client.Board;
 
 public class BoardViewModel : DependencyObject, IDisposable
 {
-    public event EventHandler<SquareViewModel>? OnSquareClick;
+    private static readonly DependencyProperty IsEnabledProperty = DependencyProperty.Register(nameof(IsEnabled)
+                                                                                             , typeof(bool)
+                                                                                             , typeof(BoardViewModel)
+                                                                                             , new UIPropertyMetadata(true));
 
-    public SquareViewModel?                           m_selectedBoardPosition;
+    public event EventHandler<SquareViewModel>? OnSquareClick;
     public Dictionary<BoardPosition, SquareViewModel> SquaresDictionary => m_squaresDictionary;
 
+    public bool IsEnabled
+    {
+        get => (bool)GetValue(IsEnabledProperty);
+        set => SetValue(IsEnabledProperty, value);
+    }
+
     private volatile Dictionary<BoardPosition, SquareViewModel> m_squaresDictionary;
-    private          HashSet<SquareViewModel>?                  m_hintedBoardPositions;
-    private          IBoardEvents                               m_boardEvents;
-    private          Dispatcher                                 m_dispatcher;
+    private readonly HashSet<SquareViewModel>?                  m_hintedBoardPositions;
+    private readonly IBoardEvents                               m_boardEvents;
+    private readonly Dispatcher                                 m_dispatcher;
+    private          SquareViewModel?                           m_selectedBoardPosition;
 
     public BoardViewModel(IBoardEvents boardEvents)
     {
@@ -40,10 +50,7 @@ public class BoardViewModel : DependencyObject, IDisposable
             return;
         }
 
-        m_dispatcher.Invoke(() =>
-                            {
-                                squareVM.Tool = tool;
-                            });
+        m_dispatcher.Invoke(() => { squareVM.Tool = tool; });
     }
 
     public void RemoveTool(BoardPosition position
@@ -174,6 +181,4 @@ public class BoardViewModel : DependencyObject, IDisposable
     {
         OnSquareClick?.Invoke(this, squareVM);
     }
-
-
 }

@@ -93,7 +93,8 @@ public class OnlineGameButton : BaseGameButton, IDisposable
         OnlineGameBoard        gameBoard              = new(m_serverAgent, null);
         OnlineChessTeamManager teamManager            = new(localTeam, remoteTeam, firstTeamTurnId, m_serverAgent);
         OnlineGameState?       gameState              = new(m_serverAgent);
-        OnlineChessGameManager onlineChessGameManager = new(m_serverAgent, gameBoard, teamManager, gameState);
+        OnlineGameEvents       gameEvents             = new(m_serverAgent);
+        OnlineChessGameManager onlineChessGameManager = new(gameBoard, teamManager, gameEvents, gameState);
         return onlineChessGameManager;
     }
 }

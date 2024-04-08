@@ -21,7 +21,6 @@ namespace OnlineChess.TeamManager
         private readonly Dictionary<ToolId, TeamId>          m_toolIdToTeamId;
         private readonly Dictionary<TeamId, HashSet<ToolId>> m_teamIdToToolId;
 
-
         private readonly IChessServerAgent m_serverAgent;
 
         public OnlineChessTeamManager(OnlineChessTeam   localTeam

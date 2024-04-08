@@ -24,15 +24,13 @@ public class OnlineChessViewModel : ChessGameViewModel
     private readonly ManualResetEvent m_resetEvent;
 
     public OnlineChessViewModel(OnlineChessGameManager gameManager
-                              , Dispatcher             dispatcher) : base(gameManager, 
-                                                                          gameManager.BoardEvents
-                                                                        , gameManager.TeamsManager)
+                              , Dispatcher             dispatcher) : base(gameManager)
     {
         m_dispatcher           = dispatcher;
-        m_resetEvent            = new ManualResetEvent(false);
+        m_resetEvent           = new ManualResetEvent(false) { };
         m_gameManager          = gameManager;
         m_gameBoard            = gameManager.GameBoard;
-        m_teamManager          = gameManager.TeamsManager;
+        m_teamManager          = gameManager.OnlineTeamsManager;
         m_availableMovesHelper = new AvailableMovesHelper(gameManager.BoardQuery);
         initBoardState(gameManager.BoardQuery);
         regiterToEvents();
@@ -43,13 +41,13 @@ public class OnlineChessViewModel : ChessGameViewModel
         m_gameManager.GameState.StateChanged += onStateChanged;
     }
 
-    private void onStateChanged(object?       sender
+    private async void onStateChanged(object?       sender
                               , GameStateEnum e)
     {
         if (e == GameStateEnum.Ended)
         {
             m_resetEvent.WaitOne(TimeSpan.FromSeconds(10));
-            Task.Run(()=> gameEnd(this, null));
+            gameEnd(this, null);
         }
     }
 
@@ -124,8 +122,11 @@ public class OnlineChessViewModel : ChessGameViewModel
 
         UserMessageViewModel checkMateMessage = new("Checkmate", "OK", () =>
                                                                        {
-                                                                           Message = null;
-                                                                           m_resetEvent.Set();
+                                                                           s_log.Info("OK Clicked");
+                                                                           if (false == m_resetEvent.Set())
+                                                                           {
+                                                                               s_log.Error("Failed to set conditional variable");
+                                                                           };
                                                                        });
         m_dispatcher.Invoke(
                             () =>
