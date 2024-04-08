@@ -40,9 +40,9 @@ namespace ChessGame
             Team team2 = TeamsManager.Teams[1];
 
             KeyValuePair<BoardPosition, ITool>[] team1BoardArrangement =
-                GameInitHelper.GenerateArrangementForDebug(team1.MoveDirection, team1.Color);
+                GameInitHelper.GenerateInitialArrangement(team1.MoveDirection, team1.Color);
             KeyValuePair<BoardPosition, ITool>[] team2BoardArrangement =
-                GameInitHelper.GenerateArrangementForDebug(team2.MoveDirection, team2.Color);
+                GameInitHelper.GenerateInitialArrangement(team2.MoveDirection, team2.Color);
 
             foreach (KeyValuePair<BoardPosition, ITool> pair in team1BoardArrangement)
             {
