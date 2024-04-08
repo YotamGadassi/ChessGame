@@ -1,25 +1,23 @@
 ﻿using System.Collections.Concurrent;
 using ChessServer.ChessPlayer;
-using log4net;
+using ChessServer.Users;
 using OnlineChess.Common;
-using Utils.DataStructures;
 
 namespace ChessServer.Game;
 
 public class GameManager : IGamesManager, IDisposable
 {
-    private readonly GameRequestsManager                       m_gameRequestsManager;
-    private readonly ConcurrentDictionary<PlayerId, IGameUnit> m_playerToGame;
-    private readonly ConcurrentDictionary<GameId, IGameUnit>   m_games;
-    private readonly ILogger                                   m_log;
-    private readonly object                                    m_gameLock = new();
-
+    private readonly GameRequestsManager                           m_gameRequestsManager;
+    private readonly ConcurrentDictionary<UserUniqueId, IGameUnit> m_userToGame;
+    private readonly ConcurrentDictionary<GameId, IGameUnit>       m_games;
+    private readonly ILogger                                       m_log;
+    private readonly object                                        m_gameLock = new();
 
     public GameManager(ILogger log)
     {
-        m_log                 = log;
-        m_playerToGame        = new ConcurrentDictionary<PlayerId, IGameUnit>();
-        m_games               = new ConcurrentDictionary<GameId, IGameUnit>();
+        m_log        = log;
+        m_userToGame = new ConcurrentDictionary<UserUniqueId, IGameUnit>();
+        m_games      = new ConcurrentDictionary<GameId, IGameUnit>();
 
         m_gameRequestsManager = new GameRequestsManager(log);
         registerToEvents();
@@ -29,12 +27,12 @@ public class GameManager : IGamesManager, IDisposable
 
     public Task CancelGameRequestAsync(GameRequestId requestId) => m_gameRequestsManager.CancelGameRequestAsync(requestId);
 
-    public Task<IGameUnit?> GetGameAsync(PlayerId playerId)
+    public Task<IGameUnit?> GetGameAsync(UserUniqueId userId)
     {
-        m_log.LogDebug("Get Game Id Called for player id: {0}", playerId);
-        if (false == m_playerToGame.TryGetValue(playerId, out IGameUnit? game))
+        m_log.LogDebug("Get Game Id Called for user id: {0}", userId);
+        if (false == m_userToGame.TryGetValue(userId, out IGameUnit? game))
         {
-            m_log.LogError("No game unit for Player Id: {0}", playerId);
+            m_log.LogError("No game unit for Player Id: {0}", userId);
         }
 
         return Task.FromResult(game);
@@ -60,20 +58,10 @@ public class GameManager : IGamesManager, IDisposable
             m_games.TryAdd(game.Id, game);
             foreach (IServerChessPlayer player in game.ChessPlayers)
             {
-                m_playerToGame.TryAdd(player.PlayerId, game);
+                m_userToGame.TryAdd(player.UserUniqueId, game);
             }
         }
         game.StartGame();
-    }
-
-    private void onGameEndedEvent(object sender, GameEndedEventArgs args)
-    {
-        IGameUnit game = args.GameUnit;
-        if (game is IDisposable disposableGame)
-        {
-            disposableGame.Dispose();
-        }
-        removeGame(args.GameUnit.Id, out _);
     }
 
     private bool removeGame(GameId gameId, out IGameUnit? gameUnit)
@@ -92,7 +80,7 @@ public class GameManager : IGamesManager, IDisposable
 
             foreach (IServerChessPlayer player in gameUnit.ChessPlayers)
             {
-                if (false == m_playerToGame.TryRemove(player.PlayerId, out _))
+                if (false == m_userToGame.TryRemove(player.UserUniqueId, out _))
                 {
                     m_log.LogError("Player id: {0} cannot be removed dictionary", player.PlayerId);
                 }
@@ -116,6 +104,16 @@ public class GameManager : IGamesManager, IDisposable
                              , IGameUnit game)
     {
         addGame(game);
+    }
+
+    private void onGameEndedEvent(object sender, GameEndedEventArgs args)
+    {
+        IGameUnit game = args.GameUnit;
+        if (game is IDisposable disposableGame)
+        {
+            disposableGame.Dispose();
+        }
+        removeGame(args.GameUnit.Id, out _);
     }
 
 }

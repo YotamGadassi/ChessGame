@@ -1,11 +1,11 @@
 ﻿namespace ChessServer.Users
 {
-    public interface IUsersManager<in T>
+    public interface IUsersManager<T>
     {
-        public Task AddNewUserAsync(T userIdentifier, UserData userData);
+        public Task AddNewUserAsync(T userIdentifier, UserData<T> userData);
 
-        public Task<UserData?> RemoveUserAsync(T userIdentifier);
+        public Task<UserData<T>> RemoveUserAsync(T userIdentifier);
 
-        public Task<UserData> GetUserDataAsync(T userIdentifier);
+        public Task<UserData<T>> GetUserDataAsync(T userIdentifier);
     }
 }

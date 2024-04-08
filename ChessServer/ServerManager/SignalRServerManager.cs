@@ -1,5 +1,4 @@
-﻿using ChessServer.ChessPlayer;
-using ChessServer.Game;
+﻿using ChessServer.Game;
 using ChessServer.Users;
 using Microsoft.AspNetCore.SignalR;
 using OnlineChess.Common;
@@ -16,7 +15,6 @@ public class SignalRServerManager : IServerManager<string>
     {
         UsersManager   = new SignalRUsersManager();
         GamesManager   = new GameManager(logger);
-        PlayersManager = new PlayersManager();
         m_hubContext   = hubContext;
         m_log          = logger;
         m_log.LogInformation($"Server state has been created");
@@ -24,5 +22,4 @@ public class SignalRServerManager : IServerManager<string>
 
     public IUsersManager<string> UsersManager { get; }
     public IGamesManager GamesManager { get; }
-    public IPlayersManager PlayersManager { get; }
 }

@@ -13,12 +13,13 @@ public class OnlineChessGamePanel : BaseGamePanel
 {
     private static readonly ILog s_log = LogManager.GetLogger(typeof(OnlineChessGamePanel));
 
-    public override  DependencyObject        GameViewModel => m_gameViewModel;
-    public override  Control                 GameControl   => m_gameControl;
+    public override DependencyObject GameViewModel => m_gameViewModel;
+    public override Control          GameControl   => m_gameControl;
 
-    private          GameControl             m_gameControl;
-    private          OnlineChessViewModel?   m_gameViewModel;
-    private readonly Dispatcher              m_dispatcher;
+    private          GameControl            m_gameControl;
+    private          OnlineChessViewModel?  m_gameViewModel;
+    private readonly Dispatcher             m_dispatcher;
+    private          OnlineChessGameManager m_gameManager;
 
     public OnlineChessGamePanel(string     panelName
                               , Dispatcher dispatcher) : base(panelName)
@@ -31,10 +32,11 @@ public class OnlineChessGamePanel : BaseGamePanel
     {
         m_dispatcher.Invoke(() =>
                             {
-                                m_gameViewModel         = new OnlineChessViewModel(gameManager, m_dispatcher);
+                                m_gameManager           =  gameManager;
+                                m_gameViewModel         =  new OnlineChessViewModel(gameManager, m_dispatcher);
                                 m_gameViewModel.GameEnd += onGameEnd;
-                                GameControl.DataContext = null;
-                                GameControl.DataContext = m_gameViewModel;
+                                GameControl.DataContext =  null;
+                                GameControl.DataContext =  m_gameViewModel;
                             });
 
         s_log.Info("Game Manager Set");
@@ -67,6 +69,7 @@ public class OnlineChessGamePanel : BaseGamePanel
 
     private void disposeResources()
     {
+        m_gameManager.Dispose();
         m_gameViewModel.GameEnd -= onGameEnd;
         m_gameViewModel.Dispose();
     }

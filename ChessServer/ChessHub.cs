@@ -1,5 +1,4 @@
-﻿using Accessibility;
-using Board;
+﻿using Board;
 using ChessServer.ChessPlayer;
 using ChessServer.Game;
 using ChessServer.ServerManager;
@@ -8,6 +7,7 @@ using Common;
 using Common.Chess;
 using Microsoft.AspNetCore.SignalR;
 using OnlineChess.Common;
+using UserData = ChessServer.Users.UserData<string>;
 
 namespace ChessServer;
 
@@ -48,7 +48,6 @@ public class ChessHub : Hub<IChessClientApi>, IChessServerApi
             await SubmitGameWithdraw();
             UserData           userData = await getUserData();
             m_serverState.UsersManager.RemoveUserAsync(connectionId);
-            m_serverState.PlayersManager.RemovePlayerAsync(userData.UserId);
         }
         catch (KeyNotFoundException e)
         {
@@ -75,8 +74,7 @@ public class ChessHub : Hub<IChessClientApi>, IChessServerApi
     public async Task SubmitGameWithdraw()
     {
         UserData   userData   = await getUserData();
-        IServerChessPlayer player = await getPlayer(userData.UserId);
-        IGameUnit? gameUnit   = await getGameUnit(player.PlayerId);
+        IGameUnit? gameUnit   = await getGameUnit(userData.UserId);
         gameUnit.EndGame();
         await m_serverState.GamesManager.RemoveGameAsync(gameUnit.Id);
     }
@@ -84,38 +82,29 @@ public class ChessHub : Hub<IChessClientApi>, IChessServerApi
     public async Task Init()
     {
         UserData           userData = await getUserData();
-        IServerChessPlayer player   = await getPlayer(userData.UserId);
-        IGameUnit?         game     = await m_serverState.GamesManager.GetGameAsync(player.PlayerId);
+        IGameUnit?         game     = await m_serverState.GamesManager.GetGameAsync(userData.UserId);
         game.Init();
-    }
-
-    private async Task<IServerChessPlayer> getPlayer(UserUniqueId id)
-    {
-        return await m_serverState.PlayersManager.GetPlayerDataAsync(id);
     }
 
     public async Task<MoveResult> SubmitMove(BoardPosition start
                                            , BoardPosition end)
     {
         UserData   userData   = await getUserData();
-        IServerChessPlayer player = await getPlayer(userData.UserId);
-        IGameUnit? gameUnit   = await getGameUnit(player.PlayerId);
+        IGameUnit? gameUnit   = await getGameUnit(userData.UserId);
         return gameUnit.Move(start, end);
     }
 
     public async Task<PromotionResult> SubmitPromote(PromotionRequest promotionRequest)
     {
         UserData   userData   = await getUserData();
-        IServerChessPlayer player = await getPlayer(userData.UserId);
-        IGameUnit? gameUnit   = await getGameUnit(player.PlayerId);
+        IGameUnit? gameUnit   = await getGameUnit(userData.UserId);
         return gameUnit.Promote(promotionRequest.Position, promotionRequest.ToolToPromote);
     }
 
     public async Task<TeamId> GetCurrentTeamTurn()
     {
         UserData   userData   = await getUserData();
-        IServerChessPlayer player = await getPlayer(userData.UserId);
-        IGameUnit? gameUnit   = await getGameUnit(player.PlayerId);
+        IGameUnit? gameUnit   = await getGameUnit(userData.UserId);
         return gameUnit.CurrentTeamId;
     }
 
@@ -126,16 +115,17 @@ public class ChessHub : Hub<IChessClientApi>, IChessServerApi
 
     private UserData createUserDataForConnection()
     {
+        string connectionId = Context.ConnectionId;
+        
         UserUniqueId userUniqueId = UserUniqueId.NewUniqueId();
         //TODO: implement name mechanism
-        return new UserData(userUniqueId, string.Empty);
+        return new UserData(connectionId, userUniqueId, string.Empty);
     }
 
     private IServerChessPlayer createPlayer(UserData userData)
     {
         PlayerId          playerId = PlayerId.NewPlayerId();
-        ServerChessPlayer player   = new(playerId, userData.UserName, m_hubContext, Context.ConnectionId);
-        m_serverState.PlayersManager.AddNewPlayerAsync(userData.UserId, player);
+        ServerChessPlayer player   = new(userData.UserId, playerId, userData.UserName, m_hubContext, Context.ConnectionId);
         return player;
     }
 
@@ -146,18 +136,18 @@ public class ChessHub : Hub<IChessClientApi>, IChessServerApi
         UserData userData = await m_serverState.UsersManager.GetUserDataAsync(conncetionId);
         if (null == userData)
         {
-            throw new KeyNotFoundException(string.Format("User Data does not exist for connection id: {0}", conncetionId));
+            throw new KeyNotFoundException($"User Data does not exist for connection id: {conncetionId}");
         }
 
         return userData;
     }
 
-    private async Task<IGameUnit?> getGameUnit(PlayerId playerId)
+    private async Task<IGameUnit?> getGameUnit(UserUniqueId userId)
     {
-        IGameUnit?    gameUnit   = await m_serverState.GamesManager.GetGameAsync(playerId);
+        IGameUnit?    gameUnit   = await m_serverState.GamesManager.GetGameAsync(userId);
         if (null == gameUnit)
         {
-            throw new KeyNotFoundException(string.Format("Game Unit does not exist for Player Id: {0}", playerId));
+            throw new KeyNotFoundException($"Game Unit does not exist for User Id: {userId}");
         }
 
         return gameUnit;

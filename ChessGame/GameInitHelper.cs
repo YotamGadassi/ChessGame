@@ -133,12 +133,12 @@ namespace ChessGame
 
             IList<KeyValuePair<BoardPosition, ITool>> list = new List<KeyValuePair<BoardPosition, ITool>>();
 
-            BoardPosition                      position = new BoardPosition(4, yAxis);
+            BoardPosition                      position = new(5, yAxis);
             ITool                              tool     = new Queen(color);
-            KeyValuePair<BoardPosition, ITool> pair     = new KeyValuePair<BoardPosition, ITool>(position, tool);
+            KeyValuePair<BoardPosition, ITool> pair     = new(position, tool);
             list.Add(pair);
 
-            position = new BoardPosition(5, yAxis);
+            position = new BoardPosition(4, yAxis);
             tool     = new King(color);
             pair     = new KeyValuePair<BoardPosition, ITool>(position, tool);
             list.Add(pair);
