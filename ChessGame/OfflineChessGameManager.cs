@@ -16,13 +16,15 @@ namespace ChessGame
         public IChessTeamManager    TeamsManager        => m_teamsManager;
         public IGameStateController GameStateController { get; }
 
-        public  IBoardQuery            BoardQuery => m_gameBoard;
+        public IBoardQuery BoardQuery => m_gameBoard;
 
         private readonly ChessBoard             m_gameBoard;
         private readonly OfflineChessBoardProxy m_chessBoardProxy;
         private readonly OfflineTeamsManager    m_teamsManager;
         private readonly OfflineGameEvents      m_gameEvents;
-        public OfflineChessGameManager(OfflineTeamsManager teamsManager, OfflineGameEvents gameEvents)
+
+        public OfflineChessGameManager(OfflineTeamsManager teamsManager
+                                     , OfflineGameEvents   gameEvents)
         {
             m_teamsManager      = teamsManager;
             m_gameEvents        = gameEvents;
@@ -77,7 +79,7 @@ namespace ChessGame
             GameStateController.StateChanged -= onStateChanged;
         }
 
-        private void onStateChanged(object?   sender
+        private void onStateChanged(object?       sender
                                   , GameStateEnum currState)
         {
             switch (currState)
