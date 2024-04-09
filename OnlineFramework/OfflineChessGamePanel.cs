@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using ChessGame;
 using Client.Game;
+using Client.Game.GameMainControl;
 using Common;
 using Common.Chess;
 using FrontCommon.GamePanel;
@@ -10,25 +11,27 @@ using log4net;
 
 namespace OfflineChess
 {
-    public class OfflineChessGamePanel : BaseGamePanel
+    public class OfflineChessGamePanel : IGamePanel
     {
         private static readonly ILog s_log = LogManager.GetLogger(typeof(OfflineChessGamePanel));
 
-        public override DependencyObject        GameViewModel => m_gameViewModel;
-        public override Control                 GameControl   => m_gameControl;
-        public          OfflineChessGameManager GameManager;
+        public event Action<IGamePanel>? GameEnded;
+        public string                    PanelName     { get; }
+        public DependencyObject          GameViewModel => m_gameViewModel;
+        public Control                   GameControl   => m_gameControl;
+        public OfflineChessGameManager   GameManager;
 
         private OfflineChessGameViewModel m_gameViewModel;
         private GameControl               m_gameControl;
         private OfflineTeamsManager       m_teamsManager;
 
         public OfflineChessGamePanel(string panelName)
-            : base(panelName)
         {
+            PanelName     = panelName;
             m_gameControl = new GameControl();
         }
 
-        public override void Init()
+        public void Init()
         {
             s_log.Info("Init");
             m_teamsManager = createOfflineTeamsManager();
@@ -41,7 +44,7 @@ namespace OfflineChess
             m_gameViewModel.GameEnd += onGameEnd;
         }
 
-        public override void Reset()
+        public void Reset()
         {
             disposeResources();
             GameManager     = null;
@@ -49,7 +52,7 @@ namespace OfflineChess
             m_gameControl   = new GameControl();
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
             disposeResources();
         }
@@ -76,7 +79,7 @@ namespace OfflineChess
         private void onGameEnd(object?   sender
                              , EventArgs e)
         {
-            gameEnd();
+            GameEnded?.Invoke(this);
         }
     }
 }

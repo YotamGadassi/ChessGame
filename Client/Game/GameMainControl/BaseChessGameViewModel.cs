@@ -7,29 +7,29 @@ using log4net;
 
 namespace Client.Game.GameMainControl;
 
-public abstract class ChessGameViewModel : DependencyObject, IDisposable
+public abstract class BaseChessGameViewModel : DependencyObject, IDisposable
 {
-    private static readonly ILog s_log = LogManager.GetLogger(typeof(ChessGameViewModel));
+    private static readonly ILog s_log = LogManager.GetLogger(typeof(BaseChessGameViewModel));
 
     private static readonly DependencyProperty NorthTeamStatusProperty =
         DependencyProperty.Register("NorthTeamStatus"
                                   , typeof(TeamStatusViewModel)
-                                  , typeof(ChessGameViewModel));
+                                  , typeof(BaseChessGameViewModel));
 
     private static readonly DependencyProperty SouthTeamStatusProperty =
         DependencyProperty.Register("SouthTeamStatus"
                                   , typeof(TeamStatusViewModel)
-                                  , typeof(ChessGameViewModel));
+                                  , typeof(BaseChessGameViewModel));
 
     private static readonly DependencyProperty MessageProperty =
         DependencyProperty.Register("Message"
                                   , typeof(object)
-                                  , typeof(ChessGameViewModel));
+                                  , typeof(BaseChessGameViewModel));
 
     private static readonly DependencyProperty BoardProperty =
         DependencyProperty.Register("Board"
                                   , typeof(BoardViewModel)
-                                  , typeof(ChessGameViewModel));
+                                  , typeof(BaseChessGameViewModel));
 
     
     public event EventHandler GameEnd;
@@ -64,11 +64,13 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
 
     private readonly IGameEvents m_gameEvents;
 
-    protected ChessGameViewModel(IChessGameManager gameManager)
+    protected BaseChessGameViewModel(IChessGameManager gameManager)
     {
-        setBoard(new BoardViewModel(gameManager.BoardEvents));
+        Board = new BoardViewModel(gameManager.BoardEvents);
         initTeams(gameManager.TeamsManager);
+        
         m_gameEvents = gameManager.GameEvents;
+        
         registerToEvents();
         s_log.Info("Created");
     }
@@ -90,17 +92,6 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
     protected abstract void onCheckMate(CheckMateData checkMateData);
 
     protected void gameEnd(object sender,EventArgs e) => GameEnd?.Invoke(sender, e);
-
-    private void setBoard(BoardViewModel newBoard)
-    {
-        if (null != Board)
-        {
-            Board.OnSquareClick -= onSquareClick;
-            Board.Dispose();
-        }
-        newBoard.OnSquareClick += onSquareClick;
-        Board                  =  newBoard;
-    }
 
     private void setNorthTeam(TeamStatusViewModel teamStatusViewModel)
     {
@@ -137,11 +128,13 @@ public abstract class ChessGameViewModel : DependencyObject, IDisposable
     {
         m_gameEvents.AskPromotionEvent += onPromotion;
         m_gameEvents.CheckMateEvent    += onCheckMate;
+        Board.OnSquareClick            += onSquareClick;
     }
 
     private void unRegisterFromEvents()
     {
-        m_gameEvents.AskPromotionEvent -= onPromotion;
+        Board.OnSquareClick            -= onSquareClick;
         m_gameEvents.CheckMateEvent    -= onCheckMate;
+        m_gameEvents.AskPromotionEvent -= onPromotion;
     }
 }

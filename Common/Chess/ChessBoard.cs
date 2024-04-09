@@ -11,11 +11,11 @@ namespace Common.Chess
     {
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public event Action<ITool, BoardPosition> ToolAddEvent;
-        public event Action<BoardPosition>        ToolRemoved;
+        public event Action<ITool, BoardPosition>? ToolAddEvent;
+        public event Action<BoardPosition>?        ToolRemoved;
 
-        private BasicBoard     m_board;
-        private GameMoveHelper m_gameMoveHelper;
+        private readonly BasicBoard     m_board;
+        private readonly GameMoveHelper m_gameMoveHelper;
 
         public ChessBoard()
         {

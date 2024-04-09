@@ -12,7 +12,7 @@ using Tools;
 
 namespace OnlineChess.UI;
 
-public class OnlineChessViewModel : ChessGameViewModel
+public class OnlineChessViewModel : BaseChessGameViewModel
 {
     private static readonly ILog s_log = LogManager.GetLogger(typeof(OnlineChessViewModel));
 

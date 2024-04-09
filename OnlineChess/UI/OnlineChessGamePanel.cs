@@ -12,12 +12,14 @@ using OnlineChess.TeamManager;
 
 namespace OnlineChess.UI;
 
-public class OnlineChessGamePanel : BaseGamePanel
+public class OnlineChessGamePanel : IGamePanel
 {
     private static readonly ILog s_log = LogManager.GetLogger(typeof(OnlineChessGamePanel));
 
-    public override DependencyObject GameViewModel => m_gameViewModel;
-    public override Control          GameControl   => m_gameControl;
+    public event Action<IGamePanel>? GameEnded;
+    public          string           PanelName     { get; }
+    public DependencyObject GameViewModel => m_gameViewModel;
+    public Control          GameControl   => m_gameControl;
 
     private          GameControl              m_gameControl;
     private          OnlineChessViewModel?    m_gameViewModel;
@@ -30,8 +32,9 @@ public class OnlineChessGamePanel : BaseGamePanel
     public OnlineChessGamePanel(string                   panelName
                               , Dispatcher               dispatcher
                               , OnlineGameRequestManager gameRequestManager
-                              , IChessConnectionManager  connectionManager) : base(panelName)
+                              , IChessConnectionManager  connectionManager)
     {
+        PanelName            = panelName;
         m_dispatcher         = dispatcher;
         m_gameControl        = new GameControl();
         m_connectionManager  = connectionManager;
@@ -53,13 +56,13 @@ public class OnlineChessGamePanel : BaseGamePanel
         s_log.Info("Game Manager Set");
     }
 
-    public override void Init()
+    public void Init()
     {
         s_log.Info("Initialized");
         registerToEvents();
     }
 
-    public override void Reset()
+    public void Reset()
     {
         disposeResources();
         m_gameViewModel = null;
@@ -67,7 +70,7 @@ public class OnlineChessGamePanel : BaseGamePanel
         s_log.Info("Reset");
     }
 
-    public override void Dispose()
+    public void Dispose()
     {
         disposeResources();
     }
@@ -116,7 +119,7 @@ public class OnlineChessGamePanel : BaseGamePanel
                                , EventArgs e)
     {
         s_log.Info("Game Ended");
-        gameEnd();
+        GameEnded?.Invoke(this);
     }
 
     private void disposeResources()

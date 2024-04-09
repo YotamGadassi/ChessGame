@@ -1,8 +1,9 @@
 ﻿using Common.MainWindow;
+using FrontCommon;
 using FrontCommon.Facade;
-using Host;
+using FrontCommon.GamePanel;
 
-namespace FrontCommon;
+namespace Host;
 
 public class GameFacade : BaseGameFacade, IGameFacade
 {
@@ -23,8 +24,8 @@ public class GameFacade : BaseGameFacade, IGameFacade
         GamePanelManager = gamePanelManager;
     }
 
-    public void SetMainWindoesViewModel(BaseMainWindowViewModel mainWindoesViewModel)
+    public void SetMainWindowViewModel(BaseMainWindowViewModel mainWindowViewModel)
     {
-        MainWindowViewModel = mainWindoesViewModel;
+        MainWindowViewModel = mainWindowViewModel;
     }
 }

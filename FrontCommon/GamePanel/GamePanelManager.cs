@@ -7,19 +7,19 @@ namespace FrontCommon;
 public class GamePanelManager : IGamePanelManager
 {
     public event EventHandler<GamePanelChangedEventArgs>? GamePanelChanged;
-    public BaseGamePanel                                  CurrentPanel { get; private set; }
+    public IGamePanel                                  CurrentPanel { get; private set; }
 
-    private Dictionary<string, BaseGamePanel> m_panels;
-    private Dispatcher                        m_dispatcher;
+    private readonly Dictionary<string, IGamePanel> m_panels;
+    private readonly Dispatcher                     m_dispatcher;
 
     public GamePanelManager()
     {
         m_dispatcher = Dispatcher.CurrentDispatcher;
-        m_panels     = new Dictionary<string, BaseGamePanel>();
+        m_panels     = new Dictionary<string, IGamePanel>();
     }
 
-    public void Add(string        panelName
-                  , BaseGamePanel panel)
+    public void Add(string     panelName
+                  , IGamePanel panel)
     {
         m_panels.Add(panelName, panel);
         panel.GameEnded += onGameEnd;
@@ -27,7 +27,7 @@ public class GamePanelManager : IGamePanelManager
 
     public void Remove(string panelName)
     {
-        bool isPanelExist = m_panels.TryGetValue(panelName, out BaseGamePanel gamePanel);
+        bool isPanelExist = m_panels.TryGetValue(panelName, out IGamePanel gamePanel);
         if (isPanelExist)
         {
             if (CurrentPanel == gamePanel)
@@ -41,9 +41,9 @@ public class GamePanelManager : IGamePanelManager
         }
     }
 
-    public bool Show(BaseGamePanel gamePanel)
+    public bool Show(IGamePanel gamePanel)
     {
-        BaseGamePanel oldPanel = CurrentPanel;
+        IGamePanel oldPanel = CurrentPanel;
         CurrentPanel = gamePanel;
         GamePanelChanged?.Invoke(this
                                , new GamePanelChangedEventArgs(oldPanel.PanelName
@@ -57,7 +57,7 @@ public class GamePanelManager : IGamePanelManager
 
     public void ResetCurrentPanel()
     {
-        BaseGamePanel oldPanel = CurrentPanel;
+        IGamePanel oldPanel = CurrentPanel;
         CurrentPanel = null;
         GamePanelChanged?.Invoke(this, new GamePanelChangedEventArgs(oldPanel.PanelName, CurrentPanel));
         m_dispatcher.Invoke(() =>
@@ -67,18 +67,18 @@ public class GamePanelManager : IGamePanelManager
                             });
     }
 
-    public bool TryGetPanel(string            panelName
-                          , out BaseGamePanel gamePanel)
+    public bool TryGetPanel(string         panelName
+                          , out IGamePanel gamePanel)
     {
         return m_panels.TryGetValue(panelName, out gamePanel);
     }
 
-    public BaseGamePanel[] GetAllPanels()
+    public IGamePanel[] GetAllPanels()
     {
         return m_panels.Values.ToArray();
     }
 
-    private void onGameEnd(BaseGamePanel gamePanel)
+    private void onGameEnd(IGamePanel gamePanel)
     {
         if (gamePanel == CurrentPanel)
             ResetCurrentPanel();

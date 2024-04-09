@@ -11,7 +11,7 @@
     <Grid>
         <Grid.Resources>
             <ResourceDictionary>
-                <DataTemplate DataType="{x:Type gameMainControl:ChessGameViewModel}">
+                <DataTemplate DataType="{x:Type gameMainControl:BaseChessGameViewModel}">
                     <game:GameControl/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type messages:UserMessageViewModel}">

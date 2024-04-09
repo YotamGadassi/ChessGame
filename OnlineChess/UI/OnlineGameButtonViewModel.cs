@@ -1,22 +1,21 @@
-﻿using System.Windows.Threading;
-using FrontCommon;
+﻿using FrontCommon;
+using FrontCommon.GamePanel;
 using log4net;
 using OnlineChess.Common;
 using OnlineChess.Game;
 
 namespace OnlineChess.UI;
 
-public class OnlineGameButton : BaseGameButton
+public class OnlineGameButtonViewModel : BaseGameButtonViewModel
 {
-    private static readonly ILog s_log = LogManager.GetLogger(typeof(OnlineGameButton));
+    private static readonly ILog s_log = LogManager.GetLogger(typeof(OnlineGameButtonViewModel));
     public override string PanelGameName => "OnlineChessGame";
     public override string CommandName => "Online Chess Game";
 
     private readonly OnlineGameRequestManager m_gameRequestManager;
 
-    public OnlineGameButton(Dispatcher               dispatcher
-                          , IGamePanelManager        panelManager
-                          , OnlineGameRequestManager gameGameRequestManager) : base(dispatcher, panelManager)
+    public OnlineGameButtonViewModel(IGamePanelManager        panelManager
+                          , OnlineGameRequestManager gameGameRequestManager) : base(panelManager)
     {
         m_gameRequestManager = gameGameRequestManager;
     }

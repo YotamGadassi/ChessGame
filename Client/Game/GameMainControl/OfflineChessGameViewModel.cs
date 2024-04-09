@@ -3,39 +3,39 @@ using Board;
 using ChessGame;
 using ChessGame.Helpers;
 using Client.Board;
-using Client.Game.GameMainControl;
 using Client.Messages;
 using Common;
 using FrontCommon;
 using log4net;
 using Tools;
 
-namespace Client.Game
+namespace Client.Game.GameMainControl
 {
-    public class OfflineChessGameViewModel : ChessGameViewModel
+    public class OfflineChessGameViewModel : BaseChessGameViewModel
     {
         private static readonly ILog s_log = LogManager.GetLogger(typeof(OfflineChessGameViewModel));
-        public                  BaseGameControllerViewModel ControllerViewModel => m_gameControllerVM;
+        public                  BaseGameControllerViewModel ControllerViewModel => m_gameControllerVm;
 
         private readonly OfflineChessGameManager m_chessGameManager;
         private readonly IAvailableMovesHelper   m_availableMovesHelper;
         private readonly Dispatcher              m_dispatcher;
-        private readonly GameControllerViewModel m_gameControllerVM;
+        private readonly GameControllerViewModel m_gameControllerVm;
         private          bool                    m_isCheckMate;
+
         public OfflineChessGameViewModel(OfflineChessGameManager gameManager) : base(gameManager)
         {
-            m_isCheckMate            = false;
+            m_isCheckMate          = false;
             m_dispatcher           = Dispatcher.CurrentDispatcher;
             m_chessGameManager     = gameManager;
             m_availableMovesHelper = new AvailableMovesHelper(gameManager.BoardQuery);
-            m_gameControllerVM     = new GameControllerViewModel(gameManager.GameStateController);
+            m_gameControllerVm     = new GameControllerViewModel(gameManager.GameStateController);
             registerToEvents();
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            m_gameControllerVM.Dispose();
+            m_gameControllerVm.Dispose();
             unRegisterFromEvens();
         }
 
@@ -48,7 +48,7 @@ namespace Client.Game
             BoardPosition position   = squareVM.Position;
             TeamId        teamTurnId = m_chessGameManager.TeamsManager.CurrentTeamTurnId;
 
-            bool isToolBelongsToTeam = null != tool 
+            bool isToolBelongsToTeam = null != tool
                                     && m_chessGameManager.TeamsManager.GetTeamId(tool.ToolId).Equals(teamTurnId);
             if (isToolBelongsToTeam)
             {
@@ -68,7 +68,7 @@ namespace Client.Game
 
             Board.ClearSelectedAndHintedBoardPositions();
         }
-
+        
         protected override async void onPromotion(PromotionRequest promotionRequest)
         {
             BoardPosition position      = promotionRequest.Position;
@@ -94,7 +94,9 @@ namespace Client.Game
                                                                            {
                                                                                Message = null;
                                                                                m_dispatcher
-                                                                                  .InvokeAsync(() => gameEnd(this, null));
+                                                                                  .InvokeAsync(() =>
+                                                                                       gameEnd(this
+                                                                                         , null));
                                                                            });
             Message = checkMateMessage;
         }

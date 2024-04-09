@@ -1,4 +1,5 @@
 ﻿using Common.MainWindow;
+using FrontCommon.GamePanel;
 
 namespace FrontCommon;
 

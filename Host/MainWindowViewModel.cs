@@ -10,16 +10,16 @@ namespace Host
     {
         private static readonly ILog s_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public IGameButton[] GameButtons => m_gameButtons.ToArray();
+        public IGameButtonViewModel[] GameButtons => m_gameButtons.ToArray();
 
-        private List<IGameButton> m_gameButtons; 
+        private List<IGameButtonViewModel> m_gameButtons; 
 
         public MainWindowViewModel()
         {
-            m_gameButtons = new List<IGameButton>();
+            m_gameButtons = new List<IGameButtonViewModel>();
         }
 
-        public void AddGameButton(BaseGameButton gameButton)
+        public void AddGameButton(BaseGameButtonViewModel gameButton)
         {
             m_gameButtons.Add(gameButton);
         }
