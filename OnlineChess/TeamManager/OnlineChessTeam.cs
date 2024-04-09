@@ -19,7 +19,7 @@ public class OnlineChessTeam : Team
 
 }
 
-public static class TeamConfigExtention
+public static class TeamConfigExtension
 {
     public static OnlineChessTeam ToOnlineChessTeam(this TeamConfig teamConfig, IChessServerAgent serverAgent)
     {

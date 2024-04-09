@@ -42,12 +42,12 @@ public class OnlineChessGamePanel : IGamePanel
         m_gameRequestManager = gameRequestManager;
     }
 
-    public void SetGameManager(OnlineChessGameManager gameManager)
+    public void StartGame(OnlineChessGameManager gameManager, TeamId localTeamId)
     {
         m_dispatcher.Invoke(() =>
                             {
                                 m_gameManager           =  gameManager;
-                                m_gameViewModel         =  new OnlineChessViewModel(gameManager, m_dispatcher);
+                                m_gameViewModel         =  new OnlineChessViewModel(gameManager, localTeamId, m_dispatcher);
                                 m_gameViewModel.GameEnd += onGameEnd;
                                 GameControl.DataContext =  null;
                                 GameControl.DataContext =  m_gameViewModel;
@@ -88,8 +88,8 @@ public class OnlineChessGamePanel : IGamePanel
     private void onGameStart(GameConfig gameConfiguration)
     {
         OnlineChessGameManager onlineGameManager = createOnlineGameManager(gameConfiguration);
-        SetGameManager(onlineGameManager);
-        m_serverAgent.Init();
+        StartGame(onlineGameManager, onlineGameManager.OnlineTeamsManager.LocalMachineTeamId);
+       
         m_serverAgent.AckGameReceive();
     }
 

@@ -17,20 +17,23 @@ public class OnlineChessViewModel : BaseChessGameViewModel
     private static readonly ILog s_log = LogManager.GetLogger(typeof(OnlineChessViewModel));
 
     private readonly OnlineGameBoard        m_gameBoard;
-    private readonly OnlineChessTeamManager m_teamManager;
+    private readonly IChessTeamManager      m_teamManager;
     private readonly IAvailableMovesHelper  m_availableMovesHelper;
     private readonly Dispatcher             m_dispatcher;
     private readonly OnlineChessGameManager m_gameManager;
-    private readonly ManualResetEvent m_resetEvent;
+    private readonly ManualResetEvent       m_resetEvent;
+    private readonly TeamId                 m_localTeamId;
 
     public OnlineChessViewModel(OnlineChessGameManager gameManager
+                              , TeamId                 localTeamId
                               , Dispatcher             dispatcher) : base(gameManager)
     {
         m_dispatcher           = dispatcher;
-        m_resetEvent           = new ManualResetEvent(false) { };
+        m_resetEvent           = new ManualResetEvent(false);
         m_gameManager          = gameManager;
         m_gameBoard            = gameManager.GameBoard;
-        m_teamManager          = gameManager.OnlineTeamsManager;
+        m_teamManager          = gameManager.TeamsManager;
+        m_localTeamId          = localTeamId;
         m_availableMovesHelper = new AvailableMovesHelper(gameManager.BoardQuery);
         initBoardState(gameManager.BoardQuery);
         regiterToEvents();
@@ -42,7 +45,7 @@ public class OnlineChessViewModel : BaseChessGameViewModel
     }
 
     private async void onStateChanged(object?       sender
-                              , GameStateEnum e)
+                                    , GameStateEnum e)
     {
         if (e == GameStateEnum.Ended)
         {
@@ -68,17 +71,17 @@ public class OnlineChessViewModel : BaseChessGameViewModel
     {
         s_log.DebugFormat("Click on square: {0}", squareVM);
 
-        bool isLocalMachineTeamTurn = m_teamManager.IsLocalMachineTeamTurn();
+        bool isLocalMachineTeamTurn = m_teamManager.CurrentTeamTurnId.Equals(m_localTeamId);
 
         if (!isLocalMachineTeamTurn)
         {
             return;
         }
 
-        ITool         tool                = squareVM.Tool;
-        BoardPosition position            = squareVM.Position;
-        TeamId        localMachineTeamId  = m_teamManager.LocalMachineTeamId;
-        bool          isToolBelongsToTeam = null != tool && m_teamManager.GetTeamId(tool.ToolId).Equals(localMachineTeamId);
+        ITool         tool     = squareVM.Tool;
+        BoardPosition position = squareVM.Position;
+        bool isToolBelongsToTeam =
+            null != tool && m_teamManager.GetTeamId(tool.ToolId).Equals(m_localTeamId);
         if (isToolBelongsToTeam)
         {
             Board.ClearSelectedAndHintedBoardPositions();
@@ -90,8 +93,8 @@ public class OnlineChessViewModel : BaseChessGameViewModel
 
         if (false == Board.SelectedBoardPosition.IsEmpty())
         {
-            BoardPosition start      = Board.SelectedBoardPosition;
-            BoardPosition end        = position;
+            BoardPosition start = Board.SelectedBoardPosition;
+            BoardPosition end   = position;
             await m_gameBoard.Move(start, end);
         }
 
@@ -126,7 +129,7 @@ public class OnlineChessViewModel : BaseChessGameViewModel
                                                                            if (false == m_resetEvent.Set())
                                                                            {
                                                                                s_log.Error("Failed to set conditional variable");
-                                                                           };
+                                                                           }
                                                                        });
         m_dispatcher.Invoke(
                             () =>
