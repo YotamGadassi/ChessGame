@@ -79,7 +79,7 @@ public class ChessHub : Hub<IChessClientApi>, IChessServerApi
         await m_serverState.GamesManager.RemoveGameAsync(gameUnit.Id);
     }
 
-    public async Task Init()
+    public async Task AckGameReceive()
     {
         UserData           userData = await getUserData();
         IGameUnit?         game     = await m_serverState.GamesManager.GetGameAsync(userData.UserId);

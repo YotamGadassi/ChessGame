@@ -90,6 +90,7 @@ public class OnlineChessGamePanel : IGamePanel
         OnlineChessGameManager onlineGameManager = createOnlineGameManager(gameConfiguration);
         SetGameManager(onlineGameManager);
         m_serverAgent.Init();
+        m_serverAgent.AckGameReceive();
     }
 
     private OnlineChessGameManager createOnlineGameManager(GameConfig gameConfiguration)

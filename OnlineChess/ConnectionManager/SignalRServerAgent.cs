@@ -32,45 +32,45 @@ namespace OnlineChess.ConnectionManager
         public async Task<GameRequestResult> SubmitGameRequest(GameRequest gameRequest)
         {
             s_log.InfoFormat("Game request sent to server: {0}", gameRequest);
-            return await m_connection.InvokeAsync<GameRequestResult>("SubmitGameRequest", gameRequest);
+            return await m_connection.InvokeAsync<GameRequestResult>(nameof(SubmitGameRequest), gameRequest);
         }
 
         public Task CancelGameRequest(GameRequestId gameRequestId)
         {
             s_log.InfoFormat("Cancel game request sent to server: {0}", gameRequestId);
-            return m_connection.InvokeAsync("CancelGameRequest", gameRequestId);
+            return m_connection.InvokeAsync(nameof(CancelGameRequest), gameRequestId);
         }
 
         public async Task SubmitGameWithdraw()
         {
             s_log.Info("Game withdraw sent to server");
-            await m_connection.InvokeAsync("SubmitGameWithdraw");
+            await m_connection.InvokeAsync(nameof(SubmitGameWithdraw));
         }
 
-        public async Task Init()
+        public async Task AckGameReceive()
         {
             s_log.Info("Init sent to server");
-            await m_connection.InvokeAsync("Init");
+            await m_connection.InvokeAsync(nameof(AckGameReceive));
         }
 
         public async Task<MoveResult> SubmitMove(BoardPosition start
                                                , BoardPosition end)
         {
             s_log.Info($"Submit Move sent to server: [start:{start} | end:{end}]");
-            return await m_connection.InvokeAsync<MoveResult>("SubmitMove", start, end);
+            return await m_connection.InvokeAsync<MoveResult>(nameof(SubmitMove), start, end);
         }
 
         public async Task<PromotionResult> SubmitPromote(PromotionRequest promotionRequest)
         {
             s_log.Info($"Submit Promote sent to server: [{promotionRequest}]");
-            return await m_connection.InvokeAsync<PromotionResult>("SubmitPromote"
+            return await m_connection.InvokeAsync<PromotionResult>(nameof(SubmitPromote)
                                                                  , promotionRequest);
         }
 
         public Task<TeamId> GetCurrentTeamTurn()
         {
             //TODO: consider remove
-            return m_connection.InvokeAsync<TeamId>("GetCurrentTeamTurn");
+            return m_connection.InvokeAsync<TeamId>(nameof(GetCurrentTeamTurn));
         }
 
         public Task SendMessage(string msg)
