@@ -1,5 +1,6 @@
 ﻿using System.Windows.Input;
 using System.Windows.Threading;
+using FrontCommon.GamePanel;
 
 namespace FrontCommon
 {
@@ -16,21 +17,21 @@ namespace FrontCommon
 
         public abstract string CommandName { get; }
 
-        protected readonly Dispatcher m_dispatcher;
+        protected readonly Dispatcher Dispatcher;
 
-        protected readonly IGamePanelManager m_panelManager;
+        protected readonly IGamePanelManager PanelManager;
 
-        protected BaseGameButton(Dispatcher        dispatcer
+        protected BaseGameButton(Dispatcher        dispatcher
                                , IGamePanelManager panelManager)
         {
-            m_dispatcher   = dispatcer;
-            m_panelManager = panelManager;
+            Dispatcher   = dispatcher;
+            PanelManager = panelManager;
             ButtonCommand  = new WpfCommand(playCommandExecute, playCommandCanExecute);
         }
 
         protected virtual BaseGamePanel getPanel()
         {
-            bool isExists = m_panelManager.TryGetPanel(PanelGameName, out BaseGamePanel panel);
+            bool isExists = PanelManager.TryGetPanel(PanelGameName, out BaseGamePanel panel);
             if (false == isExists)
             {
                 throw new KeyNotFoundException($"Panel: {PanelGameName} does not exist");
@@ -42,12 +43,12 @@ namespace FrontCommon
         {
             BaseGamePanel gamePanel = getPanel();
             gamePanel.Init();
-            m_panelManager.Show(gamePanel);
+            PanelManager.Show(gamePanel);
         }
 
         private bool playCommandCanExecute(object parameter)
         {
-            BaseGamePanel? currPanel = m_panelManager.CurrentPanel;
+            BaseGamePanel? currPanel = PanelManager.CurrentPanel;
             return null == currPanel;
         }
     }

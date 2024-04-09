@@ -1,4 +1,6 @@
-﻿namespace FrontCommon;
+﻿using FrontCommon.GamePanel;
+
+namespace FrontCommon;
 
 public class GamePanelChangedEventArgs : EventArgs
 {

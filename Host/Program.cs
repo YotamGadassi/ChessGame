@@ -3,12 +3,13 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Threading;
 using Common.MainWindow;
-using Frameworks.ChessGame;
 using FrontCommon;
 using FrontCommon.Facade;
 using log4net;
 using log4net.Config;
+using OfflineChess;
 using OnlineChess.ConnectionManager;
+using OnlineChess.Game;
 using OnlineChess.UI;
 
 namespace Host
@@ -17,6 +18,10 @@ namespace Host
     {
         private static ILog s_log;
 
+        private static IChessConnectionManager s_connectionManager  = new SignalRConnectionManager(); //TODO: use Factory
+
+        private static OnlineGameRequestManager
+            s_gameRequestManager = new OnlineGameRequestManager(s_connectionManager);
         [STAThread]
         private static void Main(string[] args)
         {
@@ -49,7 +54,7 @@ namespace Host
         private static void initGameButtons(MainWindowViewModel mainWindowViewModel
                                           , IGamePanelManager   panelManager)
         {
-            OfflineGameButton offlineGameButton = new OfflineGameButton(Dispatcher.CurrentDispatcher, panelManager);
+            OfflineGameButton offlineGameButton = new(Dispatcher.CurrentDispatcher, panelManager);
             mainWindowViewModel.AddGameButton(offlineGameButton);
 
             OnlineGameButton onlineGameButton = createOnlineGameButton(panelManager);
@@ -58,8 +63,7 @@ namespace Host
 
         private static OnlineGameButton createOnlineGameButton(IGamePanelManager panelManager)
         {
-            IChessConnectionManager   connectionManager  = new SignalRConnectionManager(); //TODO: use Factory
-            OnlineGameButton         gameButton         = new(Dispatcher.CurrentDispatcher, panelManager, connectionManager);
+            OnlineGameButton gameButton = new(Dispatcher.CurrentDispatcher, panelManager, s_gameRequestManager);
             return gameButton;
         }
 
@@ -71,7 +75,7 @@ namespace Host
             panelManager.Add(panelName, offlineChessGamePanel);
 
             panelName = "OnlineChessGame";
-            OnlineChessGamePanel onlineChessGamePanel = new(panelName, Dispatcher.CurrentDispatcher);
+            OnlineChessGamePanel onlineChessGamePanel = new(panelName, Dispatcher.CurrentDispatcher, s_gameRequestManager, s_connectionManager);
             panelManager.Add(panelName, onlineChessGamePanel);
 
             return panelManager;

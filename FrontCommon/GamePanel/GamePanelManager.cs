@@ -1,5 +1,6 @@
 ﻿using System.Windows.Threading;
 using FrontCommon.Facade;
+using FrontCommon.GamePanel;
 
 namespace FrontCommon;
 

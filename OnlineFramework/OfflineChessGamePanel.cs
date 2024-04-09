@@ -5,20 +5,22 @@ using ChessGame;
 using Client.Game;
 using Common;
 using Common.Chess;
-using FrontCommon;
+using FrontCommon.GamePanel;
+using log4net;
 
-namespace Frameworks.ChessGame
+namespace OfflineChess
 {
     public class OfflineChessGamePanel : BaseGamePanel
     {
-        public override DependencyObject GameViewModel => m_gameViewModel;
-        public override Control          GameControl   => m_gameControl;
+        private static readonly ILog s_log = LogManager.GetLogger(typeof(OfflineChessGamePanel));
 
-        public OfflineChessGameManager GameManager;
+        public override DependencyObject        GameViewModel => m_gameViewModel;
+        public override Control                 GameControl   => m_gameControl;
+        public          OfflineChessGameManager GameManager;
 
         private OfflineChessGameViewModel m_gameViewModel;
-        private GameControl m_gameControl;
-        private OfflineTeamsManager m_teamsManager;
+        private GameControl               m_gameControl;
+        private OfflineTeamsManager       m_teamsManager;
 
         public OfflineChessGamePanel(string panelName)
             : base(panelName)
@@ -28,6 +30,7 @@ namespace Frameworks.ChessGame
 
         public override void Init()
         {
+            s_log.Info("Init");
             m_teamsManager = createOfflineTeamsManager();
 
             GameManager             = new OfflineChessGameManager(m_teamsManager, new OfflineGameEvents());
@@ -41,9 +44,9 @@ namespace Frameworks.ChessGame
         public override void Reset()
         {
             disposeResources();
-            GameManager              =  null;
-            m_gameViewModel          =  null;
-            m_gameControl            =  new GameControl();
+            GameManager     = null;
+            m_gameViewModel = null;
+            m_gameControl   = new GameControl();
         }
 
         public override void Dispose()
@@ -57,7 +60,6 @@ namespace Frameworks.ChessGame
             GameManager.Dispose();
             m_teamsManager.Dispose();
         }
-
 
         private OfflineTeamsManager createOfflineTeamsManager()
         {
